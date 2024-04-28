@@ -4,16 +4,16 @@ import json
 import os
 import numpy as np
 from keras.models import Sequential
-from argument import parse_arguments
-from feature import get_feats
+from fqdd.utils.argument import parse_arguments
+from fqdd.utils.feature import get_feats
 from keras.layers import Dense
 import keras
-from files import get_all_file, readtxt
+from fqdd.utils.files import get_all_file, readtxt
 from keras.callbacks import EarlyStopping
 from keras import optimizers
 from keras.callbacks import ReduceLROnPlateau
-from load_data import zero_pad_concat
-from sklearn.model_selection import train_test_split
+# from fqdd.utils.load_data import zero_pad_concat
+from sklearn.model_selection import train_test_spit
 
 args = parse_arguments()
 

@@ -1,7 +1,7 @@
 import os, sys
 import pkuseg
 import json
-from script.utils.files import readtxt, get_all_file
+from fqdd.utils.files import readtxt, get_all_file
 
 
 def words2phones(sent, w2p, lexicon):

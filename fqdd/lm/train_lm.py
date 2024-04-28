@@ -1,12 +1,11 @@
 import torch
 import os
-from script.tools.argument import parse_arguments
 import numpy as np
 import torch.optim.lr_scheduler as lr_sch
-from script.tools.lang import create_phones, read_phones
-from script.lm.lm_net import RNN_Model
-from script.tools.load_data import load_txt_data
-from script.asr.decode import int2word
+from fqdd.utils.argument import parse_arguments
+from fqdd.utils.lang import create_phones, read_phones
+from fqdd.lm.lm_net import RNN_Model
+from fqdd.utils.load_data import load_txt_data
 import matplotlib.pyplot as plt
 import matplotlib
 

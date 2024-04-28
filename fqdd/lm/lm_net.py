@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from script.tools.argument import parse_arguments
+from fqdd.utils.argument import parse_arguments
 
 
 class RNN_Model(nn.Module):

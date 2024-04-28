@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from script.tools.argument import parse_arguments
-from script.asr.decode import int2word
-from script.tools.lang import read_phones
-from script.lm.lm_net import RNN_Model
-from script.tools.load_data import end_pad_concat
+from fqdd.utils.argument import parse_arguments
+from fqdd.bin.asr.decode import int2word
+from fqdd.utils.lang import read_phones
+from fqdd.lm.lm_net import RNN_Model
+from fqdd.utils.load_data import words2phones
 
 
 def load_model(args, dic, device):

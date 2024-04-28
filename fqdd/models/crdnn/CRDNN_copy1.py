@@ -1,14 +1,13 @@
 import os, sys, torch
 import torch.nn as nn
-sys.path.insert(0, './')
 from thop import profile
-from script.nnets.containers import Sequential
-from script.nnets.CNN import Conv2d
-from script.nnets.dropout import Dropout2d
-from script.nnets.normalization import LayerNorm, BatchNorm1d
-from script.nnets.pooling import Pooling1d, Pooling2d
-from script.nnets.RNN import LiGRU, LSTM, GRU
-from script.nnets.linear import Linear
+from fqdd.nnets.containers import Sequential
+from fqdd.nnets.CNN import Conv2d
+from fqdd.nnets.dropout import Dropout2d
+from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
+from fqdd.nnets.pooling import Pooling1d, Pooling2d
+from fqdd.nnets.RNN import LiGRU, LSTM, GRU
+from fqdd.nnets.linear import Linear
 
 class CRDNN_NET(Sequential):
 

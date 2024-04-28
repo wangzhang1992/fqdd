@@ -1,7 +1,7 @@
 import argparse
 
-def parse_arguments():
 
+def parse_arguments():
     model_args = argparse.ArgumentParser(
         description='model config', add_help=True)
     model_args.add_argument(
@@ -17,7 +17,7 @@ def parse_arguments():
         default=True,
         help="是否分布式训练"
     )
- 
+
     model_args.add_argument(
         '--world-size',
         type=int,
@@ -25,19 +25,19 @@ def parse_arguments():
         help='设置训练GPU卡数'
 
     )
- 
+
     model_args.add_argument(
         '--local-rank',
         type=int,
         default=0,
         help="进程编号"
     )
-    
+
     model_args.add_argument(
         '--host',
         type=str,
         default="env://localhost:23457",
-        #default="env://",
+        # default="env://",
         help="设置主机服务器ip"
     )
 
@@ -45,17 +45,22 @@ def parse_arguments():
         '--tensorboard_dir',
         default='log/tensorboard',
         type=str,
-        help= 'tensorbard show dir'
+        help='tensorbard show dir'
     )
 
     model_args.add_argument(
         '--data_folder',
         # default="test_folder",
-        default='/data1/data_management/speech_processing/ASR/audio_raw/language_china/zh-CN/lable/near-field/read/aishell/aishell_1_178hr/data_aishell/',  
+        default='/data1/data_management/speech_processing/ASR/audio_raw/language_china/zh-CN/lable/near-field/read/aishell/aishell_1_178hr/data_aishell/',
         type=str,
         help='data_folder path'
     )
-
+    model_args.add_argument(
+        '--configs',
+        type=str,
+        default=None,
+        help="加载模型配置文件yaml"
+    )
     model_args.add_argument(
         '--feat_type',
         default='fbank',
@@ -82,7 +87,7 @@ def parse_arguments():
         type=int,
         help=' extract feat cof'
     )
-   
+
     model_args.add_argument(
         '--shuffle',
         type=bool,
@@ -242,7 +247,5 @@ def parse_arguments():
         type=str,
         help='lm path'
     )
-
-
 
     return model_args.parse_args()

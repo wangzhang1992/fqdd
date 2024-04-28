@@ -1,9 +1,8 @@
 import os, sys
 import glob
 import json
-#sys.path.insert(0, "./")
-from script.utils.files import get_all_file, readtxt
-from script.utils.dataio import read_audio
+
+from fqdd.utils.dataio import read_audio
 
 
 def prepare_data(data_folder, dirpath):

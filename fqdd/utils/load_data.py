@@ -10,8 +10,8 @@ from tqdm import tqdm
 sys.path.insert(0, "./")
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from script.utils.lang import words2phones, read_phones
-from script.utils.feature import extract_feat
+from fqdd.utils.lang import words2phones, read_phones
+from fqdd.utils.feature import extract_feat
 
 '''
 My_Data("result_test/2021/dev.json", {"1":2})

@@ -5,13 +5,12 @@ Authors
  * Jianyuan Zhong 2020
  * Loren Lugosch 2020
 """
-
 import torch
 import logging
 import torch.nn as nn
 import numpy as np
 from typing import Optional
-from script.utils.dataio import length_to_mask
+from fqdd.utils.dataio import length_to_mask
 
 logger = logging.getLogger(__name__)
 

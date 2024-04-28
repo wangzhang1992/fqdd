@@ -19,9 +19,9 @@ from fqdd.prepare_data.aishell_prepare_data import prepare_data
 from fqdd.utils.lang import create_phones, read_phones
 from fqdd.utils.load_data import Load_Data
 from fqdd.utils.argument import parse_arguments
-from fqdd.asr.decode import GreedyDecoder, calculate_cer
+from fqdd.bin.asr.decode import GreedyDecoder, calculate_cer
 # from fqdd.models.wav2vec import Encoder_Decoer
-from fqdd.models.CRDNN import Encoder_Decoer
+from fqdd.models.crdnn.CRDNN import Encoder_Decoer
 from fqdd.models.check_model import model_init, save_model, reload_model
 from fqdd.utils.optimizers import adam_optimizer, sgd_optimizer, scheduler, warmup_lr
 from fqdd.utils.logger import init_logging
@@ -81,7 +81,6 @@ def train(model, load_object, args, phones, logger):
 
     ctc_loss = torch.nn.CTCLoss(blank=0, reduction='mean') 
     optimizer = adam_optimizer(model, args.lr)
-    #optimizer = sgd_optimizer(model, args.lr)
     warm_up = warmup_lr(args.lr, 20000)
     scheduler_lr = scheduler(optimizer, patience=0, cooldown=0)
     

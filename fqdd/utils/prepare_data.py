@@ -1,6 +1,5 @@
 import os, sys
 import simplejson
-import pkuseg
 
 
 def isExitesFile(filePath):

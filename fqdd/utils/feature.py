@@ -5,7 +5,7 @@ import python_speech_features
 import numpy as np
 import scipy.io as scio
 import scipy.io.wavfile as wav
-from script.utils.files import get_all_file, readtxt
+from fqdd.utils.files import get_all_file, readtxt
 
 
 def extract_feat(wavpath, sr=16000, feat_type='mfcc', feat_cof=40, lowfreq=0):

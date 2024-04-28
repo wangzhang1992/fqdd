@@ -1,10 +1,8 @@
 import os
 
+class Add_Noise:
+    def __init__(self):
+        self.addnoise()
 
-class Add_noise:
-    def __init__(
-        self,
-        
-    ):
-
-   def addnoise()
+    def addnoise(self):
+       return

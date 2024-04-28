@@ -1,12 +1,11 @@
 import os
 import torch.nn
-from script.tools.argument import parse_arguments
-from script.tools.feature import get_feats
-from script.asr.decode import decoder
-import script.model.CRDNN as CRDNN
-from script.tools.lang import read_phones
-from script.tools.load_data import load_data
-from apex import amp
+import fqdd
+from fqdd.utils.argument import parse_arguments
+from fqdd.utils.feature import get_feats
+from fqdd.bin.asr.decode import decoder
+import fqdd.models.crdnn as CRDNN
+from fqdd.utils.lang import read_phones
 
 
 def load_model(args, device):

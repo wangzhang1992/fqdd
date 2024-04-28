@@ -7,7 +7,7 @@ Authors
 """
 import torch
 from itertools import groupby
-from script.utils.dataio import length_to_mask
+from fqdd.utils.dataio import length_to_mask
 
 
 class CTCPrefixScorer:
