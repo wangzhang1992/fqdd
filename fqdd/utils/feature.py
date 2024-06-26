@@ -4,7 +4,6 @@ import torchaudio
 import python_speech_features
 import numpy as np
 import scipy.io as scio
-import scipy.io.wavfile as wav
 from fqdd.utils.files import get_all_file, readtxt
 
 

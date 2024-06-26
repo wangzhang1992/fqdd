@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import os, sys
 import numpy as np
-sys.path.insert(0, "./")
+# sys.path.insert(0, "./")
 import torch.optim.lr_scheduler as lr_sch
 
 from torch.utils.data import DataLoader
@@ -12,21 +12,17 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from contextlib import nullcontext
 # from apex import amp
 from tqdm import tqdm
-from fqdd.utils.feature import get_feats
-# from fqdd.prepare_data.aidatatang_prepare_data import prepare_data
 from fqdd.prepare_data.aishell_prepare_data import prepare_data
-# from fqdd.prepare_data.thch30_prepare_data import prepare_data
 from fqdd.utils.lang import create_phones, read_phones
-from fqdd.utils.load_data import Load_Data
+from fqdd.utils.init_tokenizer import Tokenizers
+from fqdd.utils.load_data import init_dataset_and_dataloader
 from fqdd.utils.argument import parse_arguments
 from fqdd.bin.asr.decode import GreedyDecoder, calculate_cer
-# from fqdd.models.wav2vec import Encoder_Decoer
 from fqdd.models.crdnn.CRDNN import Encoder_Decoer
-from fqdd.models.check_model import model_init, save_model, reload_model
+from fqdd.models.check_model import model_init, save_model, load_model
 from fqdd.utils.optimizers import adam_optimizer, sgd_optimizer, scheduler, warmup_lr
 from fqdd.utils.logger import init_logging
-from fqdd.nnets.losses import nll_loss, transducer_loss
-from fqdd.models.dense import densenet169
+from fqdd.nnets.losses import nll_loss
 from fqdd.utils.edit_distance import Static_Info
 
 
@@ -86,7 +82,7 @@ def train(model, load_object, args, phones, logger):
     
     if args.pretrained:
         # if args.local_rank < 1:
-        start_epoch = reload_model(os.path.join(args.result_dir, str(args.seed), "save", "AM"), model=model, optimizer=optimizer, map_location='cuda:{}'.format(args.local_rank))
+        start_epoch = load_model(os.path.join(args.result_dir, str(args.seed), "save", "AM"), model=model, optimizer=optimizer, map_location='cuda:{}'.format(args.local_rank))
         #else:
             #start_epoch = reload_model(os.path.join(args.result_dir, str(args.seed), "save", "AM"))
         start_epoch = start_epoch + 1
@@ -196,9 +192,18 @@ def main():
     torch.cuda.manual_seed_all(args.seed)
     np.random.seed(args.seed)
     
-    with open(args.config, 'r') as fin:
-        configs = yaml.load(fin, Loader=yaml.FullLoader)
-    
+    # with open(args.config, 'r') as fin:
+    #     configs = yaml.load(fin, Loader=yaml.FullLoader)
+
+    tokenizer = Tokenizers(args["data"].get("train_file"))
+    # train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(args["data"],
+    #                                                                                           tokenizer=tokenizer,
+    #                                                                                           s_epoch=0
+    #
+    # args["model"]["vocab_size"] = tokenizer.vocab_size()
+    # model = init_model(args["model"])
+    # optimizer, scheduler = init_optimizer(model, args["model"])
+    # seed=args.get("seed"))
     # prepare data
     dirpath = os.path.join(args.result_dir, str(args.seed))
     prepare_data(args.data_folder, dirpath)
