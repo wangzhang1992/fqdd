@@ -11,15 +11,16 @@ import os, sys, torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-
-from fqdd.nnets.containers import Sequential
-from fqdd.nnets.CNN import Conv2d
-from fqdd.nnets.dropout import Dropout2d
-from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
-from fqdd.nnets.pooling import Pooling1d, Pooling2d
-from fqdd.nnets.RNN import LiGRU, LSTM, GRU
-from fqdd .nnets.linear import Linear
-from fqdd.nnets.embedding import Embedding
+sys.path.insert(0, './')
+from thop import profile
+from script.nnets.containers import Sequential
+from script.nnets.CNN import Conv2d
+from script.nnets.dropout import Dropout2d
+from script.nnets.normalization import LayerNorm, BatchNorm1d
+from script.nnets.pooling import Pooling1d, Pooling2d
+from script.nnets.RNN import LiGRU, LSTM, GRU
+from script.nnets.linear import Linear
+from script.nnets.embedding import Embedding
 
 class Encoder(Sequential):
     """This model is a combination of CNNs, RNNs, and DNNs.
@@ -341,11 +342,7 @@ class Attention(nn.Module):
         q = self.q(q) # [4, 10, 1024] 
         k = self.k(k) # [4, 1000, 1024]
         v = self.v(v) # [4, 1000, 1024]
-
-        score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.output_size)
-        # clip
-        # score = torch.clip(score, 0) # >0 正相关保留
-        score = F.softmax(score, dim=-1) # [4, 10, 1000]
+        score = F.softmax(torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.output_size), dim=-1) # [4, 10, 1000]
         # print(q.shape, k.shape, v.shape, score.shape)
         x = torch.matmul(score, v) #  [4, 10, 1000] * [4, 1000, 1024] --> [4, 10, 1024]
         x = self.out(x)
@@ -456,8 +453,8 @@ class Encoder_Decoer(nn.Module):
 
 '''
 torch.manual_seed(2021)
-feats = torch.randn(4, 1500, 80).to("cuda:0")
-targets = torch.randint(2, 4078,(4,20)).to("cuda:0")
+feats = torch.randn(4, 1000, 120).to("cuda:0")
+targets = torch.randint(2, 4078,(4,10)).to("cuda:0")
 print("input_feats.shape:{}".format(feats.shape))
 print("input_targets.shape:{}".format(targets.shape))
 net = Encoder_Decoer(4078, feat_shape=feats.shape).to("cuda:0")

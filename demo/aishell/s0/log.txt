@@ -1,0 +1,47 @@
+NOTE: Redirects are currently not supported in Windows or MacOs.
+D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\launch.py:181: FutureWarning: The module torch.distributed.launch is deprecated
+and will be removed in future. Use torchrun.
+Note that --use-env is set by default in torchrun.
+If your script expects `--local-rank` argument to be set, please
+change it to read from `os.environ['LOCAL_RANK']` instead. See 
+https://pytorch.org/docs/stable/distributed.html#launch-utility for 
+further instructions
+
+  warnings.warn(
+[W C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\distributed\c10d\socket.cpp:601] [c10d] The client socket has failed to connect to [kubernetes.docker.internal]:29500 (system error: 10049 - 在其上下文中，该请求的地址无效。).
+[W C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\distributed\c10d\socket.cpp:601] [c10d] The client socket has failed to connect to [kubernetes.docker.internal]:29500 (system error: 10049 - 在其上下文中，该请求的地址无效。).
+D:\ProgramData\miniconda3\envs\fqdd\python.exe: can't open file 'D:\JetBrains\work\own_learn\fqdd\demo\aishell\s0\fqdd\bin\asr\train.py': [Errno 2] No such file or directory
+ERROR:torch.distributed.elastic.multiprocessing.api:failed (exitcode: 2) local_rank: 0 (pid: 14540) of binary: D:\ProgramData\miniconda3\envs\fqdd\python.exe
+Traceback (most recent call last):
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\launch.py", line 196, in <module>
+    main()
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\launch.py", line 192, in main
+    launch(args)
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\launch.py", line 177, in launch
+    run(args)
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\run.py", line 785, in run
+    elastic_launch(
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\launcher\api.py", line 134, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "D:\ProgramData\miniconda3\envs\fqdd\lib\site-packages\torch\distributed\launcher\api.py", line 250, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+fqdd/bin/asr/train.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2024-04-26_16:47:26
+  host      : singasong
+  rank      : 0 (local_rank: 0)
+  exitcode  : 2 (pid: 14540)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

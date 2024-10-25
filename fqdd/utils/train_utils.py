@@ -22,7 +22,8 @@ def init_distributed(dist_conf):
 
 
 def init_model(model_conf, init_method: str = ""):
-    model = EBranchformer(model_conf)
+    # model = EBranchformer(model_conf)
+    model=None
     # 在ReLU网络中，假定每一层有一半的神经元被激活，另一半为0。推荐在ReLU网络中使用
     if init_method == "kaiming":
         for m in model.modules():

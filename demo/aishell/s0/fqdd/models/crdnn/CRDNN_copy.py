@@ -1,17 +1,19 @@
 import os, sys, torch
 import torch.nn as nn
+sys.path.insert(0, './')
 from thop import profile
-from fqdd.nnets.containers import Sequential
-from fqdd.nnets.CNN import Conv2d
-from fqdd.nnets.dropout import Dropout2d
-from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
-from fqdd.nnets.pooling import Pooling1d, Pooling2d
-from fqdd.nnets.RNN import LiGRU, LSTM, GRU
-from fqdd.nnets.linear import Linear
+from script.nnets.containers import Sequential
+from script.nnets.CNN import Conv2d
+from script.nnets.dropout import Dropout2d
+from script.nnets.normalization import LayerNorm, BatchNorm1d
+from script.nnets.pooling import Pooling1d, Pooling2d
+from script.nnets.RNN import LiGRU, LSTM, GRU
+from script.nnets.linear import Linear
 
 class CRDNN_NET(Sequential):
 
     def __init__(self,
+            n_neurons,
             input_shape=None,
             cnn_block_num=2,
             cnn_kernel_size=(3, 3),
@@ -25,7 +27,7 @@ class CRDNN_NET(Sequential):
             rnn_neurons=LiGRU,
             rnn_hidden_size=512,
             re_init=True,
-            inter_rnn_num_layers=2,
+            inter_rnn_num_layers=4,
             activation_layer='leaky_relu',
             bidirectional=False,
             dnn_neurons=512,
@@ -103,6 +105,13 @@ class CRDNN_NET(Sequential):
             dropout=dropout,
             layer_name="block_linear")
             
+        self.append(Sequential, layer_name="Decode")
+        self.Decode.append(
+            Linear,
+            n_neurons=n_neurons,
+            bias=False,
+            layer_name="decode_line"
+        )
 
 class CNN_Block(Sequential):
 
@@ -227,16 +236,16 @@ class DNN_Block(Sequential):
             self.append(activation(), layer_name=f"act_{block_index}")
             self.append(nn.Dropout(p=dropout), layer_name=f"dropout_{block_index}")
 
-class Apply_CRDNN1(nn.Module):
+class Apply_CRDNN(nn.Module):
 
     def __init__(
             self,
             n_neurons,
             input_shape=None,
-            cnn_block_num=2,
+            cnn_block_num=6,
             cnn_kernel_size=(3, 3),
-            cnn_channels=(128, 256),
-            inter_layer_pooling_size=(2, 2),
+            cnn_channels=(32, 64, 128, 256, 512, 1024),
+            inter_layer_pooling_size=(2, 2, 2, 2 ,2, 2),
             using_2d_pooling=False,
             time_pooling=True,
             time_pooling_size=4,
@@ -244,12 +253,12 @@ class Apply_CRDNN1(nn.Module):
             rnn_neurons=LiGRU,
             rnn_hidden_size=512,
             re_init=True,
-            inter_rnn_num_layers=2,
+            inter_rnn_num_layers=8,
             activation_layer='leaky_relu',
-            bidirectional=True,
-            dnn_neurons=1024,
+            bidirectional=False,
+            dnn_neurons=512,
             normalization='layernorm',
-            inter_linear_layer_num=2
+            inter_linear_layer_num=120
         ):
         super(Apply_CRDNN, self).__init__()
         self.crnn = CRDNN_NET(
@@ -280,50 +289,19 @@ class Apply_CRDNN1(nn.Module):
         x = self.crnn(x.detach())
         return x
 
-class CRDNN_layer(Sequential):
-    def __init__(self, n_neurons, input_shape, layer_num=1):
-        super().__init__(input_shape=input_shape)
-        
-        self.append(Sequential, layer_name='CRDNN')
-        for block_index in range(layer_num):
-            self.CRDNN.append(
-                 CRDNN_NET,
-                 layer_name=f"block_{block_index}")
-        
-        self.append(Sequential, layer_name="Decode")
-        self.Decode.append(
-            Linear,
-            n_neurons=n_neurons,
-            bias=False,
-            layer_name="decode_line"
-        )
-         
-class Apply_CRDNN(nn.Module):
-
-    def __init__(self, n_neurons, input_shape, layer_num=1):
-       super(Apply_CRDNN, self).__init__()         
-       self.crdnn = CRDNN_layer(n_neurons, input_shape, layer_num)
-
-    def forward(self, x):
-        print(x.shape)
-        #x = self.batch_norm(x)
-        x = self.crdnn(x.detach())
-        return x 
-
-def test():
-    # btch=16: flops:1048655872000.0       params:21151534.0
-    cuda = "cuda:2"
-    torch.manual_seed(2021)
-    x_train = [torch.randn(4, 500, 120) for i in range(10)]
-    inputd = torch.randn(4, 500, 120).to(cuda)
-    print("input.shape:{}".format(inputd.shape))
-    net = Apply_CRDNN(4078, input_shape=inputd.shape, layer_num=2).to(cuda)
-    #for name, layer in net.named_parameters():
-    #    print(name, layer)
-    print(net)
-    flops, params = profile(net, inputs=(inputd,))
-    print("flops:{}\tparams:{}".format(flops, params))
-    for batch_x in x_train:
-        res = net(batch_x.to(cuda))
-        print(res.size())
-test()
+          
+# btch=16: flops:1048655872000.0       params:21151534.0
+cuda = "cuda:2"
+torch.manual_seed(2021)
+x_train = [torch.randn(4, 1500, 120) for i in range(10)]
+inputd = torch.randn(4, 1500, 120).to(cuda)
+print("input.shape:{}".format(inputd.shape))
+net = Apply_CRDNN(4078, input_shape=inputd.shape).to(cuda)
+#for name, layer in net.named_parameters():
+#    print(name, layer)
+print(net)
+flops, params = profile(net, inputs=(inputd,))
+print("flops:{}\tparams:{}".format(flops, params))
+for batch_x in x_train:
+    res = net(batch_x.to(cuda))
+    print(res.size())

@@ -11,14 +11,13 @@ import os, sys, torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-
 from fqdd.nnets.containers import Sequential
 from fqdd.nnets.CNN import Conv2d
 from fqdd.nnets.dropout import Dropout2d
 from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
 from fqdd.nnets.pooling import Pooling1d, Pooling2d
 from fqdd.nnets.RNN import LiGRU, LSTM, GRU
-from fqdd .nnets.linear import Linear
+from fqdd.nnets.linear import Linear
 from fqdd.nnets.embedding import Embedding
 
 class Encoder(Sequential):
@@ -344,7 +343,7 @@ class Attention(nn.Module):
 
         score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.output_size)
         # clip
-        # score = torch.clip(score, 0) # >0 正相关保留
+        score = torch.clip(score, 0) # >0 正相关保留
         score = F.softmax(score, dim=-1) # [4, 10, 1000]
         # print(q.shape, k.shape, v.shape, score.shape)
         x = torch.matmul(score, v) #  [4, 10, 1000] * [4, 1000, 1024] --> [4, 10, 1024]

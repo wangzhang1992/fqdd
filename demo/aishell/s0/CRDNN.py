@@ -1,12 +1,3 @@
-"""A combination of Convolutional, Recurrent, and Fully-connected networks.
-
-Authors
- * Mirco Ravanelli 2020
- * Peter Plantinga 2020
- * Ju-Chieh Chou 2020
- * Titouan Parcollet 2020
- * Abdel 2020
-"""
 import sys, os
 import torch
 import torch.nn as nn
@@ -14,7 +5,7 @@ import torch.nn.functional as F
 import math
 import functools
 
-sys.path.insert(0, "./")
+# sys.path.insert(0, "./")
 from fqdd.nnets.containers import Sequential
 from fqdd.nnets.CNN import Conv2d
 from fqdd.nnets.dropout import Dropout2d
