@@ -6,7 +6,6 @@ requirements = [
     "numpy",
     "requests"
 ]
-
 setup(
     name='fqdd',
     version='v1.0.0',
@@ -18,3 +17,4 @@ setup(
     author_email='',
     description=''
 )
+
