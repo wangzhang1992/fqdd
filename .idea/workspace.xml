@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="u更新依赖包关系">
-      <change afterPath="$PROJECT_DIR$/fqdd/utils/torch_audio_backend.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/CRDNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/CRDNN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/utils/train_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/train_utils.py" afterDir="false" />
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="init">
+      <change beforePath="$PROJECT_DIR$/.idea/fqdd.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/fqdd.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/run.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,11 +207,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.CRDNN" />
       <item itemvalue="Python.readdata" />
+      <item itemvalue="Python.CRDNN" />
       <item itemvalue="Python.train_NNM" />
-      <item itemvalue="Shell Script.run.sh" />
       <item itemvalue="Python tests.Doctests in CRDNN" />
+      <item itemvalue="Shell Script.run.sh" />
     </list>
     <recent_temporary>
       <list>
@@ -282,7 +279,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719371504527</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="init">
+      <option name="closed" value="true" />
+      <created>1729845812822</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1729845812822</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -290,7 +295,8 @@
     <MESSAGE value="update setup.py, install enviroment&#10;Run: python setup.py install," />
     <MESSAGE value="update package, check requirements" />
     <MESSAGE value="u更新依赖包关系" />
-    <option name="LAST_COMMIT_MESSAGE" value="u更新依赖包关系" />
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

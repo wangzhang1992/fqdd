@@ -433,13 +433,10 @@ class Dataload:
             same:输出大小与输入信号相同。
                 在中心部分进行完全重叠卷积，并根据需要用零填充边缘来匹配输入信号的大小。输入和输出信号长度相同
             '''
-            m_waveform = scipy.signal.fftconvolve(waveform.numpy(), r_waveform.numpy(), mode='same')
+            reverb_waveform = scipy.signal.fftconvolve(waveform.numpy(), r_waveform.numpy(), mode='full')
             # 进行标准化以防止溢出
-            waveform = m_waveform / np.max(np.abs(m_waveform))
-
-            # 检查是否存在 NaN
-            if np.isnan(waveform).any():
-                waveform[np.isnan(waveform)] = 0
+            reverb_waveform = reverb_waveform / np.max(np.abs(reverb_waveform))
+            waveform = reverb_waveform[:, :waveform.shape[1]]
             waveform = torch.from_numpy(waveform)
             # logging.info(waveform.shape)
         return waveform
