@@ -8,14 +8,11 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from contextlib import nullcontext
 from tqdm import tqdm
 from fqdd.prepare_data.aishell_prepare_data import prepare_data
-# from fqdd.prepare_data.thch30_prepare_data import prepare_data
 from fqdd.utils.lang import create_phones
-from fqdd.utils.load_data import Load_Data
 from fqdd.utils.argument import parse_arguments
 from fqdd.bin.asr.decode import GreedyDecoder
-# from fqdd.models.wav2vec import Encoder_Decoer
 from fqdd.models.crdnn.CRDNN import Encoder_Decoer
-from fqdd.models.check_model import model_init, save_model, reload_model
+from fqdd.models.check_model import model_init, save_model
 from fqdd.utils.optimizers import adam_optimizer, scheduler, warmup_lr
 from fqdd.utils.logger import init_logging
 from fqdd.nnets.losses import nll_loss

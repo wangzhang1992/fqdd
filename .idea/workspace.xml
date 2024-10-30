@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="init">
-      <change beforePath="$PROJECT_DIR$/.idea/fqdd.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/fqdd.iml" afterDir="false" />
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="update setup.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/run.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/prepare_data/aishell_prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/prepare_data/aishell_prepare_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/prepare_data/asd_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/prepare_data/asd_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/files.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,8 +20,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Setup Script" />
         <option value="Python Script" />
+        <option value="Setup Script" />
       </list>
     </option>
   </component>
@@ -63,7 +65,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/JetBrains/work/fqdd/demo/aishell/s0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
   <component name="PyConsoleOptionsProvider">
@@ -90,7 +92,7 @@
       <recent name="D:\JetBrains\work\own_learn\fqdd\demo" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.readdata">
+  <component name="RunManager" selected="Python.train">
     <configuration name="CRDNN" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
@@ -127,6 +129,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/readdata.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="fqdd" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fqdd/bin/asr" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fqdd/bin/asr/train.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -172,21 +196,6 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="run.sh" type="ShConfigurationType" temporary="true">
-      <option name="SCRIPT_TEXT" value="" />
-      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
-      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/demo/aishell/s0/run.sh" />
-      <option name="SCRIPT_OPTIONS" value="" />
-      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
-      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
-      <option name="INTERPRETER_PATH" value="/bin/bash" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="EXECUTE_IN_TERMINAL" value="true" />
-      <option name="EXECUTE_SCRIPT_FILE" value="true" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <configuration name="Doctests in CRDNN" type="tests" factoryName="Doctests" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
@@ -207,19 +216,19 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.train" />
       <item itemvalue="Python.readdata" />
       <item itemvalue="Python.CRDNN" />
       <item itemvalue="Python.train_NNM" />
       <item itemvalue="Python tests.Doctests in CRDNN" />
-      <item itemvalue="Shell Script.run.sh" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.train" />
         <item itemvalue="Python.readdata" />
         <item itemvalue="Python tests.Doctests in CRDNN" />
         <item itemvalue="Python.CRDNN" />
         <item itemvalue="Python.train_NNM" />
-        <item itemvalue="Shell Script.run.sh" />
       </list>
     </recent_temporary>
   </component>
@@ -287,7 +296,23 @@
       <option name="project" value="LOCAL" />
       <updated>1729845812822</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="update部分功能">
+      <option name="closed" value="true" />
+      <created>1730081343429</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1730081343430</updated>
+    </task>
+    <task id="LOCAL-00008" summary="update setup.py">
+      <option name="closed" value="true" />
+      <created>1730084870266</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1730084870267</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -296,7 +321,9 @@
     <MESSAGE value="update package, check requirements" />
     <MESSAGE value="u更新依赖包关系" />
     <MESSAGE value="init" />
-    <option name="LAST_COMMIT_MESSAGE" value="init" />
+    <MESSAGE value="update部分功能" />
+    <MESSAGE value="update setup.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="update setup.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -305,6 +332,10 @@
           <url>file://$PROJECT_DIR$/demo/aishell/s0/CRDNN.py</url>
           <line>723</line>
           <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fqdd/bin/asr/train.py</url>
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

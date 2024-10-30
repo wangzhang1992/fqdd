@@ -2,25 +2,11 @@ import os, sys
 import json
 import glob
 import torchaudio
+from fqdd.utils.files import readtxt
 
 # sys.path.insert(0, "./")
 
-def readtxt(txtf):
 
-    '''
-    line:
-        eg: S001T001E000N00011 感恩父母感恩亲人感恩全世界
-    '''
-    with open(txtf, 'r', encoding='utf8') as rf:
-        str_map = {}
-        for line in rf:
-            try:
-                key, value = line.strip().split(' ')
-            except:
-                key, value = line.strip().split('\t')
-            finally:
-                str_map[key] = value.lower()
-        return str_map
 
 
 def prepare_data_list(data_folder, dirpath="data"):
