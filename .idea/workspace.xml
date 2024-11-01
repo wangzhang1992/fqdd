@@ -5,12 +5,81 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="update setup.py">
+      <change afterPath="$PROJECT_DIR$/fqdd/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/CRDNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/attention.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/beamsearch.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/blstm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/decode.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/resnet.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/resnet18.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/svm.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/svm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_cp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_dense.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_las.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_v1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_warm_up.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/decoders/ctc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/lm_net.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/train_NNM.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/train_lm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/troch.lm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/check_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/crdnn/CRDNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/crdnn/CRDNN_copy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/crdnn/CRDNN_copy1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/crdnn/CRDNN_copy2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/dense.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/las/las.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/resnet_ctc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/tranformer_at.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/wav2vec/wav2vec.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/CNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/RNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/attention.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/containers.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/dropout.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/embedding.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/linear.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/losses.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/normalization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/pooling.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/transducer_loss.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/transducer_loss1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/aidatatang_prepare_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/aishell_prepare_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/thch30_prepare_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/test/asr_reference.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/test/lm_reference.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/tmp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/argument.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/callchains.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/data_specug.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/dataio.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/edit_distance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/feature.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/files.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/lang.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/load_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/logger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/mask.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/misc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/optimizers.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/prepare_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/torch_audio_backend.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/train_visual.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/version.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/decode.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/decode.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/prepare_data/aishell_prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/prepare_data/aishell_prepare_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/prepare_data/asd_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/prepare_data/asd_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/utils/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train_ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train_ebranchformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/lang.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/lang.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/optimizers.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/optimizers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +89,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Setup Script" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -54,20 +123,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Doctests in CRDNN.executor&quot;: &quot;Run&quot;,
-    &quot;Python.CRDNN.executor&quot;: &quot;Run&quot;,
-    &quot;Python.readdata.executor&quot;: &quot;Run&quot;,
-    &quot;Python.train.executor&quot;: &quot;Run&quot;,
-    &quot;Python.train_NNM.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/JetBrains/work/fqdd/demo/aishell/s0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Doctests in CRDNN.executor": "Run",
+    "Python.CRDNN.executor": "Run",
+    "Python.readdata.executor": "Run",
+    "Python.train.executor": "Run",
+    "Python.train_NNM.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/bin/asr",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="fqdd" is-module-sdk="true" working-directory="$PROJECT_DIR$">
@@ -86,6 +155,7 @@
       <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0\data\train" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\fqdd\bin\asr" />
       <recent name="D:\JetBrains\work\own_learn\fqdd" />
       <recent name="D:\JetBrains\work\own_learn\fqdd\demo\aishell\s0" />
       <recent name="D:\JetBrains\work\own_learn\fqdd\demo\aishell" />
@@ -312,7 +382,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730084870267</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="update setup.py">
+      <option name="closed" value="true" />
+      <created>1730272214795</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1730272214795</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -324,20 +402,5 @@
     <MESSAGE value="update部分功能" />
     <MESSAGE value="update setup.py" />
     <option name="LAST_COMMIT_MESSAGE" value="update setup.py" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/demo/aishell/s0/CRDNN.py</url>
-          <line>723</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/fqdd/bin/asr/train.py</url>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

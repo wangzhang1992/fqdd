@@ -18,7 +18,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from itertools import permutations
 import sys
-sys.path.insert(0, "./")
+# sys.path.insert(0, "./")
 from fqdd.utils.dataio import length_to_mask
 from fqdd.decoders.ctc import filter_ctc_output
 

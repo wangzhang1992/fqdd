@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
+from typing import List, Union
 import torch.optim.lr_scheduler as lr_sch
-
+from torch.optim.lr_scheduler import _LRScheduler
 '''
 optimizer
 '''
@@ -20,40 +21,55 @@ def scheduler(optimizer, patience=0, cooldown=0):
     scheduler_l = lr_sch.ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=patience, verbose=False, threshold=0.0001, threshold_mode='rel', min_lr=1e-10, cooldown=cooldown, eps=1e-08)
     return scheduler_l
 
-class warmup_lr(nn.Module):
-    def __init__(self, lr_initial, n_warmup_steps: int=20000):
-        self.lr_initial = lr_initial
-        self.n_warmup_steps = n_warmup_steps
-        self.current_lr = lr_initial
+class WarmupLR(_LRScheduler):
+    """The WarmupLR scheduler
 
-        self.n_steps = 0
-        self.normalize = 1 / (n_warmup_steps * n_warmup_steps ** -1.5)
+    This scheduler is almost same as NoamLR Scheduler except for following
+    difference:
 
-    def __call__(self, opt):
-        self.n_steps +=1
-        current_lr = opt.param_groups[0]["lr"]
+    NoamLR:
+        lr = optimizer.lr * model_size ** -0.5
+             * min(step ** -0.5, step * warmup_step ** -1.5)
+    WarmupLR:
+        lr = optimizer.lr * warmup_step ** 0.5
+             * min(step ** -0.5, step * warmup_step ** -1.5)
 
-        lr = self.lr_initial * self._get_lr_scale()
+    Note that the maximum lr equals to optimizer.lr in this scheduler.
 
-        # Changing the learning rate within the optimizer
-        for param_group in opt.param_groups:
-            param_group["lr"] = lr
+    """
 
-        self.current_lr = current_lr
-        return current_lr, lr
-   
-    def _get_lr_scale(self):
-        n_steps, n_warmup_steps = self.n_steps, self.n_warmup_steps
-        return self.normalize * min(
-            n_steps ** (-0.5), n_steps * n_warmup_steps ** (-1.5)
-        )
-'''
-lr_init = 0.01
-step = 2500
-model = torch.nn.Linear(10,10)
-optimizer = adam_optimizer(model, lr_init)
-warmup = warmup_lr(lr_init, step)
-for i in range(22000):
-    lr, lr1 = warmup(optimizer)
-    print("lr:{}, lr1:{}".format(lr, lr1))
-'''
+    def __init__(
+        self,
+        optimizer: torch.optim.Optimizer,
+        warmup_steps: Union[int, float, List[Union[int, float]]] = 25000,
+        last_epoch: int = -1,
+    ):
+        self.warmup_steps = warmup_steps
+        # __init__() must be invoked before setting field
+        # because step() is also invoked in __init__()
+        super().__init__(optimizer, last_epoch)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(warmup_steps={self.warmup_steps})"
+
+    def get_lr(self):
+        step_num = self.last_epoch + 1
+        warmup_steps = self.warmup_steps
+        if not isinstance(warmup_steps, List):
+            warmup_steps = [self.warmup_steps] * len(self.base_lrs)
+
+        def initlr_fn(lr):
+            return lr * step_num**-0.5
+
+        def warmuplr_fn(lr, warmup_step):
+            return lr * warmup_step**0.5 * min(step_num**-0.5,
+                                               step_num * warmup_step**-1.5)
+
+        return [
+            initlr_fn(lr) if warmup_steps[i] == 0 else warmuplr_fn(
+                lr, warmup_steps[i]) for (i, lr) in enumerate(self.base_lrs)
+        ]
+
+    def set_step(self, step: int):
+        self.last_epoch = step
+

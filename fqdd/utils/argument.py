@@ -1,185 +1,207 @@
 import argparse
 
-
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='training your network')
-    parser.add_argument('--train_engine',
-                        default='torch_ddp',
-                        choices=['torch_ddp', 'torch_fsdp', 'deepspeed'],
-                        help='Engine for paralleled training')
-    parser = add_model_args(parser)
-    parser = add_dataset_args(parser)
-    parser = add_ddp_args(parser)
-    parser = add_lora_args(parser)
-    parser = add_deepspeed_args(parser)
-    parser = add_fsdp_args(parser)
-    parser = add_trace_args(parser)
-    args = parser.parse_args()
-    if args.train_engine == "deepspeed":
-        args.deepspeed = True
-        assert args.deepspeed_config is not None
-    return args
 
-
-def add_model_args(parser):
-    parser.add_argument('--config', required=True, help='config file')
-    parser.add_argument('--model_dir', required=True, help='save model dir')
-    parser.add_argument('--checkpoint', help='checkpoint model')
-    parser.add_argument('--tensorboard_dir',
-                        default='tensorboard',
-                        help='tensorboard log dir')
-    parser.add_argument('--override_config',
-                        action='append',
-                        default=[],
-                        help="override yaml config")
-    parser.add_argument("--enc_init",
-                        default=None,
-                        type=str,
-                        help="Pre-trained model to initialize encoder")
-    parser.add_argument(
-        '--enc_init_mods',
-        default="encoder.",
-        type=lambda s: [str(mod) for mod in s.split(",") if s != ""],
-        help="List of encoder modules \
-                        to initialize ,separated by a comma")
-    parser.add_argument(
-        '--freeze_modules',
-        default="",
-        type=lambda s: [str(mod) for mod in s.split(",") if s != ""],
-        help='free module names',
+    model_args = argparse.ArgumentParser(
+        description='model config', add_help=True)
+    model_args.add_argument(
+        '--seed',
+        default=2024,
+        type=int,
+        help='rand seed'
     )
-    return parser
 
-
-def add_trace_args(parser):
-    parser.add_argument('--jit',
-                        action='store_true',
-                        default=False,
-                        help='if use jit to trace model while training stage')
-    parser.add_argument('--print_model',
-                        action='store_true',
-                        default=False,
-                        help='print model')
-    return parser
-
-
-def add_dataset_args(parser):
-    parser.add_argument('--data_type',
-                        default='raw',
-                        choices=['raw', 'shard'],
-                        help='train and cv data type')
-    parser.add_argument('--train_data', required=True, help='train data file')
-    parser.add_argument('--cv_data', required=True, help='cv data file')
-    parser.add_argument('--num_workers',
-                        default=0,
-                        type=int,
-                        help='num of subprocess workers for reading')
-    parser.add_argument('--pin_memory',
-                        action='store_true',
-                        default=False,
-                        help='Use pinned memory buffers used for reading')
-    parser.add_argument('--prefetch',
-                        default=100,
-                        type=int,
-                        help='prefetch number')
-    return parser
-
-
-def add_lora_args(parser):
-    parser.add_argument("--use_lora",
-                        default=False,
-                        type=bool,
-                        help="whether use the lora finetune.")
-    parser.add_argument("--only_optimize_lora",
-                        default=False,
-                        type=bool,
-                        help="freeze all other paramters and only optimize \
-                        LoRA-related prameters.")
-    parser.add_argument("--lora_list",
-                        default=['o', 'q', 'k', 'v'],
-                        help="lora module list.")
-    parser.add_argument("--lora_rank",
-                        default=8,
-                        type=int,
-                        help="lora rank num.")
-    parser.add_argument("--lora_alpha",
-                        default=8,
-                        type=int,
-                        help="lora scale param, scale=lora_alpha/lora_rank.")
-    parser.add_argument("--lora_dropout",
-                        default=0,
-                        type=float,
-                        help="lora dropout param.")
-    return parser
-
-
-def add_ddp_args(parser):
-    parser.add_argument('--ddp.dist_backend',
-                        dest='dist_backend',
-                        default='nccl',
-                        choices=['nccl', 'gloo'],
-                        help='distributed backend')
-    parser.add_argument('--use_amp',
-                        action='store_true',
-                        default=False,
-                        help='Use automatic mixed precision training')
-    parser.add_argument('--fp16_grad_sync',
-                        action='store_true',
-                        default=False,
-                        help='Use fp16 gradient sync for ddp')
-    return parser
-
-
-def add_deepspeed_args(parser):
-    parser.add_argument('--timeout',
-                        default=30,
-                        type=int,
-                        help='timeout (in seconds) of wenet_join. ' +
-                             '30s for aishell & 300s for wenetspeech')
-    parser.add_argument('--local_rank',
-                        type=int,
-                        default=-1,
-                        help='local rank passed from distributed launcher')
-    parser.add_argument('--deepspeed.save_states',
-                        dest='save_states',
-                        default='model_only',
-                        choices=['model_only', 'model+optimizer'],
-                        help='save model/optimizer states')
-    # DeepSpeed automaticly add '--deepspeed' and '--deepspeed_config' to parser
-    parser = deepspeed.add_config_arguments(parser)
-    return parser
-
-
-def add_fsdp_args(parser):
-    parser.add_argument(
-        '--dtype',
-        default='fp32',
-        choices=['fp32', 'fp16', 'bf16'],
-        help='when amp is used, dtype is automatically set to fp16.\
-        this arg has no effect when deepspeed is enabled.')
-    parser.add_argument(
-        '--fsdp_cpu_offload',
-        default=False,
-        type=bool,
-        help='whether to offload parameters to CPU',
+    model_args.add_argument(
+        '--config',
+        type=str,
+        default="conf/ebranchformer_conf.json",
+        help="模型配文件"
     )
-    parser.add_argument(
-        '--fsdp_sync_module_states',
+
+    model_args.add_argument(
+        '--is-distributed',
         type=bool,
         default=True,
-        help='\
-        each FSDP module will broadcast module parameters and buffers from \
-        rank 0 to ensure that they are replicated across ranks',
+        help="是否分布式训练"
     )
-    parser.add_argument(
-        '--fsdp_sharding_strategy',
-        default='zero2',
-        # TODO(Mddct): pipeline and model parallel (3-D parallelism)
-        choices=['no_shard', 'model', 'zero2', 'zero3'],
-        help='Sharding strategy for FSDP. Choose from the following options:\n'
-             '  - "no_shard": Equivalent to DistributedDataParallel (DDP).\n'
-             '  - "model": WENET_ENC_DEC strategy, equivalent to DeepSpeed zero1.\n'
-             '  - "zero2": SHARD_GRAD_OP strategy, equivalent to DeepSpeed zero2.\n'
-             '  - "zero3": FULL_SHARD strategy, equivalent to DeepSpeed zero3.\n'
-             'For more information, refer to the FSDP API documentation.')
-    return parser
+ 
+    model_args.add_argument(
+        '--world-size',
+        type=int,
+        default=3,
+        help='设置训练GPU卡数'
+
+    )
+ 
+    model_args.add_argument(
+        '--local-rank',
+        type=int,
+        default=0,
+        help="进程编号"
+    )
+    
+    model_args.add_argument(
+        '--host',
+        type=str,
+        default="env://localhost:2345",
+        #default="env://",
+        help="设置主机服务器ip"
+    )
+
+    model_args.add_argument(
+        '--tensorboard_dir',
+        default='log/tensorboard',
+        type=str,
+        help= 'tensorbard show dir'
+    )
+
+    model_args.add_argument(
+        '--data_folder',
+        # default="test_folder",
+        default="/data1/data_management/speech_processing/ASR/audio_raw/language_china/zh-CN/lable/near-field/read/aishell/aishell_1_178hr/data_aishell/", 
+        type=str,
+        help='data_folder path'
+    )
+
+    model_args.add_argument(
+        '--max_epoch',
+        default=200,
+        type=int,
+        help='train epoch'
+    )
+
+    model_args.add_argument('--train_engine',
+        default='torch_ddp',
+        choices=['torch_ddp', 'torch_fsdp', 'deepspeed'],
+        help='Engine for paralleled training'
+    )
+
+    model_args.add_argument('--ddp.dist_backend',
+        dest='dist_backend',
+        default='nccl',
+        choices=['nccl', 'gloo', "hccl"],
+        help='distributed backend'
+        )
+
+    model_args.add_argument('--device',
+        type=str,
+        default='cuda',
+        choices=["cpu", "npu", "cuda"],
+        help='accelerator for training'
+    )
+
+    model_args.add_argument(
+        '--batch_size',
+        default=8,
+        type=int,
+        help='batch set'
+    )
+
+    model_args.add_argument(
+        '--num_workers',
+        default=8,
+        type=int,
+        help='set thread number reading data '
+    )
+
+    model_args.add_argument(
+        '--lr',
+        default=0.001,
+        type=float,
+        help='set learning rate '
+    )
+
+    model_args.add_argument(
+        '--lexicon',
+        default='dic/lexicon.txt',
+        type=str,
+        help='set lexicon path'
+    )
+
+    model_args.add_argument(
+        '--label_status',
+        default='word',
+        type=str,
+        help=' label status: word/phones '
+    )
+
+    model_args.add_argument(
+        '--min_trans_len',
+        default=1,
+        type=int,
+        help='max_label_length'
+    )
+
+    model_args.add_argument(
+        '--max_trans_len',
+        default=50,
+        type=int,
+        help='max_label_length'
+    )
+
+    model_args.add_argument(
+        '--e_num_layers',
+        default=4,
+        type=int,
+        help='net layer size'
+    )
+
+
+    model_args.add_argument(
+        '--result_dir',
+        default='exp',
+        type=str,
+        help='result path'
+    )
+
+    model_args.add_argument(
+        '--use_lm',
+        default=False,
+        type=bool,
+        help='use lm'
+    )
+
+    model_args.add_argument(
+        '--opt_level',
+        default="O1",
+        type=str,
+        help='训练数据精度, '
+             'O0 : 执行FP32训练'
+             'O1 : 当前使用部分FP16混合训练'
+             'O2 : 除了BN层的权重外，其他层的权重都使用FP16执行训练'
+             'O3 : 默认所有的层都使用FP16执行计算，当keep_batch norm_fp32=True，'
+             '则会使用cudnn执行BN层的计算，该优化等级能够获得最快的速度，但是精度可能会有一些较大的损失。'
+
+    )
+
+    model_args.add_argument(
+        '--amp',
+        default=False,
+        type=bool,
+        help='use apm'
+    )
+
+    model_args.add_argument(
+        '--embedding_dim',
+        default=512,
+        type=int,
+        help='Embedding nodes'
+    )
+
+    model_args.add_argument(
+        '--pretrained',
+        default=True,
+        type=bool,
+        help="是否加载预训练模型"
+    )
+
+    model_args.add_argument(
+        '--lm_path',
+        default="lm/lm_best.pth",
+        type=str,
+        help='lm path'
+    )
+
+
+
+    return model_args.parse_args()

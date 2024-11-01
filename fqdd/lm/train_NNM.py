@@ -3,15 +3,17 @@ import torch.nn as nn
 import json
 import os
 import numpy as np
-from keras.src.models import Sequential
-from fqdd.utils.argument import parse_arguments
-from fqdd.utils.feature import get_feats
-from keras.src.layers import Dense
-from fqdd.utils.files import get_all_file, readtxt
-from keras.src.callbacks import EarlyStopping, ReduceLROnPlateau
+from keras.models import Sequential
+from argument import parse_arguments
+from feature import get_feats
+from keras.layers import Dense
+import keras
+from files import get_all_file, readtxt
+from keras.callbacks import EarlyStopping
 from keras import optimizers
-# from fqdd.utils.load_data import zero_pad_concat
-from sklearn.model_selection import train_test_spit
+from keras.callbacks import ReduceLROnPlateau
+from load_data import zero_pad_concat
+from sklearn.model_selection import train_test_split
 
 args = parse_arguments()
 
@@ -60,7 +62,7 @@ def make_batch(sentences):
 input_data, target_data = make_batch(dlabels)
 input_data = np.array(input_data).reshape(-1, n_step * n_class)
 target_data = np.array(target_data).reshape(-1, n_class)
-X_train, X_test, y_train, y_test = train_test_spit(input_data, target_data, test_size=0.2, shuffle=False,
+X_train, X_test, y_train, y_test = train_test_split(input_data, target_data, test_size=0.2, shuffle=False,
                                                     random_state=42)
 
 

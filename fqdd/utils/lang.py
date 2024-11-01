@@ -61,7 +61,10 @@ def create_phones(dirpath):
         except:
             print("data_json not exists")
             sys.exit()
-        dicts = train + test + dev
+        if test:
+            dicts = train + test + dev
+        else:
+            dicts = train + dev
         dicts = list(set(dicts))
         phones = {"<blank>":0, "<unk>": 1, "<sos/eos>":2}
 

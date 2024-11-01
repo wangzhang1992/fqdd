@@ -1,7 +1,8 @@
 import os, sys
 import glob
 import json
-
+#sys.path.insert(0, "./")
+from fqdd.utils.files import get_all_file, readtxt
 from fqdd.utils.dataio import read_audio
 
 

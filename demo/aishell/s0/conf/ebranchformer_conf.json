@@ -80,8 +80,10 @@
             "n_expert": 8,
             "n_expert_activated": 2,
             "norm_eps": 1e-5
-        },
+        }
+    },
 
+    "opt_configs":{
         "optimizer": "adam",
         "optimizer_conf":{
             "lr": 0.001,
@@ -89,10 +91,10 @@
             },
 
         "scheduler": "warmuplr",
-        "scheduler_conf":{
+        "scheduler_conf": {
             "warmup_steps": 35000
-            }
-        },
+        }
+    },
 
     "data":{
         "train_file": "data/train/data.list",
