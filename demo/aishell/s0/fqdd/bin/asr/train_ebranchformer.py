@@ -184,7 +184,7 @@ def main():
     model_conf = configs["model"]
 
     # model = Encoder_Decoer(output_dim, feat_shape=[args.batch_size, args.max_during*100, input_dim], output_size=1024)
-    model = init_model(args, configs)
+    model, configs = init_model(args, configs)
     model, optimizer, scheduler = init_optimizer_and_scheduler(configs, model)
     if rank == 0:
         logger.info(model)

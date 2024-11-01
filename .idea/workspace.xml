@@ -4,48 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="update">
-      <change afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/attention.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/decode.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/decode.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/recognize.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/resnet.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/resnet18.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_ebranchformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/lm_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/lm_net.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/train_NNM.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/train_NNM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/train_lm.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/lm/train_lm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/check_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/check_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/crdnn/CRDNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/crdnn/CRDNN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/ebranchformer/ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/ebranchformer/ebranchformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/tranformer_at.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/tranformer_at.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/wav2vec/wav2vec.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/models/wav2vec/wav2vec.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/attention.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/attention.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/nnets/losses.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/aidatatang_prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/aidatatang_prepare_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/aishell_prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/aishell_prepare_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/asd_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/asd_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/thch30_prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/prepare_data/thch30_prepare_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/argument.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/argument.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/feature.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/feature.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/files.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/init_tokenizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/init_tokenizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/lang.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/lang.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/load_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/load_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/mask.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/mask.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/optimizers.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/optimizers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/prepare_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/torch_audio_backend.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/torch_audio_backend.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/train_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/utils/train_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/check_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/check_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/dense.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/resnet_ctc.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/tranformer_at.py" beforeDir="false" />
-    </list>
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="update" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -377,7 +336,23 @@
       <option name="project" value="LOCAL" />
       <updated>1730427293460</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="update">
+      <option name="closed" value="true" />
+      <created>1730431807588</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1730431807588</updated>
+    </task>
+    <task id="LOCAL-00013" summary="update">
+      <option name="closed" value="true" />
+      <created>1730431816207</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1730431816207</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
