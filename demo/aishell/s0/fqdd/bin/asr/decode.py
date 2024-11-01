@@ -41,8 +41,8 @@ def GreedyDecoder(output, labels, wavlist_length, label_lengths, dic):
     labels = labels.data.cpu().numpy()
     arg_max = np.argmax(output, axis=2)
     
-    wavlist_length = (wavlist_length * output.shape[1]).int()
-    label_lengths = (label_lengths * labels.shape[1]).int()
+    # wavlist_length = (wavlist_length * output.shape[1]).int()
+    # label_lengths = (label_lengths * labels.shape[1]).int()
     # print("arg_max.shape:{}".format(arg_max.shape)) # shape=(B, N)
     # print("labels.shape:{}".format(labels.shape)) # shape = (B, C)
     pred = [arg_max[i, :j] for i, j in enumerate(wavlist_length)]

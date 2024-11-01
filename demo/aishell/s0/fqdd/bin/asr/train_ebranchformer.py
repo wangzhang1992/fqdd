@@ -1,31 +1,21 @@
 import torch
-import torch.nn as nn
-import os, sys
-import numpy as np
-import logging
+import os
 import json
-sys.path.insert(0, "./")
-
 import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
-from tqdm import tqdm
-from fqdd.prepare_data.asd_data import prepare_data_json
-from fqdd.utils.lang import create_phones, read_phones
-from fqdd.utils.load_data import init_dataset_and_dataloader
-from fqdd.utils.argument import parse_arguments
-from fqdd.bin.asr.decode import GreedyDecoder
-from fqdd.utils.init_tokenizer import Tokenizers
-from fqdd.models.ebranchformer.ebranchformer import EBranchformer
-from fqdd.models.check_model import model_init, save_model, reload_model
-from fqdd.utils.optimizers import adam_optimizer, sgd_optimizer, scheduler, warmup_lr
-from fqdd.utils.logger import init_logging
-from fqdd.utils.edit_distance import Static_Info
 
+from tqdm import tqdm
+from fqdd.utils.load_data import init_dataset_and_dataloader
+from fqdd.utils.train_utils import init_optimizer_and_scheduler, init_distributed
+from fqdd.utils.argument import parse_arguments
+from fqdd.utils.init_tokenizer import Tokenizers
+from fqdd.models.check_model import save_model, reload_model
+from fqdd.models.init_model import init_model
+from fqdd.utils.logger import init_logging
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
 
-def calculate_loss(ctc_loss, pred, gold, input_lengths, target_lengths):
 
+def calculate_loss(ctc_loss, pred, gold, input_lengths, target_lengths):
     # print("{}\t{}\t{}\t{}".format(pred.shape, gold.shape, input_lengths.shape, target_lengths.shape))
     """
     Calculate loss
@@ -53,7 +43,7 @@ def calculate_loss(ctc_loss, pred, gold, input_lengths, target_lengths):
     input_lengths: torch.Size([8])
     target_lengths: torch.Size([8])
     """
-    
+
     # log_probs = F.log_softmax(log_probs, dim=2)
     # log_probs = log_probs.detach().requires_grad_()
     loss = ctc_loss(log_probs.to("cpu"), targets.to("cpu"), input_lengths.to("cpu"), target_lengths.to("cpu"))
@@ -61,174 +51,150 @@ def calculate_loss(ctc_loss, pred, gold, input_lengths, target_lengths):
     return loss
 
 
-def train(model, load_object, args, phones, logger):
+def train(model, train_loader, dev_loader, optimizer, scheduler, configs, args, logger, rank, device):
+    epoch_n = configs["max_epoch"]
 
-    min_loss = 1000
-    lr_cer = 100
-    slice_len = 5    
-    epoch_n = args.epoch_n
-    device = model.device
-    train_sampler = load_object.train_sampler
-    train_load = load_object.train_load
-    dev_load = load_object.dev_load
-
-    ctc_loss = torch.nn.CTCLoss(blank=0, reduction='mean') 
-    optimizer = adam_optimizer(model, args.lr)
-    #optimizer = sgd_optimizer(model, args.lr)
-    warm_up = warmup_lr(args.lr, 10000)
-    # scheduler_lr = scheduler(optimizer, patience=0, cooldown=0)
-    
     if args.pretrained:
         # if args.local_rank < 1:
-        start_epoch = reload_model(os.path.join(args.result_dir, str(args.seed), "save", "AM"), model=model, optimizer=optimizer, map_location='cuda:{}'.format(args.local_rank))
-        #else:
-            #start_epoch = reload_model(os.path.join(args.result_dir, str(args.seed), "save", "AM"))
+        start_epoch = reload_model(os.path.join(args.result_dir, str(configs["seed"])), model=model,
+                                   optimizer=optimizer, map_location='cuda:{}'.format(0))
         start_epoch = start_epoch + 1
     else:
         start_epoch = 1
- 
-    if args.local_rank < 1: 
+
+    if rank == 0:
         logger.info("init_lr:{}".format(optimizer.state_dict()['param_groups'][0]['lr']))
     accum_grad = 4
-    for epoch in range(start_epoch, epoch_n+1):
+    for epoch in range(start_epoch, epoch_n + 1):
         model.train()
-        
-        if args.is_distributed:
-            train_sampler.set_epoch(epoch)
-        if args.local_rank < 1:
+
+        if rank == 0:
             logger.info("Epoch {}/{}".format(epoch, epoch_n))
             logger.info("-" * 10)
-        static = Static_Info()
-        inter_cers = 0.0
-        inter_num = 100
-        if args.local_rank < 1:
-            print("status: train\t train_load_size:{}".format(len(train_load)))
-        dist.barrier() # 同步训练进程
-        for idx, data in enumerate(tqdm(train_load)):
+
+        infos = {"loss": 0.0,
+                 "ctc_loss": 0.0,
+                 "att_loss": 0.0,
+                 "th_acc": 0.0
+                 }
+        log_interval = configs["log_interval"]
+        if rank == 0:
+            print("status: train\t train_load_size:{}".format(len(train_loader)))
+        dist.barrier()  # 同步训练进程
+        for idx, batch_data in enumerate(tqdm(train_loader)):
             # 只做推理，代码不会更新模型状态 
-            feats, targets, targets_bos, targets_eos, wav_lengths, target_lens, target_os_lens = [item.to(device) for item in data]
-            
-            info_dicts = model(feats, wav_lengths, targets, target_lens) 
+            keys, feats, wav_lengths, targets, target_lens = batch_data
+            feats = feats.to(device)
+            wav_lengths = wav_lengths.to(device)
+            targets = targets.to(device)
+            target_lens = target_lens.to(device)
+            info_dicts = model(feats, wav_lengths, targets, target_lens)
             loss = info_dicts["loss"]
             loss.backward()
-            
-            output_en = info_dicts["encoder_out"]
 
-            targ, pred = GreedyDecoder(output_en, targets, wav_lengths, target_lens, phones)
-            cer = static.one_iter(targ, pred, loss)
-            inter_cers += cer
+            # output_en = info_dicts["encoder_out"]
+
             torch.nn.utils.clip_grad_norm_((p for p in model.parameters()), max_norm=50)
-            optimizer.step() 
+            optimizer.step()
             optimizer.zero_grad()
-            warm_up(optimizer)
- 
-            if (idx+1) % inter_num == 0:
-                avg_inter_loss = static.get_inter_loss(inter_num)
-                avg_inter_cer = inter_cers / inter_num
-                inter_cers = 0.0
-                logger.info("batchs:{}/{}   Loss:{:.2f}   CER:{:.2f}".format(epoch, idx+1, avg_inter_loss, avg_inter_cer))
-            # torch.distributed.barrier()
-            torch.cuda.empty_cache() 
-        cer, corr, det, ins, sub = static.avg_one_epoch_cer()
-        avg_one_epoch_loss = static.avg_one_epoch_loss(len(train_load))
- 
-        #scheduler_lr.step(loss)
-        if args.local_rank < 1:
-            logger.info("Epoch:{}, loss:{}, cer:{}, lr:{}, corr:{}, det:{}, ins:{}, sub:{}".format(epoch, avg_one_epoch_loss, cer, optimizer.state_dict()['param_groups'][0]['lr'], corr, det, ins, sub))
-            save_model(model, optimizer, epoch, os.path.join(args.result_dir, str(args.seed), 'save', 'AM'))
-        dist.barrier() # 同步测试进程
-        with torch.no_grad():
-            loss, cer, corr, det, ins, sub = evaluate(model, dev_load, ctc_loss, args, phones, device)
-            logger.info("Epoch:{}, DEV:  loss:{}, cer:{}, corr:{}, det:{}, ins:{}, sub:{}".format(epoch, loss, cer, corr, det, ins, sub))
-            
-    
-def evaluate(model, eval_load, ctc_loss, args, phones, device):
-    
-    model.eval()
-    dev_cer = Static_Info()
+            scheduler.step()
+            infos["loss"] = info_dicts["loss"] + infos["loss"]
+            infos["ctc_loss"] = info_dicts["ctc_loss"] + infos["ctc_loss"]
+            infos["att_loss"] = info_dicts["att_loss"] + infos["att_loss"]
+            infos["th_acc"] = info_dicts["th_acc"] + infos["th_acc"]
+            if rank == 0 and (idx + 1) % log_interval == 0:
+                avg_loss = infos["loss"] / (idx + 1)
+                avg_ctc_loss = infos["ctc_loss"] / (idx + 1)
+                avg_att_loss = infos["att_loss"] / (idx + 1)
+                avg_th_acc = infos["th_acc"] / (idx + 1)
+                logger.info(
+                    "Epoch:{}/{}\ttrain:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
+                                                                                                       avg_loss,
+                                                                                                       avg_ctc_loss,
+                                                                                                       avg_att_loss,
+                                                                                                       avg_th_acc))
 
-    for idx, data in enumerate(tqdm(eval_load)):
-        feats, targets, targets_bos, targets_eos, wav_lengths, target_lens, target_os_lens = [item.to(device) for item in data]
-        
+                save_model(model, optimizer, epoch, os.path.join(args.result_dir, str(configs["seed"])))
+        dist.barrier()  # 同步测试进程
+        with torch.no_grad():
+            loss, ctc_loss, att_loss, th_acc = evaluate(model, dev_loader, epoch, configs, logger, rank, device)
+            logger.info(
+                "Epoch:{}\tDEV:loss:{}\tctc_loss:{}\tatt_loss:{}\tth_acc:{}".format(epoch, loss, ctc_loss, att_loss,
+                                                                                    th_acc))
+
+
+def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
+    model.eval()
+    infos = {"loss": 0.0,
+             "ctc_loss": 0.0,
+             "att_loss": 0.0,
+             "th_acc": 0.0
+             }
+    log_interval = configs["log_interval"]
+    for idx, batch_data in enumerate(tqdm(eval_loader)):
+
+        keys, feats, wav_lengths, targets, target_lens = batch_data
+        feats = feats.to(device)
+        wav_lengths = wav_lengths.to(device)
+        targets = targets.to(device)
+        target_lens = target_lens.to(device)
         # print(feats.shape)
         info_dicts = model(feats, wav_lengths, targets, target_lens)
-        loss = info_dicts["loss"]
-        output_en = info_dicts["encoder_out"]
-        
-        targ, pred = GreedyDecoder(output_en, targets, wav_lengths, target_lens, phones) 
-        cer = dev_cer.one_iter(targ, pred, loss)
-        torch.cuda.empty_cache()
-    avg_dev_loss = dev_cer.avg_one_epoch_loss(len(eval_load))
-    cer, corr, det, ins, sub = dev_cer.avg_one_epoch_cer()
-    return avg_dev_loss, cer, corr, det, ins, sub
+        infos["loss"] = info_dicts["loss"] + infos["loss"]
+        infos["ctc_loss"] = info_dicts["ctc_loss"] + infos["ctc_loss"]
+        infos["att_loss"] = info_dicts["att_loss"] + infos["att_loss"]
+        infos["th_acc"] = info_dicts["th_acc"] + infos["th_acc"]
+        if rank == 0 and (idx + 1) % log_interval == 0:
+            avg_loss = infos["loss"] / (idx + 1)
+            avg_ctc_loss = infos["ctc_loss"] / (idx + 1)
+            avg_att_loss = infos["att_loss"] / (idx + 1)
+            avg_th_acc = infos["th_acc"] / (idx + 1)
+            logger.info("Epoch:{}/{}\tDEV:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
+                                                                                                         avg_loss,
+                                                                                                         avg_ctc_loss,
+                                                                                                         avg_att_loss,
+                                                                                                         avg_th_acc))
+
+    loss = infos["loss"] / (idx + 1)
+    ctc_loss = infos["ctc_loss"] / (idx + 1)
+    att_loss = infos["att_loss"] / (idx + 1)
+    th_acc = infos["th_acc"] / (idx + 1)
+    return loss, ctc_loss, att_loss, th_acc
+
 
 def main():
-
     args = parse_arguments()
-    
-    '''
-    logging.basicConfig(level=logging.DEBUG,
-        format='%(asctime)s %(levelname)s %(message)s')
-    
-
-    parser = argparse.ArgumentParser(description='extract CMVN stats')
-    parser.add_argument('--num_workers',
-                        default=0,
-                        type=int,
-                        help='num of subprocess workers for processing')
-    parser.add_argument('--train_config',
-                        default='',
-                        help='training yaml conf')
-    in_args = parser.parse_args()
-    '''
-
     configs = json.load(open(args.config, 'r', encoding="utf-8"))
+    # configs = reload_configs(args, configs)
 
+    configs["init_infos"] = {}
     # prepare data
-    dirpath = os.path.join(args.result_dir, str(args.seed))
-    prepare_data_json(args.data_folder, dirpath)
-    phones = create_phones(dirpath)
+    dirpath = os.path.join(args.result_dir, str(configs["seed"]))
+    # prepare_data_json(args.data_folder, dirpath)
 
+    tokenizer = Tokenizers(configs["data"].get("train_file"))
+
+    _, _, rank = init_distributed(args)
+    train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(configs["data"],
+                                                                                              tokenizer=tokenizer,
+                                                                                              seed=configs["seed"]
+                                                                                              )
+    configs["model"]["vocab_size"] = tokenizer.vocab_size()
     logger = init_logging("train", dirpath)
-
-    output_dim = len(phones) 
-    configs["model"]["vocab_size"] = output_dim
     model_conf = configs["model"]
-    
+
     # model = Encoder_Decoer(output_dim, feat_shape=[args.batch_size, args.max_during*100, input_dim], output_size=1024)
-    model = EBranchformer(model_conf)
-
-    if torch.cuda.is_available():
-        torch.backends.cudnn.enabled = True
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = True
-
-        if args.is_distributed:
-            torch.cuda.set_device(args.local_rank)
-            num_gpus = torch.cuda.device_count()
-            # world_size #表示开启的全局进程个数进程数，node * num_gpus_one_node， 
-            # rank 表示为第几个节点进程，一般rank=0表示，master节点
-            # local_rank: 进程内，GPU 编号，非显式参数，由 torch.distributed.launch 内部指定。比方说， rank = 3，local_rank = 0 表示第 3 个进程内的第 1 块 GPU
-            # dist.init_process_group(backend='nccl', init_method=args.host, rank=args.local_rank, world_size=args.world_size)
-            dist.init_process_group(backend='nccl')
-            device = torch.device('cuda', args.local_rank)
-            model.to(device)
-            print(num_gpus, device)
-            model = DDP(model, device_ids=[args.local_rank], output_device=args.local_rank, find_unused_parameters=True)
-    else:
-        model = model.to("cpu")
-    
-    logger.info("\nresult_path:{}\nfeat_type:{}\nfeat_cof:{}\ndevice:{}\nbatch_size:{}\nclassify_num:{}\n"
-            .format(dirpath, args.feat_type, args.feat_cof, model.device, args.batch_size, output_dim))
-    logger.info(model)
-
-    model_init(model, init_method="kaiming")
-    load_object = Load_Data(phones, args)
-    load_object.dataload()
- 
-    train(model, load_object, args, phones, logger)
+    model = init_model(args, configs)
+    model, optimizer, scheduler = init_optimizer_and_scheduler(configs, model)
+    if rank == 0:
+        logger.info(model)
+        print(args)
+    device = args.device
+    model.to(device)
+    train(model, train_loader, dev_loader, optimizer, scheduler, configs, args, logger, rank, device)
     # Tear down the process group
     dist.destroy_process_group()
+
 
 if __name__ == "__main__":
     main()

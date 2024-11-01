@@ -821,7 +821,7 @@ def init_dataset_and_dataloader(args, tokenizer=None, seed=4233):
 
     return train_set, train_loader, train_sampler, dev_set, dev_loader
 
-
+'''
 configs = {
     "train_file": "data_copy/train/data.list",
     "dev_file": "data_copy/dev/data.list",
@@ -928,3 +928,4 @@ for i in range(10):
         print(padded_y, padded_y_lens)
 
         print("keys:{}, padded_x_lens:{}, padded_x.shape:{}".format(keys, padded_x_lens, padded_x.shape))
+'''

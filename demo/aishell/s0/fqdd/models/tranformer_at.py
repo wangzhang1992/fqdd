@@ -11,8 +11,8 @@ import os, sys, torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-sys.path.insert(0, './')
-from thop import profile
+sys.path.insert(0, '/data/work/own_learn')
+#from thop import profile
 from script.nnets.containers import Sequential
 from script.nnets.CNN import Conv2d
 from script.nnets.dropout import Dropout2d
@@ -451,7 +451,6 @@ class Encoder_Decoer(nn.Module):
         return en_out, de_out
 
 
-'''
 torch.manual_seed(2021)
 feats = torch.randn(4, 1000, 120).to("cuda:0")
 targets = torch.randint(2, 4078,(4,10)).to("cuda:0")
@@ -459,10 +458,9 @@ print("input_feats.shape:{}".format(feats.shape))
 print("input_targets.shape:{}".format(targets.shape))
 net = Encoder_Decoer(4078, feat_shape=feats.shape).to("cuda:0")
 print(net)
-flops, params = profile(net, inputs=(feats, targets,))
-print("flops:{}\tparams:{}".format(flops, params))
+# flops, params = profile(net, inputs=(feats, targets,))
+# print("flops:{}\tparams:{}".format(flops, params))
 while 1:
     res = net(feats, targets)
     print(res[0].size(), res[1].size())
     torch.cuda.empty_cache()
-'''

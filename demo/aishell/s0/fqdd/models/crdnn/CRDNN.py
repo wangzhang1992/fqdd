@@ -11,14 +11,13 @@ import os, sys, torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-
 from fqdd.nnets.containers import Sequential
 from fqdd.nnets.CNN import Conv2d
 from fqdd.nnets.dropout import Dropout2d
 from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
 from fqdd.nnets.pooling import Pooling1d, Pooling2d
 from fqdd.nnets.RNN import LiGRU, LSTM, GRU
-from fqdd .nnets.linear import Linear
+from fqdd.nnets.linear import Linear
 from fqdd.nnets.embedding import Embedding
 
 class Encoder(Sequential):
@@ -452,7 +451,6 @@ class Encoder_Decoer(nn.Module):
         x_de = self.decoder(targets_bos, x_en)
         de_out = self.de_out(x_de)
         return en_out, de_out
-
 
 '''
 torch.manual_seed(2021)

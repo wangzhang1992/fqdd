@@ -16,20 +16,15 @@ from __future__ import print_function
 
 import argparse
 import copy
+import json
 import logging
 import os
 
 import torch
-import yaml
-from torch.utils.data import DataLoader
-
+from fqdd.models.init_model import init_model
 from fqdd.utils.load_data import Dataload
-from fqdd.utils.config import override_config
-from fqdd.utils.init_model import init_model
-from fqdd.utils.init_tokenizer import init_tokenizer
-from fqdd.utils.context_graph import ContextGraph
-from fqdd.utils.ctc_utils import get_blank_id
-from fqdd.utils.common import TORCH_NPU_AVAILABLE  # noqa just ensure to check torch-npu
+from fqdd.utils.init_tokenizer import Tokenizers
+from torch.utils.data import DataLoader
 
 
 def get_args():
@@ -111,12 +106,12 @@ def get_args():
                         type=float,
                         default=0.0,
                         help='transducer weight for rescoring weight in '
-                        'transducer attention rescore mode')
+                             'transducer attention rescore mode')
     parser.add_argument('--attn_weight',
                         type=float,
                         default=0.0,
                         help='attention weight for rescoring weight in '
-                        'transducer attention rescore mode')
+                             'transducer attention rescore mode')
     parser.add_argument('--decoding_chunk_size',
                         type=int,
                         default=-1,
@@ -162,30 +157,6 @@ def get_args():
                         default=0.0,
                         help='lm scale for hlg attention rescore decode')
 
-    parser.add_argument(
-        '--context_bias_mode',
-        type=str,
-        default='',
-        help='''Context bias mode, selectable from the following
-                                option: decoding-graph, deep-biasing''')
-    parser.add_argument('--context_list_path',
-                        type=str,
-                        default='',
-                        help='Context list path')
-    parser.add_argument('--context_graph_score',
-                        type=float,
-                        default=0.0,
-                        help='''The higher the score, the greater the degree of
-                                bias using decoding-graph for biasing''')
-
-    parser.add_argument('--use_lora',
-                        type=bool,
-                        default=False,
-                        help='''Whether to use lora for biasing''')
-    parser.add_argument("--lora_ckpt_path",
-                        default=None,
-                        type=str,
-                        help="lora checkpoint path.")
     args = parser.parse_args()
     print(args)
     return args
@@ -201,12 +172,9 @@ def main():
     if "cuda" in args.device:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
-    with open(args.config, 'r') as fin:
-        configs = yaml.load(fin, Loader=yaml.FullLoader)
-    if len(args.override_config) > 0:
-        configs = override_config(configs, args.override_config)
+    configs = json.load(open(args.config, 'r', encoding="utf-8"))
 
-    test_conf = copy.deepcopy(configs['dataset_conf'])
+    test_conf = copy.deepcopy(configs["data"]['data_conf'])
 
     test_conf['filter_conf']['max_length'] = 102400
     test_conf['filter_conf']['min_length'] = 0
@@ -214,36 +182,30 @@ def main():
     test_conf['filter_conf']['token_min_length'] = 0
     test_conf['filter_conf']['max_output_input_ratio'] = 102400
     test_conf['filter_conf']['min_output_input_ratio'] = 0
-    test_conf['speed_perturb'] = False
-    test_conf['spec_aug'] = False
-    test_conf['spec_sub'] = False
-    test_conf['spec_trim'] = False
+    if 'fbank' in test_conf:
+        test_conf['feat_conf']['dither'] = 0.0
+    elif 'mfcc' in test_conf:
+        test_conf['feat_conf']['dither'] = 0.0
+    test_conf['batch_size'] = args.batch_size
     test_conf['shuffle'] = False
-    test_conf['sort'] = False
-    test_conf['cycle'] = 1
-    test_conf['list_shuffle'] = False
-    if 'fbank_conf' in test_conf:
-        test_conf['fbank_conf']['dither'] = 0.0
-    elif 'mfcc_conf' in test_conf:
-        test_conf['mfcc_conf']['dither'] = 0.0
-    test_conf['batch_conf']['batch_type'] = "static"
-    test_conf['batch_conf']['batch_size'] = args.batch_size
-
-    tokenizer = init_tokenizer(configs)
-    test_dataset = Dataset(args.data_type,
-                           args.test_data,
-                           tokenizer,
-                           test_conf,
-                           partition=False)
+    test_conf["augment"]["speed_perturb"] = False
+    test_conf["augment"]["wav_distortion"] = False
+    test_conf["augment"]["add_reverb"] = False
+    test_conf["augment"]["add_noise"] = False
+    test_conf["augment"]['spec_aug'] = False
+    test_conf["augment"]['spec_sub'] = False
+    test_conf["augment"]['spec_trim'] = False
+    test_conf["filter"] = False
+    tokenizer = Tokenizers(configs["data"].get("train_file"))
+    test_dataset = Dataload(args["train_file"], test_conf, tokenizer=tokenizer)
 
     test_data_loader = DataLoader(test_dataset,
-                                  batch_size=None,
-                                  num_workers=args.num_workers)
-
+                                  batch_size=test_conf.get("batch_size", 1),
+                                  pin_memory=test_conf.get("pin_memory", False),
+                                  num_workers=test_conf.get("num_workers", 1)
+                                  )
     # Init asr model from configs
-    args.jit = False
     model, configs = init_model(args, configs)
-
     device = torch.device(args.device)
     model = model.to(device)
     model.eval()
@@ -255,13 +217,7 @@ def main():
     logging.info("compute dtype is {}".format(dtype))
 
     context_graph = None
-    if 'decoding-graph' in args.context_bias_mode:
-        context_graph = ContextGraph(args.context_list_path,
-                                     tokenizer.symbol_table,
-                                     configs['tokenizer_conf']['bpe_path'],
-                                     args.context_graph_score)
-
-    _, blank_id = get_blank_id(configs, tokenizer.symbol_table)
+    blank_id = tokenizer.tokens2ids("<blank>")
     logging.info("blank_id is {}".format(blank_id))
 
     # TODO(Dinghao Zhou): Support RNN-T related decoding

@@ -4,11 +4,24 @@ import torchaudio
 import python_speech_features
 import numpy as np
 import scipy.io as scio
+import torchaudio
+import scipy.io.wavfile as wav
 from fqdd.utils.files import get_all_file, readtxt
 
 
+
+def resample_waveform(waveform, org_fr, new_fr):
+    waveform = torchaudio.transforms.Resample(orig_freq=org_fr, new_freq=new_fr)(waveform)
+    return waveform
+
 def extract_feat(wavpath, sr=16000, feat_type='mfcc', feat_cof=40, lowfreq=0):
     waveform, sample_rate = torchaudio.load(wavpath)  
+    waveform = waveform * (1 << 15) 
+    if sr == sample_rate:
+        pass
+    else:
+        waveform = resample_waveform(waveform, sample_rate, sr)
+    
     if feat_type =='raw':
         feat = waveform.squeeze()
     else:

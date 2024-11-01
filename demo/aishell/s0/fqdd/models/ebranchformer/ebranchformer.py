@@ -1,15 +1,35 @@
 import math
+import os, sys
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import json
-
 from typing import List, Optional, Union, Tuple, Dict
-from fqdd.nnets.base_utils import ACTIVATION_CLASSES
+
+# sys.path.insert(0, "./")
+# from src.model.base import ACTIVATION_CLASSES
 
 T_CACHE = Tuple[torch.Tensor, torch.Tensor]
 IGNORE_ID = -1
+
+class Swish(torch.nn.Module):
+    """Construct an Swish object."""
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Return Swish activation function."""
+        return x * torch.sigmoid(x)
+
+
+ACTIVATION_CLASSES = {
+    "hardtanh": torch.nn.Hardtanh,
+    "tanh": torch.nn.Tanh,
+    "relu": torch.nn.ReLU,
+    "selu": torch.nn.SELU,
+    "swish": getattr(torch.nn, "SiLU", Swish),
+    "gelu": torch.nn.GELU,
+}
 
 
 def th_accuracy(pad_outputs: torch.Tensor, pad_targets: torch.Tensor,
@@ -33,7 +53,6 @@ def th_accuracy(pad_outputs: torch.Tensor, pad_targets: torch.Tensor,
     denominator = torch.sum(mask)
     return (numerator / denominator).detach()
 
-
 def remove_duplicates_and_blank(hyp: List[int],
                                 blank_id: int = 0) -> List[int]:
     new_hyp: List[int] = []
@@ -45,7 +64,6 @@ def remove_duplicates_and_blank(hyp: List[int],
         while cur < len(hyp) and hyp[cur] == hyp[prev]:
             cur += 1
     return new_hyp
-
 
 def pad_list(xs: List[torch.Tensor], pad_value: int):
     """Perform padding for the list of tensors.
@@ -151,7 +169,6 @@ class DecodeResult:
         self.nbest = nbest
         self.nbest_scores = nbest_scores
         self.nbest_times = nbest_times
-
 
 class GlobalCMVN(torch.nn.Module):
 
@@ -327,7 +344,7 @@ class CTC(torch.nn.Module):
         # print("log_softmax, hs_pad:{}".format(hs_pad.shape))
         xs = self.ctc_lo(hs_pad)
         # print("log_softmax ctc_lo:{}".format(xs.shape))
-
+        
         xs = F.log_softmax(xs, dim=2)
         # print("log_softmax, log_softma:{}".format(xs.shape))
 
@@ -1825,13 +1842,12 @@ class EBranchformer(nn.Module):
         self.eos = (self.vocab_size - 1 if self.special_tokens is None else
                     self.special_tokens.get("<eos>", self.vocab_size - 1))
         # print(self.sos, self.eos)
-
+        
         self.encoder = EBranchformerEncoder(encoder_conf, use_cmvn, cmvn_file)
         self.decoder = TransformerDecoder(self.vocab_size, decoder_conf)
 
         ctc_conf = model_conf.get("ctc_conf", None)
-        self.ctcloss = CTC(self.vocab_size, decoder_conf.get("encoder_output_size", 256),
-                           blank_id=ctc_conf.get("ctc_blank_id") if "ctc_blank_id" in ctc_conf else 0)
+        self.ctcloss = CTC(self.vocab_size, decoder_conf.get("encoder_output_size", 256), blank_id=ctc_conf.get("ctc_blank_id") if "ctc_blank_id" in ctc_conf else 0)
         self.att_loss = LabelSmoothingLoss(
             size=self.vocab_size,
             padding_idx=self.ignore_id,
@@ -1845,11 +1861,11 @@ class EBranchformer(nn.Module):
         encoder_out_lens = encoder_mask.squeeze(1).sum(1)
 
         ctcloss, y_hats = self.ctcloss(encoder_out, encoder_out_lens, padding_ys, ys_lens)
-
+        
         ys_in_pad, ys_out_pad = self.add_sos_eos(padding_ys, self.sos, self.eos, self.ignore_id)
         ys_in_lens = ys_lens + 1
-
-        decoder_out, r_decoder_out, _ = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens)
+        
+        decoder_out, r_decoder_out, _  = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens)
         loss_att = self.att_loss(decoder_out, ys_out_pad)
         loss = self.ctc_weight * ctcloss + (1 - self.ctc_weight) * loss_att
         # print(decoder_out.shape) 
@@ -1858,13 +1874,14 @@ class EBranchformer(nn.Module):
             ys_out_pad,
             ignore_label=self.ignore_id
         )
-
+        
         info_dicts = {
-            "loss": loss,
-            "ctc_loss": ctcloss,
-            "att_loss": loss_att,
-            "th_acc": acc_att
-        }
+                "loss": loss,
+                "ctc_loss": ctcloss,
+                "att_loss": loss_att,
+                "th_acc": acc_att,
+                "encoder_out": encoder_out
+            }
 
         return info_dicts
 
@@ -1914,6 +1931,7 @@ class EBranchformer(nn.Module):
 
         return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)
 
+
     def ctc_logprobs(self,
                      encoder_out: torch.Tensor,
                      blank_penalty: float = 0.0,
@@ -1927,14 +1945,14 @@ class EBranchformer(nn.Module):
             ctc_probs = self.ctcloss.log_softmax(encoder_out)
 
         return ctc_probs
-
+    
     def ctc_greedy_search(
             self,
             ctc_probs: torch.Tensor,
             ctc_lens: torch.Tensor,
             blank_id: int = 0
-    ) -> List[DecodeResult]:
-
+        ) -> List[DecodeResult]:
+    
         batch_size = ctc_probs.shape[0]
         maxlen = ctc_probs.size(1)
         topk_prob, topk_index = ctc_probs.topk(1, dim=2)  # (B, maxlen, 1)
@@ -1951,13 +1969,13 @@ class EBranchformer(nn.Module):
         return results
 
     def decode(self,
-               speech,
-               speech_lengths,
-               beam_size: int = 10,
-               blank_id: int = 0,
-               blank_penalty: float = 0.0,
-               methods: List = ["ctc_greedy_search"]
-               ):
+            speech,
+            speech_lengths,
+            beam_size: int = 10,
+            blank_id: int = 0,
+            blank_penalty: float = 0.0,
+            methods: List = ["ctc_greedy_search"]
+        ):
 
         assert speech.shape[0] == speech_lengths.shape[0]
         encoder_out, encoder_mask = self.encoder(speech, speech_lengths)
@@ -1968,9 +1986,8 @@ class EBranchformer(nn.Module):
         if 'ctc_greedy_search' in methods:
             results['ctc_greedy_search'] = self.ctc_greedy_search(
                 ctc_probs, encoder_lens, blank_id)
-
+        
         return results
-
 
 '''
 torch.manual_seed(123)

@@ -23,9 +23,8 @@ import torch
 import yaml
 from torch.utils.data import DataLoader
 
-from fqdd.utils.load_data import Dataload
 from fqdd.utils.config import override_config
-from fqdd.utils.init_model import init_model
+from fqdd.models.init_model import init_model
 from fqdd.utils.init_tokenizer import init_tokenizer
 from fqdd.utils.context_graph import ContextGraph
 from fqdd.utils.ctc_utils import get_blank_id

@@ -38,8 +38,6 @@ def getdict_words(jsonpath):
     except:
         print("read jons file error,check: {}".format(jsonpath))
         return
-
-
 def getdict_phones(txtpath, w2p, lexicon):
     dicts = []
     txtfile = get_all_file(txtpath, 'txt')
@@ -53,7 +51,8 @@ def getdict_phones(txtpath, w2p, lexicon):
 
 
 def create_phones(dirpath):
-    if not os.path.exists(os.path.join(dirpath, "phones.txt")):
+
+    if not os.path.exists(os.path.join(dirpath, "phones.txt")): 
         try:
             print(os.path.join(dirpath, "train.json"))
             train = getdict_words(os.path.join(dirpath, "train.json"))
@@ -62,9 +61,12 @@ def create_phones(dirpath):
         except:
             print("data_json not exists")
             sys.exit()
-        dicts = train + test + dev
+        if test:
+            dicts = train + test + dev
+        else:
+            dicts = train + dev
         dicts = list(set(dicts))
-        phones = {"<blank>": 0, "<unk>": 1, "<sos/eos>": 2}
+        phones = {"<blank>":0, "<unk>": 1, "<sos/eos>":2}
 
         with open(os.path.join(dirpath, "phones.txt"), 'w', encoding='utf8') as ph:
             ph.write("<blank>\t0\n<unk>\t1\n<sos/eos>\t2\n")

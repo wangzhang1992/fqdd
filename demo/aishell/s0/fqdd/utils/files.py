@@ -12,6 +12,20 @@ def get_all_file(wavdir, tail):
     return allfiles
 
 
+# encoding=utf8
+import os, sys
+
+
+def get_all_file(wavdir, tail):
+    allfiles = []
+    for root, dirs, files in os.walk(wavdir):
+        for f in files:
+            if f.endswith(tail):
+                allfiles.append(os.path.join(root, f))
+
+    return allfiles
+
+
 def readtxt(txtf):
     '''
     line:
@@ -37,5 +51,7 @@ def readtxt(txtf):
 #             except:
 #                 strs = line.strip().split('\t')[1].replace(' ', '')
 #         return strs
+
+# get_all_file('data/train/cctv','.wav')
 
 # get_all_file('data/train/cctv','.wav')

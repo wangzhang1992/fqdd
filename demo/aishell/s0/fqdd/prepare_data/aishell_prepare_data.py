@@ -54,14 +54,13 @@ def prepare_data_json(data_folder, dirpath="data"):
                 items = item.strip().split(' ')
                 if len(items) >= 2:
                     text_map[items[0]] = " ".join(items[1:]).replace(" ", "")
-
     for dirname in ["train", "dev", "test"]:
-
+        
         datalist = os.path.join(dirpath, dirname + '.json')
+        print(datalist)
         if os.path.exists(datalist):
             continue
         # /data1/data_management/speech_processing/ASR/audio_raw/language_china/zh-CN/lable/near-field/read/SAD/Speaker_Independent/dataset/{wav, transcript}
-
         train_wavs = glob.glob(os.path.join(data_folder, 'wav', dirname) + '/*/*.wav')
         index = 0
         tmp = {}
@@ -77,7 +76,7 @@ def prepare_data_json(data_folder, dirpath="data"):
                 continue
         js = json.dumps(tmp, indent=2, ensure_ascii=False)
         print(os.path.join(dirpath, dirname + '.json'))
-
+        
         with open(datalist, "w", encoding="utf-8") as wf:
             wf.write(js)
 
