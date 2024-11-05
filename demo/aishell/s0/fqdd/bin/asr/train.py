@@ -20,7 +20,7 @@ from fqdd.utils.argument import parse_arguments
 from fqdd.bin.asr.decode import GreedyDecoder, calculate_cer
 # from fqdd.models.wav2vec import Encoder_Decoer
 from fqdd.models.crdnn.CRDNN import Encoder_Decoer
-from fqdd.models.check_model import model_init, save_model, reload_model
+from fqdd.models.model_utils import model_init, save_model, reload_model
 from fqdd.utils.optimizers import adam_optimizer, sgd_optimizer, scheduler, warmup_lr
 from fqdd.utils.logger import init_logging
 from fqdd.nnets.losses import nll_loss, transducer_loss

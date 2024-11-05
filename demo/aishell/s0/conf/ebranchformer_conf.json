@@ -1,8 +1,9 @@
 {
     "seed": 777,
-    "max_epoch": 240,
+    "max_epoch": 120,
     "pretrain_model": null,
     "log_interval": 100,
+    "model_root_dir": "exp",
     "accumulation_steps": 1,
     "dist_conf":{
         "train_engine": "torch_ddp",
@@ -11,7 +12,6 @@
         },
     "model_name": "Ebranchformer",
     "model":{
-        "model_root_dir": "exp",
         "grad_clip": 5,
         "dtype": "fp32",
         "use_cmvn": true,
@@ -83,17 +83,15 @@
         }
     },
 
-    "opt_configs":{
-        "optimizer": "adam",
-        "optimizer_conf":{
-            "lr": 0.001,
-            "weight_decay": 0.000001
-            },
+    "optim": "adam",
+    "optim_conf":{
+        "lr": 0.001,
+        "weight_decay": 0.000001
+    },
 
-        "scheduler": "warmuplr",
-        "scheduler_conf": {
-            "warmup_steps": 35000
-        }
+    "scheduler": "warmuplr",
+    "scheduler_conf": {
+        "warmup_steps": 35000
     },
 
     "data":{
@@ -110,7 +108,6 @@
                 "min_output_input_ratio": 0.005,
                 "max_output_input_ratio": 1
                 },
-
             "feat_type": "fbank",
             "feat_conf":{
                 "num_mel_bins": 80,
@@ -118,8 +115,8 @@
                 "frame_length": 25,
                 "dither": 1.0
                 },
-            "batch_size": 1,
-            "num_workers": 1,
+            "batch_size": 8,
+            "num_workers": 4,
             "pin_memory": true,
             "prefetch": 500,
             "shuffle":true,

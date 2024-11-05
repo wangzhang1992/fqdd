@@ -1,31 +1,52 @@
 import torch
-import os, sys
-import torch.nn as nn
-import time
+import os
 import logging
 import re
+import json
+import datetime
 
 
-def save_model(model, optimizer, epoch, save_dir):
-    try:
-        # epoch
-        os.makedirs(save_dir, exist_ok=True)
-        epoch_path = os.path.join(save_dir, 'checkpoint')
-        check_epoch = {'checkpoint': epoch}
-        torch.save(check_epoch, epoch_path, _use_new_zipfile_serialization=False)
+def save_state_dict_and_infos(state_dict, path: str, infos=None):
+    rank = int(os.environ.get('RANK', 0))
+    logging.info('[Rank {}] Checkpoint: save to checkpoint {}'.format(
+        rank, path))
+    torch.save(state_dict, path)
+    info_path = re.sub('.pt$', '.json', path)
+    if infos is None:
+        infos = {}
+    infos['save_time'] = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    with open(info_path, 'w') as fout:
+        data = json.dumps(infos, indent=4)
+        fout.write(data)
 
-        # model
-        model_path = os.path.join(save_dir, 'model.ckpt')
-        check_model = {'model': model.state_dict()}
-        torch.save(check_model, model_path, _use_new_zipfile_serialization=False)
 
-        # optimizer
-        optimizer_path = os.path.join(save_dir, 'optimizer.ckpt')
-        check_optimizer = {'optimizer': optimizer.state_dict()}
-        torch.save(check_optimizer, optimizer_path, _use_new_zipfile_serialization=False)
-    except:
-        print('save {}th epoch mode error'.format(epoch))
-        return
+def save_checkpoint(model: torch.nn.Module, path: str, infos=None):
+    '''
+    Args:
+        infos (dict or None): any info you want to save.
+    '''
+    if isinstance(model, torch.nn.DataParallel):
+        state_dict = model.module.state_dict()
+    elif isinstance(model, torch.nn.parallel.DistributedDataParallel):
+        state_dict = model.module.state_dict()
+    else:
+        state_dict = model.state_dict()
+    save_state_dict_and_infos(state_dict, path, infos)
+
+
+def save_model(model, info_dict):
+    rank = int(os.environ.get('RANK', 0))
+    tag = info_dict["tag"]
+    model_dir = info_dict["model_dir"]
+    save_model_path = os.path.join(model_dir, '{}.pt'.format(tag))
+    # save ckpt
+    if rank == 0:
+        # NOTE(xcsong): For torch_ddp, only rank-0 should call this.
+        save_checkpoint(model, save_model_path, info_dict)
+        # # save yaml
+        # with open("{}/{}.json".format(model_dir, tag), 'w') as fout:
+        #     data = json.dumps(info_dict, indent=4)
+        #     fout.write(data)
 
 
 '''
@@ -79,11 +100,12 @@ def load_checkpoint(model: torch.nn.Module, path: str) -> dict:
             logging.info("missing tensor: {}".format(key))
         for key in unexpected_keys:
             logging.info("unexpected tensor: {}".format(key))
-    info_path = re.sub('.pt$', '.yaml', path)
+    info_path = re.sub('.pt$', '.json', path)
     configs = {}
     if os.path.exists(info_path):
         with open(info_path, 'r') as fin:
-            configs = yaml.load(fin, Loader=yaml.FullLoader)
+            configs = json.load(fin)
+    print(configs)
     return configs
 
 

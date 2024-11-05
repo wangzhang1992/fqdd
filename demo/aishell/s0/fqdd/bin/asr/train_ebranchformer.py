@@ -8,7 +8,7 @@ from fqdd.utils.load_data import init_dataset_and_dataloader
 from fqdd.utils.train_utils import init_optimizer_and_scheduler, init_distributed
 from fqdd.utils.argument import parse_arguments
 from fqdd.utils.init_tokenizer import Tokenizers
-from fqdd.models.check_model import save_model, reload_model
+from fqdd.models.model_utils import save_model, reload_model
 from fqdd.models.init_model import init_model
 from fqdd.utils.logger import init_logging
 

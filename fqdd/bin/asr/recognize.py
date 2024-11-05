@@ -16,29 +16,26 @@ from __future__ import print_function
 
 import argparse
 import copy
+import json
 import logging
 import os
+import sys
 
+sys.path.insert(0, "./")
 import torch
 import yaml
 from torch.utils.data import DataLoader
 
-from fqdd.utils.config import override_config
+from fqdd.utils.argument import reload_configs
 from fqdd.models.init_model import init_model
-from fqdd.utils.init_tokenizer import init_tokenizer
-from fqdd.utils.context_graph import ContextGraph
-from fqdd.utils.ctc_utils import get_blank_id
-from fqdd.utils.common import TORCH_NPU_AVAILABLE  # noqa just ensure to check torch-npu
-
+from fqdd.utils.load_data import Dataload
+from fqdd.utils.init_tokenizer import Tokenizers
+from fqdd.utils.load_data import mycollate_fn
 
 def get_args():
     parser = argparse.ArgumentParser(description='recognize with your model')
-    parser.add_argument('--config', required=True, help='config file')
+    parser.add_argument('--configs', required=True, help='config file')
     parser.add_argument('--test_data', required=True, help='test data file')
-    parser.add_argument('--data_type',
-                        default='raw',
-                        choices=['raw', 'shard'],
-                        help='train and cv data type')
     parser.add_argument('--gpu',
                         type=int,
                         default=-1,
@@ -110,12 +107,12 @@ def get_args():
                         type=float,
                         default=0.0,
                         help='transducer weight for rescoring weight in '
-                        'transducer attention rescore mode')
+                             'transducer attention rescore mode')
     parser.add_argument('--attn_weight',
                         type=float,
                         default=0.0,
                         help='attention weight for rescoring weight in '
-                        'transducer attention rescore mode')
+                             'transducer attention rescore mode')
     parser.add_argument('--decoding_chunk_size',
                         type=int,
                         default=-1,
@@ -161,30 +158,6 @@ def get_args():
                         default=0.0,
                         help='lm scale for hlg attention rescore decode')
 
-    parser.add_argument(
-        '--context_bias_mode',
-        type=str,
-        default='',
-        help='''Context bias mode, selectable from the following
-                                option: decoding-graph, deep-biasing''')
-    parser.add_argument('--context_list_path',
-                        type=str,
-                        default='',
-                        help='Context list path')
-    parser.add_argument('--context_graph_score',
-                        type=float,
-                        default=0.0,
-                        help='''The higher the score, the greater the degree of
-                                bias using decoding-graph for biasing''')
-
-    parser.add_argument('--use_lora',
-                        type=bool,
-                        default=False,
-                        help='''Whether to use lora for biasing''')
-    parser.add_argument("--lora_ckpt_path",
-                        default=None,
-                        type=str,
-                        help="lora checkpoint path.")
     args = parser.parse_args()
     print(args)
     return args
@@ -200,12 +173,10 @@ def main():
     if "cuda" in args.device:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
-    with open(args.config, 'r') as fin:
-        configs = yaml.load(fin, Loader=yaml.FullLoader)
-    if len(args.override_config) > 0:
-        configs = override_config(configs, args.override_config)
+    configs = json.load(open(args.configs, 'r', encoding="utf-8"))
+    configs = reload_configs(args, configs)
 
-    test_conf = copy.deepcopy(configs['dataset_conf'])
+    test_conf = copy.deepcopy(configs['data']["data_conf"])
 
     test_conf['filter_conf']['max_length'] = 102400
     test_conf['filter_conf']['min_length'] = 0
@@ -213,31 +184,34 @@ def main():
     test_conf['filter_conf']['token_min_length'] = 0
     test_conf['filter_conf']['max_output_input_ratio'] = 102400
     test_conf['filter_conf']['min_output_input_ratio'] = 0
-    test_conf['speed_perturb'] = False
-    test_conf['spec_aug'] = False
-    test_conf['spec_sub'] = False
-    test_conf['spec_trim'] = False
-    test_conf['shuffle'] = False
     test_conf['sort'] = False
-    test_conf['cycle'] = 1
-    test_conf['list_shuffle'] = False
-    if 'fbank_conf' in test_conf:
-        test_conf['fbank_conf']['dither'] = 0.0
-    elif 'mfcc_conf' in test_conf:
-        test_conf['mfcc_conf']['dither'] = 0.0
-    test_conf['batch_conf']['batch_type'] = "static"
-    test_conf['batch_conf']['batch_size'] = args.batch_size
+    test_conf['shuffle'] = False
+    test_conf["augment"]["speed_perturb"] = False
+    test_conf["augment"]["wav_distortion"] = False
+    test_conf["augment"]["add_reverb"] = False
+    test_conf["augment"]["add_noise"] = False
+    test_conf["augment"]['spec_aug'] = False
+    test_conf["augment"]['spec_sub'] = False
+    test_conf["augment"]['spec_trim'] = False
+    test_conf["filter"] = False
 
-    tokenizer = init_tokenizer(configs)
-    test_dataset = Dataset(args.data_type,
-                           args.test_data,
-                           tokenizer,
-                           test_conf,
-                           partition=False)
+    test_conf['feat_conf']['dither'] = 0.0
+
+    test_conf['batch_size'] = args.batch_size
+
+    tokenizer = Tokenizers(configs["data"].get("train_file"))
+    configs["model"]["vocab_size"] = tokenizer.vocab_size()
+
+    test_dataset = Dataload(args.test_data,
+                            test_conf,
+                            tokenizer
+                            )
 
     test_data_loader = DataLoader(test_dataset,
-                                  batch_size=None,
-                                  num_workers=args.num_workers)
+                                  batch_size=test_conf.get("batch_size", 1),
+                                  num_workers=args.num_workers,
+                                  collate_fn=mycollate_fn,
+                                  )
 
     # Init asr model from configs
     args.jit = False
@@ -253,14 +227,8 @@ def main():
         dtype = torch.bfloat16
     logging.info("compute dtype is {}".format(dtype))
 
-    context_graph = None
-    if 'decoding-graph' in args.context_bias_mode:
-        context_graph = ContextGraph(args.context_list_path,
-                                     tokenizer.symbol_table,
-                                     configs['tokenizer_conf']['bpe_path'],
-                                     args.context_graph_score)
-
-    _, blank_id = get_blank_id(configs, tokenizer.symbol_table)
+    # blank_id = tokenizer.tokens2ids("<blank>")
+    blank_id = tokenizer.blank_id
     logging.info("blank_id is {}".format(blank_id))
 
     # TODO(Dinghao Zhou): Support RNN-T related decoding
@@ -279,34 +247,33 @@ def main():
                                  cache_enabled=False):
         with torch.no_grad():
             for batch_idx, batch in enumerate(test_data_loader):
-                keys = batch["keys"]
-                feats = batch["feats"].to(device)
-                target = batch["target"].to(device)
-                feats_lengths = batch["feats_lengths"].to(device)
-                target_lengths = batch["target_lengths"].to(device)
-                infos = {"tasks": batch["tasks"], "langs": batch["langs"]}
+                keys, feats, feats_lengths, targets, target_lengths = batch
+                feats = feats.to(device)
+                feats_lengths = feats_lengths.to(device)
+                targets = targets.to(device)
+                target_lengths = target_lengths.to(device)
+
                 results = model.decode(
-                    args.modes,
                     feats,
                     feats_lengths,
-                    args.beam_size,
-                    decoding_chunk_size=args.decoding_chunk_size,
-                    num_decoding_left_chunks=args.num_decoding_left_chunks,
-                    ctc_weight=args.ctc_weight,
-                    simulate_streaming=args.simulate_streaming,
-                    reverse_weight=args.reverse_weight,
-                    context_graph=context_graph,
+                    beam_size=args.beam_size,
+                    methods=args.modes,
                     blank_id=blank_id,
-                    blank_penalty=args.blank_penalty,
-                    length_penalty=args.length_penalty,
-                    infos=infos)
+                    blank_penalty=args.blank_penalty
+                )
                 for i, key in enumerate(keys):
                     for mode, hyps in results.items():
-                        tokens = hyps[i].tokens
-                        line = '{} {}'.format(key,
-                                              tokenizer.detokenize(tokens)[0])
-                        logging.info('{} {}'.format(mode.ljust(max_format_len),
-                                                    line))
+
+                        print(mode, hyps)
+                        if type(hyps[0]) is not list:
+                            tokens = tokenizer.id2tokens(hyps)
+                            line = '{} {}'.format(key, "".join(tokens))
+                        else:
+                            line = ""
+                            for hyp in hyps:
+                                tokens = tokenizer.id2tokens(hyp)
+                                line += '{} {}\n'.format(key, "".join(tokens))
+                        logging.info('{}'.format(line))
                         files[mode].write(line + '\n')
         for mode, f in files.items():
             f.close()

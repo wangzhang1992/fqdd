@@ -18,6 +18,7 @@ class Tokenizers:
         self.file_path = file_path
         self.special_tokens = special_tokens
         self.ch2ids_dict, self.ids2ch_dict = self.read_file()
+        self.blank_id = self.ch2ids_dict["<blank>"]
 
     def read_file(self):
 
@@ -49,7 +50,7 @@ class Tokenizers:
                 for k, v in ch2ids_dict.items():
                     wf.write(k + ' ' + str(v) + '\n')
 
-        ids2ch_dict = {k: v for k, v in ch2ids_dict.items()}
+        ids2ch_dict = {v: k for k, v in ch2ids_dict.items()}
 
         return ch2ids_dict, ids2ch_dict
 
@@ -65,12 +66,14 @@ class Tokenizers:
         return ids
 
     def id2tokens(self, ids: List[int]) -> List[str]:
-
-        content = [self.ids2ch_dict[w] for w in ids]
+        content = ""
+        if len(ids) == 0:
+            pass
+        else:
+            content = [self.ids2ch_dict[w] for w in ids]
         return content
 
     def vocab_size(self):
-
         return len(self.ch2ids_dict)
 
 

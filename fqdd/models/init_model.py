@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from fqdd.models.check_model import infer_model, load_checkpoint
+from fqdd.models.model_utils import infer_model, load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
 from fqdd.models.crdnn.CRDNN import Encoder_Decoer
 from fqdd.models.las.las import LAS
@@ -33,16 +33,18 @@ def model_params_init(model, init_method="default"):
                 nn.init.orthogonal(m.weight)
     else:
         print("model init method error")
-        return model
 
 
 def init_model(args, configs):
     model_name = configs["model_name"]
     model_configs = configs["model"]
     model = model_lists[model_name](model_configs)
-    init_method = model_configs.get("init_method", "default")
-    model = model_params_init(model, init_method)
+
     if args.checkpoint is not None:
         infos = load_checkpoint(model, args.checkpoint)
-        configs["init_infos"] = infos
+    else:
+        init_method = model_configs.get("init_method", "default")
+        model_params_init(model, init_method)
+        infos = {}
+    configs["init_infos"] = infos
     return model, configs

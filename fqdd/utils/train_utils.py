@@ -1,10 +1,12 @@
 import os
 import logging
 import copy
+import deepseeed
 import torch
 import torch.distributed as dist
 import torch.optim as optim
-from fqdd.utils.optimizers import adam_optimizer, sgd_optimizer, scheduler, WarmupLR
+from fqdd.utils.optimizers import adam_optimizer, sgd_optimizer, scheduler, WarmupLR, NoamHoldAnnealing
+
 
 def init_distributed(args):
     world_size = int(os.environ.get('WORLD_SIZE', 1))
@@ -28,7 +30,6 @@ def init_distributed(args):
 
 
 def init_optimizer_and_scheduler(configs, model):
-   
     params = model.parameters()
     optim_conf = copy.deepcopy(configs['optim_conf'])
     if configs['optim'] == 'adam':
