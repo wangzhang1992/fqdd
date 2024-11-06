@@ -5,40 +5,33 @@ import torch.nn as nn
 from typing import List, Union
 import torch.optim.lr_scheduler as lr_sch
 from torch.optim.lr_scheduler import _LRScheduler
-
 '''
 optimizer
 '''
-
-
 def adam_optimizer(model, lr=0.001):
+
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
 
     return optimizer
 
-
 def sgd_optimizer(model, lr=0.001):
+
     optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4, nesterov=True)
     return optimizer
 
-
 def scheduler(optimizer, patience=0, cooldown=0):
-    scheduler_l = lr_sch.ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=patience, verbose=False,
-                                           threshold=0.0001, threshold_mode='rel', min_lr=1e-10, cooldown=cooldown,
-                                           eps=1e-08)
+    scheduler_l = lr_sch.ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=patience, verbose=False, threshold=0.0001, threshold_mode='rel', min_lr=1e-10, cooldown=cooldown, eps=1e-08)
     return scheduler_l
-
 
 def _noam_hold_annealing(initial_lr, step, warmup_steps, hold_steps,
                          decay_rate, min_lr):
     # hold_steps = total number of steps
     # to hold the LR, not the warmup + hold steps.
-    T_warmup_decay = max(1, warmup_steps ** decay_rate)
-    T_hold_decay = max(1, (step - hold_steps) ** decay_rate)
+    T_warmup_decay = max(1, warmup_steps**decay_rate)
+    T_hold_decay = max(1, (step - hold_steps)**decay_rate)
     lr = (initial_lr * T_warmup_decay) / T_hold_decay
     lr = max(lr, min_lr)
     return lr
-
 
 class WarmupLR(_LRScheduler):
     """The WarmupLR scheduler
@@ -58,10 +51,10 @@ class WarmupLR(_LRScheduler):
     """
 
     def __init__(
-            self,
-            optimizer: torch.optim.Optimizer,
-            warmup_steps: Union[int, float, List[Union[int, float]]] = 25000,
-            last_epoch: int = -1,
+        self,
+        optimizer: torch.optim.Optimizer,
+        warmup_steps: Union[int, float, List[Union[int, float]]] = 25000,
+        last_epoch: int = -1,
     ):
         self.warmup_steps = warmup_steps
         # __init__() must be invoked before setting field
@@ -78,11 +71,11 @@ class WarmupLR(_LRScheduler):
             warmup_steps = [self.warmup_steps] * len(self.base_lrs)
 
         def initlr_fn(lr):
-            return lr * step_num ** -0.5
+            return lr * step_num**-0.5
 
         def warmuplr_fn(lr, warmup_step):
-            return lr * warmup_step ** 0.5 * min(step_num ** -0.5,
-                                                 step_num * warmup_step ** -1.5)
+            return lr * warmup_step**0.5 * min(step_num**-0.5,
+                                               step_num * warmup_step**-1.5)
 
         return [
             initlr_fn(lr) if warmup_steps[i] == 0 else warmuplr_fn(
@@ -107,16 +100,16 @@ class WarmupAnnealHoldPolicy(_LRScheduler):
     """
 
     def __init__(
-            self,
-            optimizer,
-            *,
-            warmup_steps=None,
-            warmup_ratio=None,
-            constant_steps=None,
-            constant_ratio=None,
-            max_steps=None,
-            min_lr=0.0,
-            last_epoch=-1,
+        self,
+        optimizer,
+        *,
+        warmup_steps=None,
+        warmup_ratio=None,
+        constant_steps=None,
+        constant_ratio=None,
+        max_steps=None,
+        min_lr=0.0,
+        last_epoch=-1,
     ):
         assert not (warmup_steps is not None
                     and warmup_ratio is not None), \
@@ -187,7 +180,6 @@ class WarmupAnnealHoldPolicy(_LRScheduler):
         """Simple const lr policy"""
         return self.base_lrs
 
-
 class WarmupPolicy(_LRScheduler):
     """Adds warmup kwargs and warmup logic to lr policy.
     All arguments should be passed as kwargs for clarity,
@@ -206,7 +198,7 @@ class WarmupPolicy(_LRScheduler):
                  max_steps=None,
                  min_lr=0.0,
                  last_epoch=-1):
-        assert not (warmup_steps is not None and warmup_ratio is not None), \
+        assert not (warmup_steps is not None and warmup_ratio is not None),\
             "Either use particular number of step or ratio"
         assert warmup_ratio is None or max_steps is not None, \
             "If there is a ratio, there should be a total steps"
@@ -249,8 +241,6 @@ class WarmupPolicy(_LRScheduler):
     def _get_lr(self, step):
         """Simple const lr policy"""
         return self.base_lrs
-
-
 class WarmupHoldPolicy(WarmupPolicy):
     """Variant of WarmupPolicy which maintains high
        learning rate for a defined number of steps.
@@ -266,16 +256,16 @@ class WarmupHoldPolicy(WarmupPolicy):
     """
 
     def __init__(
-            self,
-            optimizer,
-            *,
-            warmup_steps=None,
-            warmup_ratio=None,
-            hold_steps=None,
-            hold_ratio=None,
-            max_steps=None,
-            min_lr=0.0,
-            last_epoch=-1,
+        self,
+        optimizer,
+        *,
+        warmup_steps=None,
+        warmup_ratio=None,
+        hold_steps=None,
+        hold_ratio=None,
+        max_steps=None,
+        min_lr=0.0,
+        last_epoch=-1,
     ):
         assert not (hold_steps is not None and hold_ratio is not None), \
             "Either use particular number of step or ratio"
@@ -333,7 +323,6 @@ class WarmupHoldPolicy(WarmupPolicy):
             return [self.min_lr for _ in self.base_lrs]
 
         return self._get_lr(step)
-
 
 class NoamHoldAnnealing(WarmupHoldPolicy):
 
@@ -429,3 +418,4 @@ class NoamHoldAnnealing(WarmupHoldPolicy):
 
     def set_step(self, step: int):
         self.last_epoch = step
+

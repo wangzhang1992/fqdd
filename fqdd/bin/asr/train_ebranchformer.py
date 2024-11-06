@@ -148,7 +148,7 @@ def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
 
 def main():
     args = parse_arguments()
-    configs = json.load(open(args.config, 'r', encoding="utf-8"))
+    configs = json.load(open(args.train_config, 'r', encoding="utf-8"))
 
     configs = reload_configs(args, configs)
 
@@ -157,10 +157,11 @@ def main():
     logger = init_logging("train", configs["model_dir"])
     # prepare_data_json(args.data_folder, configs["model_dir"])
 
-    tokenizer = Tokenizers(configs["data"].get("train_file"))
+    tokenizer = Tokenizers(configs)
 
     _, _, rank = init_distributed(args)
-    train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(configs["data"],
+    train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(args,
+                                                                                              configs,
                                                                                               tokenizer=tokenizer,
                                                                                               seed=configs["seed"]
                                                                                           )
@@ -187,3 +188,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

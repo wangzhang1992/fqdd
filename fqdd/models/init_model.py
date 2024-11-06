@@ -39,8 +39,8 @@ def init_model(args, configs):
     model_name = configs["model_name"]
     model_configs = configs["model"]
     model = model_lists[model_name](model_configs)
-
     if args.checkpoint is not None:
+
         infos = load_checkpoint(model, args.checkpoint)
     else:
         init_method = model_configs.get("init_method", "default")
@@ -48,3 +48,4 @@ def init_model(args, configs):
         infos = {}
     configs["init_infos"] = infos
     return model, configs
+

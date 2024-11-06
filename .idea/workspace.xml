@@ -4,26 +4,58 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="update">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="编写recognize程序,测试运行，目前只有ctc_greedy解码模式">
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/dev/data.list" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/dev/text" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/dev/wav.scp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/dict/lang_char.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/dev/text" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/dev/transcripts.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/dev/utt.list" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/dev/wav.flist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/dev/wav.scp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/dev/wav.scp_all" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/test/text" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/test/transcripts.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/test/utt.list" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/test/wav.flist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/test/wav.scp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/test/wav.scp_all" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/train/text" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/train/transcripts.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/train/utt.list" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/train/wav.flist" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/train/wav.scp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/local/train/wav.scp_all" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/test/data.list" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/test/global_cmvn" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/test/text" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/test/wav.scp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/train/data.list" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/train/text" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/data/train/wav.scp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/local/aishell_data_prep.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/local/aishell_train_lms.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/local/align_combine_wavs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/local/download_and_untar.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/local/extrach_channel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/local/prepare_data_asd.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/compute_cmvn_stats.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/compute_fbank_feats.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/feat_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_ebranchformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/data/train/global_cmvn" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/data/train/global_cmvn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/run.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train_ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train_ebranchformer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/check_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/model_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/model_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/utils/argument.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/argument.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/utils/data_specug.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/utils/init_tokenizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/init_tokenizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/utils/load_data.py.bak" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/load_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/load_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/utils/optimizers.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/optimizers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/utils/train_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/train_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/nn_step1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/nn_step2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/nn_step3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/nn_step4.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +112,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/lm",
+    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
@@ -95,18 +127,18 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\fqdd" />
+      <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0" />
+      <recent name="D:\JetBrains\work\fqdd\demo\aishell" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\lm" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\decoders" />
-      <recent name="D:\JetBrains\work\fqdd\fqdd\nnets" />
-      <recent name="D:\JetBrains\work\fqdd\fqdd\models" />
-      <recent name="D:\JetBrains\work\fqdd\fqdd\utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\tools" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\bin\asr" />
       <recent name="D:\JetBrains\work\own_learn\fqdd" />
       <recent name="D:\JetBrains\work\own_learn\fqdd\demo\aishell\s0" />
-      <recent name="D:\JetBrains\work\own_learn\fqdd\demo\aishell" />
     </key>
   </component>
   <component name="RunManager" selected="Python.recognize">
@@ -388,7 +420,23 @@
       <option name="project" value="LOCAL" />
       <updated>1730439341149</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式">
+      <option name="closed" value="true" />
+      <created>1730798676882</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1730798676882</updated>
+    </task>
+    <task id="LOCAL-00017" summary="编写recognize程序,测试运行，目前只有ctc_greedy解码模式">
+      <option name="closed" value="true" />
+      <created>1730855987931</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1730855987931</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -400,7 +448,9 @@
     <MESSAGE value="update部分功能" />
     <MESSAGE value="update setup.py" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式" />
+    <MESSAGE value="编写recognize程序,测试运行，目前只有ctc_greedy解码模式" />
+    <option name="LAST_COMMIT_MESSAGE" value="编写recognize程序,测试运行，目前只有ctc_greedy解码模式" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -409,10 +459,6 @@
           <url>file://$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_ebranchformer.py</url>
           <line>2</line>
           <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/fqdd/utils/train_utils.py</url>
-          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

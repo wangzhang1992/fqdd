@@ -13,7 +13,7 @@ def parse_arguments():
     )
 
     model_args.add_argument(
-        '--config',
+        '--train_config',
         type=str,
         default="conf/ebranchformer_conf.json",
         help="模型配文件"
@@ -63,17 +63,19 @@ def parse_arguments():
         type=str,
         help='data_folder path'
     )
+    
+    model_args.add_argument('--train_data', required=True, help='train data file')
+    model_args.add_argument('--dev_data', required=True, help='cv data file')
 
     model_args.add_argument(
         '--checkpoint',
-        default=None,
         type=str,
         help='预加载模型路径'
     )
 
     model_args.add_argument(
         '--max_epoch',
-        default=200,
+        default=120,
         type=int,
         help='train epoch'
     )
@@ -100,7 +102,7 @@ def parse_arguments():
 
     model_args.add_argument(
         '--batch_size',
-        default=8,
+        default=1,
         type=int,
         help='batch set'
     )
@@ -146,6 +148,7 @@ def parse_arguments():
 
 def reload_configs(args, configs):
     configs["model_dir"] = os.path.join(configs["model_root_dir"], configs["model_name"])
-    configs["max_epoch"] = args.max_epoch if "max_epoch" not in configs else configs["max_epoch"]
-    configs["data"]["data_conf"]["batch_size"] = args.max_epoch if "batch_size" not in configs else configs["data"]["data_conf"]["batch_size"]
+    configs["max_epoch"] = args.max_epoch if "max_epoch" not in str(configs) else configs["max_epoch"]
+    configs["data_conf"]["batch_size"] = args.batch_size if "batch_size" not in str(configs) else configs["data_conf"]["batch_size"]
+    # print(configs)
     return configs

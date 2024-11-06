@@ -43,8 +43,6 @@ class Dataload:
         # logging.info("data_list_len:{}".format(len(self.files)))
         self.conf = conf
 
-        # feat_conf=conf["feat_conf"]
-        # augment_conf=conf["augment"]
 
     def speed_perturb(self, waveform, sr, speeds=None):
         """ Apply speed perturb to the sample.
@@ -445,10 +443,10 @@ class Dataload:
 
         waveform = waveform * (1 << 15)
 
-        feat_conf = self.conf["feat_conf"]
         sample_rate = self.conf.get("sample_rate", 16000)
 
         if self.conf.get("feat_type") == "fbank":
+            feat_conf = self.conf.get("fbank_conf")
             mat = torchaudio.compliance.kaldi.fbank(
                 waveform,
                 num_mel_bins=feat_conf.get("num_mel_bins", 80),
@@ -459,6 +457,7 @@ class Dataload:
                 sample_frequency=sample_rate
             )
         elif self.conf.get("feat_type") == "mfcc":
+            feat_conf = self.conf.get("mfcc_conf")
             mat = torchaudio.compliance.kaldi.mfcc(
                 waveform,
                 num_mel_bins=feat_conf.get("num_mel_bins", 23),
@@ -756,13 +755,13 @@ def mycollate_fn(data):
     return keys, padded_x, padded_x_lens, padded_y, padded_y_lens
 
 
-def init_dataset_and_dataloader(args, tokenizer=None, seed=4233):
+def init_dataset_and_dataloader(args, config, tokenizer=None, seed=4233):
     generator = torch.Generator()
     generator.manual_seed(seed)
 
-    train_conf = args["data_conf"]
+    data_conf = config["data_conf"]
 
-    dev_conf = copy.deepcopy(train_conf)
+    dev_conf = copy.deepcopy(data_conf)
 
     dev_conf['shuffle'] = False
     dev_conf["augment"]["speed_perturb"] = False
@@ -776,8 +775,8 @@ def init_dataset_and_dataloader(args, tokenizer=None, seed=4233):
     world_size = int(os.environ.get('WORLD_SIZE', 1))
     rank = int(os.environ.get('RANK', 0))
 
-    train_set = Dataload(args["train_file"], train_conf, tokenizer=tokenizer)
-    dev_set = Dataload(args["dev_file"], dev_conf, tokenizer=tokenizer)
+    train_set = Dataload(args.train_data, data_conf, tokenizer=tokenizer)
+    dev_set = Dataload(args.dev_data, dev_conf, tokenizer=tokenizer)
 
     '''
     
@@ -786,7 +785,7 @@ def init_dataset_and_dataloader(args, tokenizer=None, seed=4233):
         可以选择是否在每个epoch内对数据进行重新排序或随机化。
 
     '''
-    train_sampler = DistributedSampler(train_set, num_replicas=world_size, shuffle=train_conf.get("shuffle"), rank=rank)
+    train_sampler = DistributedSampler(train_set, num_replicas=world_size, shuffle=data_conf.get("shuffle"), rank=rank)
 
     '''
     prefetch_factor:
@@ -797,15 +796,15 @@ def init_dataset_and_dataloader(args, tokenizer=None, seed=4233):
 
     '''
     train_loader = DataLoader(train_set,
-                              batch_size=train_conf.get("batch_size", 1),
-                              pin_memory=train_conf.get("pin_memory", False),
-                              num_workers=train_conf.get("num_workers", 0),
+                              batch_size=data_conf.get("batch_size", 1),
+                              pin_memory=data_conf.get("pin_memory", False),
+                              num_workers=data_conf.get("num_workers", 0),
                               persistent_workers=True,
                               generator=generator,
                               sampler=train_sampler,
                               collate_fn=mycollate_fn,
                               # shuffle=train_conf.get("shuffle"),
-                              prefetch_factor=train_conf.get("prefetch", 500)
+                              prefetch_factor=data_conf.get("prefetch", 500)
                               )
 
     dev_loader = DataLoader(dev_set,
@@ -816,116 +815,8 @@ def init_dataset_and_dataloader(args, tokenizer=None, seed=4233):
                             generator=generator,
                             collate_fn=mycollate_fn,
                             shuffle=dev_conf.get("shuffle"),
-                            prefetch_factor=args.get("prefetch", 500)
+                            prefetch_factor=data_conf.get("prefetch", 500)
                             )
 
     return train_set, train_loader, train_sampler, dev_set, dev_loader
 
-'''
-configs = {
-    "train_file": "data_copy/train/data.list",
-    "dev_file": "data_copy/dev/data.list",
-    "data_conf": {
-        "sample_rate": 16000,
-        "filter": True,
-        "filter_conf": {
-            "max_length": 2400,
-            "min_length": 10,
-            "token_max_length": 200,
-            "token_min_length": 1,
-            "min_output_input_ratio": 0.005,
-            "max_output_input_ratio": 1
-        },
-
-        "feat_type": "fbank",
-        "feat_conf": {
-            "num_mel_bins": 80,
-            "frame_shift": 10,
-            "frame_length": 25,
-            "dither": 0.1
-        },
-        "batch_size": 2,
-        "num_workers": 2,
-        "pin_memory": True,
-        "prefetch": 500,
-        "shuffle": True,
-        "augment": {
-            "spec_aug": False,
-            "spec_aug_conf": {
-                "num_t_mask": 2,
-                "num_f_mask": 2,
-                "max_t": 50,
-                "max_f": 10,
-                "rate": 0.5,
-            },
-            "spec_sub": False,
-            "spec_sub_conf": {
-                "max_t": 20,
-                "num_t_sub": 3,
-                "rate": 0.5,
-            },
-            "spec_trim": False,
-            "spec_trim_conf": {
-                "max_t": 20,
-                "rate": 0.5,
-            },
-            "speed_perturb": False,
-            "add_noise": False,
-            "add_noise_conf": {
-                "noise_lists": "data/noise/musan.lst",
-                "snr_db": [5, 10, 15],
-                "rate": 0.5,
-            },
-            "add_reverb": False,
-            "add_reverb_conf": {
-                "reverb_lists": "data/noise/rirs.lst",
-                "rate": 0.5,
-            },
-            "wav_distortion": False,
-            "wav_distortion_conf": {
-                "rate": 0.5,
-                "gain_db": {
-                    "db": -30,
-                },
-                "max_distortion": {
-                    "max_db": -30,
-                },
-                "jag_distortion": {
-                    "mask_number": 4,
-                },
-                "fence_distortion": {
-                    "mask_number": 1,
-                    "max_db": -30
-                },
-                "poly_distortion": {
-                    "a": 4,
-                    "m": 2,
-                    "n": 2
-                },
-                "quad_distortion": {
-                    "a": 1,
-                    "m": 1,
-                    "n": 1
-                },
-                "none_distortion": {
-
-                }
-            }
-
-        }
-    }
-}
-
-print(configs)
-tokenizer = Tokenizers(configs.get("train_file"))
-train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(configs, tokenizer=tokenizer,
-                                                                                          seed=4233)
-for i in range(10):
-    print("********************{}********************".format(i))
-    train_sampler.set_epoch(i)
-    for batch_idx, batch_data in enumerate(train_loader):
-        keys, padded_x, padded_x_lens, padded_y, padded_y_lens = batch_data
-        print(padded_y, padded_y_lens)
-
-        print("keys:{}, padded_x_lens:{}, padded_x.shape:{}".format(keys, padded_x_lens, padded_x.shape))
-'''

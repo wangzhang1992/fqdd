@@ -176,7 +176,7 @@ def main():
     configs = json.load(open(args.configs, 'r', encoding="utf-8"))
     configs = reload_configs(args, configs)
 
-    test_conf = copy.deepcopy(configs['data']["data_conf"])
+    test_conf = copy.deepcopy(configs["data_conf"])
 
     test_conf['filter_conf']['max_length'] = 102400
     test_conf['filter_conf']['min_length'] = 0
@@ -195,11 +195,13 @@ def main():
     test_conf["augment"]['spec_trim'] = False
     test_conf["filter"] = False
 
-    test_conf['feat_conf']['dither'] = 0.0
-
+    if test_conf["feat_type"] == "fbank":
+        test_conf['fbank_conf']['dither'] = 0.0
+    elif test_conf["feat_type"] == 'mfcc': 
+        test_conf["mfcc_conf"]['dither']= 0.0
     test_conf['batch_size'] = args.batch_size
 
-    tokenizer = Tokenizers(configs["data"].get("train_file"))
+    tokenizer = Tokenizers(configs)
     configs["model"]["vocab_size"] = tokenizer.vocab_size()
 
     test_dataset = Dataload(args.test_data,
@@ -265,7 +267,7 @@ def main():
                 for mode, hyps in results.items():
                     print(mode, hyps)
                     for i, key in enumerate(keys):
-                        assert hyps[0] is list
+                        assert hyps[0] is not list
                         tokens = "".join(tokenizer.id2tokens(hyps[i]))
                         line = '{} {}\n'.format(key, tokens)
                         logging.info('{} {} {}'.format(mode, key, tokens))
@@ -276,3 +278,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

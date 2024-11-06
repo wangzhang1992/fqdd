@@ -43,10 +43,10 @@ def save_model(model, info_dict):
     if rank == 0:
         # NOTE(xcsong): For torch_ddp, only rank-0 should call this.
         save_checkpoint(model, save_model_path, info_dict)
-        # # save yaml
-        # with open("{}/{}.json".format(model_dir, tag), 'w') as fout:
-        #     data = json.dumps(info_dict, indent=4)
-        #     fout.write(data)
+        # save yaml
+        with open("{}/{}.json".format(model_dir, tag), 'w') as fout:
+            data = json.dumps(info_dict, indent=4)
+            fout.write(data)
 
 
 '''
@@ -105,7 +105,6 @@ def load_checkpoint(model: torch.nn.Module, path: str) -> dict:
     if os.path.exists(info_path):
         with open(info_path, 'r') as fin:
             configs = json.load(fin)
-    print(configs)
     return configs
 
 
