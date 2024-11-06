@@ -261,20 +261,15 @@ def main():
                     blank_id=blank_id,
                     blank_penalty=args.blank_penalty
                 )
-                for i, key in enumerate(keys):
-                    for mode, hyps in results.items():
 
-                        print(mode, hyps)
-                        if type(hyps[0]) is not list:
-                            tokens = tokenizer.id2tokens(hyps)
-                            line = '{} {}'.format(key, "".join(tokens))
-                        else:
-                            line = ""
-                            for hyp in hyps:
-                                tokens = tokenizer.id2tokens(hyp)
-                                line += '{} {}\n'.format(key, "".join(tokens))
-                        logging.info('{}'.format(line))
-                        files[mode].write(line + '\n')
+                for mode, hyps in results.items():
+                    print(mode, hyps)
+                    for i, key in enumerate(keys):
+                        assert hyps[0] is list
+                        tokens = "".join(tokenizer.id2tokens(hyps[i]))
+                        line = '{} {}\n'.format(key, tokens)
+                        logging.info('{} {} {}'.format(mode, key, tokens))
+                        files[mode].write(line)
         for mode, f in files.items():
             f.close()
 
