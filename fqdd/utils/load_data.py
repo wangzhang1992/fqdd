@@ -1,5 +1,5 @@
 import copy
-import os, sys
+import os
 import random
 import scipy
 import torch
@@ -12,7 +12,6 @@ import numpy as np
 # sys.path.insert(0, "./")
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DistributedSampler, DataLoader
-from fqdd.utils.init_tokenizer import Tokenizers
 
 # '''
 logging.basicConfig(level=logging.DEBUG,

@@ -48,4 +48,3 @@ def init_model(args, configs):
         infos = {}
     configs["init_infos"] = infos
     return model, configs
-

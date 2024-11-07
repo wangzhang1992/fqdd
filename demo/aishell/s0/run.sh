@@ -77,18 +77,24 @@ if [ ${start_stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
 fi
 
 if [ $stop_stage -ge 4 ] && [ $start_stage -le 4 ]; then
-    python -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$nodes \
-	    --master-port=$master_port \
-	    fqdd/bin/asr/train_ebranchformer.py \
-	    --train_config $train_config \
-	    ${checkpoint:+--checkpoint $checkpoint} \
-	    --train_data data/$train_set/data.list \
-	    --dev_data data/$dev_sets/data.list \
+    python -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$nodes --master-port=$master_port \
+	      fqdd/bin/asr/train_ebranchformer.py \
+	          --train_config $train_config \
+	          ${checkpoint:+--checkpoint $checkpoint} \
+	          --train_data data/$train_set/data.list \
+	          --dev_data data/$dev_sets/data.list \
 
 fi
 
-if [ $stop_stage -ge 6 ] && [ $start_stage -le 6 ]; then
-    echo "pass"
+if [ $stop_stage -ge 5 ] && [ $start_stage -le 5 ]; then
+    # 测试模型
+    python fqdd/bin/asr/recognize.py --configs=conf/ebranchformer_conf.json \
+        --checkpoint=exp/ebranchformer/epoch_1.pt \
+        --test_data data/test/data.list \
+        --gpu "-1" \
+        --modes ctc_greedy_search \
+        --result_dir exp/ebranchformer
+
 fi
 
 if [ $stop_stage -ge 7 ] && [ $start_stage -le 7 ]; then

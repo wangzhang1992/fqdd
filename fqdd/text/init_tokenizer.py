@@ -8,50 +8,48 @@ from typing import List, Optional, Union, Tuple, Dict
 class Tokenizers:
 
     def __init__(self,
-                 file_path,
-                 token_type: str = "char",
-                 special_tokens=None,
-                 unk: str = "<unk>"
+                config,
+                token_type: str = "char",
+                special_tokens=None,
+                unk: str = "<unk>",
+                connect_symbol: str = ''
                  ):
 
         self.unk = unk
-        self.file_path = file_path
+        self.dict_path = config["tokenizer_conf"]["symbol_table_path"]
+        self.split_with_space = config["tokenizer_conf"]["split_with_space"]
         self.special_tokens = special_tokens
+        self.connect_symbol = connect_symbol
         self.ch2ids_dict, self.ids2ch_dict = self.read_file()
+        self.blank_id = self.ch2ids_dict["<blank>"]
 
     def read_file(self):
 
-        dict_path = os.path.join(os.path.split(self.file_path)[0], "dicts.txt")
-
-        if os.path.exists(dict_path):
-            ch2ids_dict = {k: int(v) for k, v in [kv.split(" ") for kv in open(dict_path, 'r').readlines()]}
-        else:
-            ch2ids_dict = {
-                "<blank>": 0,
-                "<unk>": 1,
-                "<sos/eos>": 2
-            }
-
-            if self.special_tokens:
-                for ch in self.special_tokens:
-                    ch2ids_dict[ch] = len(ch2ids_dict)
-
-            txts = [json.loads(jline)["txt"].strip().replace(" ", "").lower() for jline in
-                    open(self.file_path, 'r').readlines()]
-
-            for txt in txts:
-                for ch in txt:
-                    if ch in ch2ids_dict:
-                        pass
-                    else:
-                        ch2ids_dict[ch] = len(ch2ids_dict)
-            with open(dict_path, 'w') as wf:
-                for k, v in ch2ids_dict.items():
-                    wf.write(k + ' ' + str(v) + '\n')
-
-        ids2ch_dict = {k: v for k, v in ch2ids_dict.items()}
+        print(self.dict_path)
+        assert os.path.exists(self.dict_path) is True
+        
+        ch2ids_dict = {k: int(v) for k, v in [kv.split(" ") for kv in open(self.dict_path, 'r').readlines()]}
+        ids2ch_dict = {v: k for k, v in ch2ids_dict.items()}
 
         return ch2ids_dict, ids2ch_dict
+
+    def text2tokens(self, line: str)-> List[str]:
+        line = line.strip()
+
+        parts = [line]
+
+        tokens = []
+        for part in parts:
+            if self.split_with_space:
+                part = part.split(" ")
+            for ch in part:
+                if ch == ' ':
+                    ch = "▁"
+                tokens.append(ch)
+        return tokens
+
+    def tokens2text(self, tokens: List[str]) -> str:
+        return self.connect_symbol.join(tokens)
 
     def tokens2ids(self, tokens: List[str]) -> List[int]:
 
@@ -65,12 +63,14 @@ class Tokenizers:
         return ids
 
     def id2tokens(self, ids: List[int]) -> List[str]:
-
-        content = [self.ids2ch_dict[w] for w in ids]
+        content = ""
+        if len(ids) == 0:
+            pass
+        else:
+            content = [self.ids2ch_dict[w] for w in ids]
         return content
 
     def vocab_size(self):
-
         return len(self.ch2ids_dict)
 
 
@@ -173,4 +173,5 @@ def add_sos_eos(self, ys_pad: torch.Tensor, sos: int, eos: int,
 '''
 tokenizer = Tokenizers("data/train/data.list")
 '''
+
 

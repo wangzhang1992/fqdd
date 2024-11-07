@@ -8,11 +8,14 @@ import numpy as np
 import json
 from typing import List, Optional, Union, Tuple, Dict
 
+from fqdd.models.CTC import CTC
+
 # sys.path.insert(0, "./")
 # from src.model.base import ACTIVATION_CLASSES
 
 T_CACHE = Tuple[torch.Tensor, torch.Tensor]
 IGNORE_ID = -1
+
 
 class Swish(torch.nn.Module):
     """Construct an Swish object."""
@@ -53,6 +56,7 @@ def th_accuracy(pad_outputs: torch.Tensor, pad_targets: torch.Tensor,
     denominator = torch.sum(mask)
     return (numerator / denominator).detach()
 
+
 def remove_duplicates_and_blank(hyp: List[int],
                                 blank_id: int = 0) -> List[int]:
     new_hyp: List[int] = []
@@ -64,6 +68,7 @@ def remove_duplicates_and_blank(hyp: List[int],
         while cur < len(hyp) and hyp[cur] == hyp[prev]:
             cur += 1
     return new_hyp
+
 
 def pad_list(xs: List[torch.Tensor], pad_value: int):
     """Perform padding for the list of tensors.
@@ -169,6 +174,7 @@ class DecodeResult:
         self.nbest = nbest
         self.nbest_scores = nbest_scores
         self.nbest_times = nbest_times
+
 
 class GlobalCMVN(torch.nn.Module):
 
@@ -279,87 +285,6 @@ class LabelSmoothingLoss(nn.Module):
         denom = total if self.normalize_length else batch_size
 
         return kl.masked_fill(ignore.unsqueeze(1), 0).sum() / denom
-
-
-class CTC(torch.nn.Module):
-    """CTC module"""
-
-    def __init__(
-            self,
-            odim: int,
-            encoder_output_size: int,
-            dropout_rate: float = 0.0,
-            reduce: bool = True,
-            blank_id: int = 0,
-    ):
-        """ Construct CTC module
-        Args:
-            odim: dimension of outputs
-            encoder_output_size: number of encoder projection units
-            dropout_rate: dropout rate (0.0 ~ 1.0)
-            reduce: reduce the CTC loss into a scalar
-            blank_id: blank label.
-        """
-        super().__init__()
-        eprojs = encoder_output_size
-        self.dropout_rate = dropout_rate
-        # print("eprojs:{}, odim:{}".format(eprojs, odim))
-        self.ctc_lo = torch.nn.Linear(eprojs, odim)
-
-        reduction_type = "sum" if reduce else "none"
-        self.ctc_loss = torch.nn.CTCLoss(blank=blank_id,
-                                         reduction=reduction_type,
-                                         zero_infinity=True)
-
-    def forward(self, hs_pad: torch.Tensor, hlens: torch.Tensor,
-                ys_pad: torch.Tensor,
-                ys_lens: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Calculate CTC loss.
-
-        Args:
-            hs_pad: batch of padded hidden state sequences (B, Tmax, D)
-            hlens: batch of lengths of hidden state sequences (B)
-            ys_pad: batch of padded character id sequence tensor (B, Lmax)
-            ys_lens: batch of lengths of character sequence (B)
-        """
-        # hs_pad: (B, L, NProj) -> ys_hat: (B, L, Nvocab)
-        ys_hat = self.ctc_lo(F.dropout(hs_pad, p=self.dropout_rate))
-        # ys_hat: (B, L, D) -> (L, B, D)
-        ys_hat = ys_hat.transpose(0, 1)
-        ys_hat = ys_hat.log_softmax(2)
-        loss = self.ctc_loss(ys_hat, ys_pad, hlens, ys_lens)
-        # Batch-size average
-        loss = loss / ys_hat.size(1)
-        ys_hat = ys_hat.transpose(0, 1)
-        return loss, ys_hat
-
-    def log_softmax(self, hs_pad: torch.Tensor) -> torch.Tensor:
-        """log_softmax of frame activations
-
-        Args:
-            Tensor hs_pad: 3d tensor (B, Tmax, eprojs)
-        Returns:
-            torch.Tensor: log softmax applied 3d tensor (B, Tmax, odim)
-        """
-        # print("log_softmax, hs_pad:{}".format(hs_pad.shape))
-        xs = self.ctc_lo(hs_pad)
-        # print("log_softmax ctc_lo:{}".format(xs.shape))
-        
-        xs = F.log_softmax(xs, dim=2)
-        # print("log_softmax, log_softma:{}".format(xs.shape))
-
-        # return F.log_softmax(self.ctc_lo(hs_pad), dim=2)
-        return xs
-
-    def argmax(self, hs_pad: torch.Tensor) -> torch.Tensor:
-        """argmax of frame activations
-
-        Args:
-            torch.Tensor hs_pad: 3d tensor (B, Tmax, eprojs)
-        Returns:
-            torch.Tensor: argmax applied 2d tensor (B, Tmax)
-        """
-        return torch.argmax(self.ctc_lo(hs_pad), dim=2)
 
 
 class EBranchformerEncoderLayer(torch.nn.Module):
@@ -1842,12 +1767,13 @@ class EBranchformer(nn.Module):
         self.eos = (self.vocab_size - 1 if self.special_tokens is None else
                     self.special_tokens.get("<eos>", self.vocab_size - 1))
         # print(self.sos, self.eos)
-        
+
         self.encoder = EBranchformerEncoder(encoder_conf, use_cmvn, cmvn_file)
         self.decoder = TransformerDecoder(self.vocab_size, decoder_conf)
 
         ctc_conf = model_conf.get("ctc_conf", None)
-        self.ctcloss = CTC(self.vocab_size, decoder_conf.get("encoder_output_size", 256), blank_id=ctc_conf.get("ctc_blank_id") if "ctc_blank_id" in ctc_conf else 0)
+        self.ctcloss = CTC(self.vocab_size, decoder_conf.get("encoder_output_size", 256),
+                           blank_id=ctc_conf.get("ctc_blank_id") if "ctc_blank_id" in ctc_conf else 0)
         self.att_loss = LabelSmoothingLoss(
             size=self.vocab_size,
             padding_idx=self.ignore_id,
@@ -1861,11 +1787,11 @@ class EBranchformer(nn.Module):
         encoder_out_lens = encoder_mask.squeeze(1).sum(1)
 
         ctcloss, y_hats = self.ctcloss(encoder_out, encoder_out_lens, padding_ys, ys_lens)
-        
+
         ys_in_pad, ys_out_pad = self.add_sos_eos(padding_ys, self.sos, self.eos, self.ignore_id)
         ys_in_lens = ys_lens + 1
-        
-        decoder_out, r_decoder_out, _  = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens)
+
+        decoder_out, r_decoder_out, _ = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens)
         loss_att = self.att_loss(decoder_out, ys_out_pad)
         loss = self.ctc_weight * ctcloss + (1 - self.ctc_weight) * loss_att
         # print(decoder_out.shape) 
@@ -1874,14 +1800,14 @@ class EBranchformer(nn.Module):
             ys_out_pad,
             ignore_label=self.ignore_id
         )
-        
+
         info_dicts = {
-                "loss": loss,
-                "ctc_loss": ctcloss,
-                "att_loss": loss_att,
-                "th_acc": acc_att,
-                "encoder_out": encoder_out
-            }
+            "loss": loss,
+            "ctc_loss": ctcloss,
+            "att_loss": loss_att,
+            "th_acc": acc_att,
+            "encoder_out": encoder_out
+        }
 
         return info_dicts
 
@@ -1931,7 +1857,6 @@ class EBranchformer(nn.Module):
 
         return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)
 
-
     def ctc_logprobs(self,
                      encoder_out: torch.Tensor,
                      blank_penalty: float = 0.0,
@@ -1945,14 +1870,14 @@ class EBranchformer(nn.Module):
             ctc_probs = self.ctcloss.log_softmax(encoder_out)
 
         return ctc_probs
-    
+
     def ctc_greedy_search(
             self,
             ctc_probs: torch.Tensor,
             ctc_lens: torch.Tensor,
             blank_id: int = 0
-        ) -> List[DecodeResult]:
-    
+    ) -> List[DecodeResult]:
+
         batch_size = ctc_probs.shape[0]
         maxlen = ctc_probs.size(1)
         topk_prob, topk_index = ctc_probs.topk(1, dim=2)  # (B, maxlen, 1)
@@ -1969,13 +1894,13 @@ class EBranchformer(nn.Module):
         return results
 
     def decode(self,
-            speech,
-            speech_lengths,
-            beam_size: int = 10,
-            blank_id: int = 0,
-            blank_penalty: float = 0.0,
-            methods: List = ["ctc_greedy_search"]
-        ):
+               speech,
+               speech_lengths,
+               beam_size: int = 10,
+               blank_id: int = 0,
+               blank_penalty: float = 0.0,
+               methods: List = ["ctc_greedy_search"]
+               ):
 
         assert speech.shape[0] == speech_lengths.shape[0]
         encoder_out, encoder_mask = self.encoder(speech, speech_lengths)
@@ -1983,97 +1908,30 @@ class EBranchformer(nn.Module):
         ctc_probs = self.ctc_logprobs(encoder_out, blank_penalty, blank_id)
         # print("**********{}".format(ctc_probs.shape)) 
         results = {}
+        if 'attention' in methods:
+            results['attention'] = attention_beam_search(
+                self, encoder_out, encoder_mask, beam_size, length_penalty,
+                infos)
         if 'ctc_greedy_search' in methods:
-            results['ctc_greedy_search'] = self.ctc_greedy_search(
+            results['ctc_greedy_search'] = ctc_greedy_search(
                 ctc_probs, encoder_lens, blank_id)
-        
+        if 'ctc_prefix_beam_search' in methods:
+            ctc_prefix_result = ctc_prefix_beam_search(ctc_probs, encoder_lens,
+                                                       beam_size,
+                                                       context_graph, blank_id)
+            results['ctc_prefix_beam_search'] = ctc_prefix_result
+        if 'attention_rescoring' in methods:
+            # attention_rescoring depends on ctc_prefix_beam_search nbest
+            if 'ctc_prefix_beam_search' in results:
+                ctc_prefix_result = results['ctc_prefix_beam_search']
+            else:
+                ctc_prefix_result = ctc_prefix_beam_search(
+                    ctc_probs, encoder_lens, beam_size, context_graph,
+                    blank_id)
+            if self.apply_non_blank_embedding:
+                encoder_out, _ = self.filter_blank_embedding(
+                    ctc_probs, encoder_out)
+            results['attention_rescoring'] = attention_rescoring(
+                self, ctc_prefix_result, encoder_out, encoder_lens, ctc_weight,
+                reverse_weight, infos)
         return results
-
-'''
-torch.manual_seed(123)
-model_conf = {
-    "model_root_dir": "exp",
-    "grad_clip": 5,
-    "dtype": "fp32",  # fp16: torch.float16 / bf16: torch.bfloat16 / None: fp32 torch.float32
-    "use_cmvn": True,
-    "cmvn_file": "data/train/global_cmvn",
-    "vocab_size": 90,
-    "special_tokens": {
-        "<blank>": 0,
-        "<unk>": 1,
-        "<sos>": 2,
-        "<eos>": 2
-    },
-    "ctc_weight": 0.3,
-    "ctc_conf":{
-        "ctc_blank_id": 0
-    },
-    "lsm_weight": 0.1,
-    "length_normalized_loss": False,
-    "encoder": {
-        "input_size": 80,  # fbank
-        "output_size": 256,
-        "attention_heads": 4,
-        "linear_units": 2048,
-        "cgmlp_linear_units": 2048,
-        "cgmlp_conv_kernel": 31,
-        "use_linear_after_conv": False,
-        "gate_activation": "identity",
-        "activation_type": "swish", 
-        "num_blocks": 12,
-        "dropout_rate": 0.1,
-        "attention_dropout_rate": 0.0,
-        "normalize_before": True,
-        "stochastic_depth_rate": 0.0,
-        "use_cmvn": True,
-        "causal": False,
-        "positional_dropout_rate": 0.1,
-        "merge_conv_kernel": 3,
-        "use_ffn": True,
-        "macaron_style": True,
-        "query_bias": True,
-        "key_bias": True,
-        "value_bias": True,
-        "n_kv_head": None,
-        "head_dim": None,
-        "mlp_bias": True,
-        "n_expert": 8,
-        "n_expert_activated": 2,
-        "norm_eps": 1e-5
-    },
-
-    "decoder": {
-        "encoder_output_size": 256,
-        "attention_heads": 4,
-        "linear_units": 2048,
-        "num_blocks": 6,
-        "dropout_rate": 0.1,
-        "self_attention_dropout_rate": 0.0,
-        "src_attention_dropout_rate": 0.0,
-        "normalize_before": True,
-        "use_output_layer": True,
-        "positional_dropout_rate": 0.1,
-        "query_bias": True,
-        "key_bias": True,
-        "value_bias": True,
-        "n_kv_head": None,
-        "head_dim": None,
-        "mlp_bias": True,
-        "n_expert": 8,
-        "n_expert_activated": 2,
-        "norm_eps": 1e-5
-    }
-}
-xs = torch.randn(4, 2400, 80)
-xs_len = torch.LongTensor([56, 43, 21, 67])
-ys = torch.LongTensor([[3, 51, 7, 9], [56, 21, 2, 0], [61, 32, 12, 0], [46, 21, 9, 0]])
-ys_len = torch.LongTensor([4, 3, 3, 3])
-model = EBranchformer(model_conf)
-
-# print(model)
-while 1:
-    info_dicts = model(xs, xs_len, ys, ys_len)
-    result = model.decode(xs, xs_len)
-    print(info_dicts)
-    print(result)
-'''

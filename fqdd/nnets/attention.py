@@ -80,7 +80,6 @@ class ContentBasedAttention(nn.Module):
         """
 
         if self.precomputed_enc_h is None:
-
             self.precomputed_enc_h = self.mlp_enc(enc_states)
             self.mask = length_to_mask(
                 enc_len, max_len=enc_states.size(1), device=enc_states.device
@@ -142,14 +141,14 @@ class LocationAwareAttention(nn.Module):
     precomputed_enc_h: Optional[torch.Tensor]
 
     def __init__(
-        self,
-        enc_dim,
-        dec_dim,
-        attn_dim,
-        output_dim,
-        conv_channels,
-        kernel_size,
-        scaling=1.0,
+            self,
+            enc_dim,
+            dec_dim,
+            attn_dim,
+            output_dim,
+            conv_channels,
+            kernel_size,
+            scaling=1.0,
     ):
         super(LocationAwareAttention, self).__init__()
 
@@ -195,7 +194,6 @@ class LocationAwareAttention(nn.Module):
             The query tensor.
         """
         if self.precomputed_enc_h is None:
-
             self.precomputed_enc_h = self.mlp_enc(enc_states)
             self.mask = length_to_mask(
                 enc_len, max_len=enc_states.size(1), device=enc_states.device
@@ -290,7 +288,6 @@ class KeyValueAttention(nn.Module):
         """
 
         if self.keys is None:
-
             self.keys = self.key_linear(enc_states)
             self.values = self.value_linear(enc_states)
             self.mask = length_to_mask(
@@ -337,15 +334,15 @@ class MultiheadAttention(nn.Module):
     """
 
     def __init__(
-        self,
-        nhead,
-        d_model,
-        dropout=0.0,
-        bias=True,
-        add_bias_kv=False,
-        add_zero_attn=False,
-        kdim=None,
-        vdim=None,
+            self,
+            nhead,
+            d_model,
+            dropout=0.0,
+            bias=True,
+            add_bias_kv=False,
+            add_zero_attn=False,
+            kdim=None,
+            vdim=None,
     ):
         super().__init__()
 
@@ -361,12 +358,12 @@ class MultiheadAttention(nn.Module):
         )
 
     def forward(
-        self,
-        query,
-        key,
-        value,
-        attn_mask: Optional[torch.Tensor] = None,
-        key_padding_mask: Optional[torch.Tensor] = None,
+            self,
+            query,
+            key,
+            value,
+            attn_mask: Optional[torch.Tensor] = None,
+            key_padding_mask: Optional[torch.Tensor] = None,
     ):
         """
         Arguments
@@ -455,12 +452,12 @@ class PositionalwiseFeedForward(nn.Module):
     """
 
     def __init__(
-        self,
-        d_ffn,
-        input_shape=None,
-        input_size=None,
-        dropout=0.1,
-        activation=nn.ReLU,
+            self,
+            d_ffn,
+            input_shape=None,
+            input_size=None,
+            dropout=0.1,
+            activation=nn.ReLU,
     ):
         super().__init__()
 

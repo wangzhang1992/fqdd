@@ -1,11 +1,9 @@
 import os
 import torch.nn
-import fqdd
 from fqdd.utils.argument import parse_arguments
 from fqdd.utils.feature import get_feats
 from fqdd.bin.asr.decode import decoder
-import fqdd.models.crdnn as CRDNN
-from fqdd.utils.lang import read_phones
+from fqdd.text.lang import read_phones
 
 
 def load_model(args, device):

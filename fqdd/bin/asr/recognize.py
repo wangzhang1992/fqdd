@@ -23,13 +23,12 @@ import sys
 
 sys.path.insert(0, "./")
 import torch
-import yaml
 from torch.utils.data import DataLoader
 
 from fqdd.utils.argument import reload_configs
 from fqdd.models.init_model import init_model
 from fqdd.utils.load_data import Dataload
-from fqdd.utils.init_tokenizer import Tokenizers
+from fqdd.text.init_tokenizer import Tokenizers
 from fqdd.utils.load_data import mycollate_fn
 
 def get_args():
