@@ -17,3 +17,4 @@ pyyaml==6.0.1
 simplejson==3.19.2
 keras==3.3.3
 fqdd==1.0.0
+openai-whisper==20231117

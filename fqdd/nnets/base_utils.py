@@ -1,7 +1,6 @@
 import torch
 import fqdd
 
-
 class Swish(torch.nn.Module):
     """Construct an Swish object."""
 

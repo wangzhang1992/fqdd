@@ -16,15 +16,42 @@
 
 import math
 import time
-from typing import List, Tuple
-
 import torch
+import numpy as np
+import json
+
+from typing import List, Tuple
+from whisper.tokenizer import LANGUAGES as WhiserLanguages
 from torch.nn.utils.rnn import pad_sequence
 
-from whisper.tokenizer import LANGUAGES as WhiserLanguages
 
 WHISPER_LANGS = tuple(WhiserLanguages.keys())
 IGNORE_ID = -1
+
+
+def load_json_cmvn(json_cmvn_file):
+    """ Load the json format cmvn stats file and calculate cmvn
+
+    Args:
+        json_cmvn_file: cmvn stats file in json format
+
+    Returns:
+        a numpy array of [means, vars]
+    """
+    with open(json_cmvn_file) as f:
+        cmvn_stats = json.load(f)
+
+    means = cmvn_stats['mean_stat']
+    variance = cmvn_stats['var_stat']
+    count = cmvn_stats['frame_num']
+    for i in range(len(means)):
+        means[i] /= count
+        variance[i] = variance[i] / count - means[i] * means[i]
+        if variance[i] < 1.0e-20:
+            variance[i] = 1.0e-20
+        variance[i] = 1.0 / math.sqrt(variance[i])
+    cmvn = np.array([means, variance])
+    return cmvn[0], cmvn[1]
 
 
 def pad_list(xs: List[torch.Tensor], pad_value: int):

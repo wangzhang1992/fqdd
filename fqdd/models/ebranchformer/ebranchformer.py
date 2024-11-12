@@ -1,38 +1,18 @@
 import math
-import os, sys
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-import json
-from typing import List, Optional, Union, Tuple, Dict
 
+from typing import List, Optional, Union, Tuple, Dict
 from fqdd.models.CTC import CTC
+from fqdd.nnets.base_utils import ACTIVATION_CLASSES
+from fqdd.utils.common import load_json_cmvn, pad_list
 
 # sys.path.insert(0, "./")
 # from src.model.base import ACTIVATION_CLASSES
 
 T_CACHE = Tuple[torch.Tensor, torch.Tensor]
 IGNORE_ID = -1
-
-
-class Swish(torch.nn.Module):
-    """Construct an Swish object."""
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Return Swish activation function."""
-        return x * torch.sigmoid(x)
-
-
-ACTIVATION_CLASSES = {
-    "hardtanh": torch.nn.Hardtanh,
-    "tanh": torch.nn.Tanh,
-    "relu": torch.nn.ReLU,
-    "selu": torch.nn.SELU,
-    "swish": getattr(torch.nn, "SiLU", Swish),
-    "gelu": torch.nn.GELU,
-}
 
 
 def th_accuracy(pad_outputs: torch.Tensor, pad_targets: torch.Tensor,
@@ -68,80 +48,6 @@ def remove_duplicates_and_blank(hyp: List[int],
         while cur < len(hyp) and hyp[cur] == hyp[prev]:
             cur += 1
     return new_hyp
-
-
-def pad_list(xs: List[torch.Tensor], pad_value: int):
-    """Perform padding for the list of tensors.
-
-    Args:
-        xs (List): List of Tensors [(T_1, `*`), (T_2, `*`), ..., (T_B, `*`)].
-        pad_value (float): Value for padding.
-
-    Returns:
-        Tensor: Padded tensor (B, Tmax, `*`).
-
-    Examples:
-        >>> x = [torch.ones(4), torch.ones(2), torch.ones(1)]
-        >>> x
-        [tensor([1., 1., 1., 1.]), tensor([1., 1.]), tensor([1.])]
-        >>> pad_list(x, 0)
-        tensor([[1., 1., 1., 1.],
-                [1., 1., 0., 0.],
-                [1., 0., 0., 0.]])
-
-    """
-    max_len = max([len(item) for item in xs])
-    batchs = len(xs)
-    ndim = xs[0].ndim
-    if ndim == 1:
-        pad_res = torch.zeros(batchs,
-                              max_len,
-                              dtype=xs[0].dtype,
-                              device=xs[0].device)
-    elif ndim == 2:
-        pad_res = torch.zeros(batchs,
-                              max_len,
-                              xs[0].shape[1],
-                              dtype=xs[0].dtype,
-                              device=xs[0].device)
-    elif ndim == 3:
-        pad_res = torch.zeros(batchs,
-                              max_len,
-                              xs[0].shape[1],
-                              xs[0].shape[2],
-                              dtype=xs[0].dtype,
-                              device=xs[0].device)
-    else:
-        raise ValueError(f"Unsupported ndim: {ndim}")
-    pad_res.fill_(pad_value)
-    for i in range(batchs):
-        pad_res[i, :len(xs[i])] = xs[i]
-    return pad_res
-
-
-def load_json_cmvn(json_cmvn_file):
-    """ Load the json format cmvn stats file and calculate cmvn
-
-    Args:
-        json_cmvn_file: cmvn stats file in json format
-
-    Returns:
-        a numpy array of [means, vars]
-    """
-    with open(json_cmvn_file) as f:
-        cmvn_stats = json.load(f)
-
-    means = cmvn_stats['mean_stat']
-    variance = cmvn_stats['var_stat']
-    count = cmvn_stats['frame_num']
-    for i in range(len(means)):
-        means[i] /= count
-        variance[i] = variance[i] / count - means[i] * means[i]
-        if variance[i] < 1.0e-20:
-            variance[i] = 1.0e-20
-        variance[i] = 1.0 / math.sqrt(variance[i])
-    cmvn = np.array([means, variance])
-    return cmvn[0], cmvn[1]
 
 
 class DecodeResult:
@@ -1784,14 +1690,20 @@ class EBranchformer(nn.Module):
     def forward(self, xs, xs_lens, padding_ys, ys_lens):
 
         encoder_out, encoder_mask = self.encoder(xs, xs_lens)
+        print("encoder_out.shape:{}\nencoder_out[0][0]{}".format(encoder_out.shape, encoder_out[0][0]))
+
         encoder_out_lens = encoder_mask.squeeze(1).sum(1)
+        print("encoder_out_lens:{}".format(encoder_out_lens))
 
         ctcloss, y_hats = self.ctcloss(encoder_out, encoder_out_lens, padding_ys, ys_lens)
+        print("y_hats.shape:{}\ny_hats[0][0]{}".format(y_hats.shape, y_hats[0][0]))
 
         ys_in_pad, ys_out_pad = self.add_sos_eos(padding_ys, self.sos, self.eos, self.ignore_id)
         ys_in_lens = ys_lens + 1
 
         decoder_out, r_decoder_out, _ = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens)
+        print("decoder_out.shape:{}\nr_decoder_out:{}".format(decoder_out.shape, r_decoder_out))
+
         loss_att = self.att_loss(decoder_out, ys_out_pad)
         loss = self.ctc_weight * ctcloss + (1 - self.ctc_weight) * loss_att
         # print(decoder_out.shape) 
@@ -1836,8 +1748,8 @@ class EBranchformer(nn.Module):
             >>> ys_in,ys_out=add_sos_eos(self, sos_id , eos_id, ignore_id)
             >>> ys_in
             tensor([[10,  1,  2,  3,  4,  5],
-                    [10,  4,  5,  6, 11, 11],
-                    [10,  7,  8,  9, 11, 11]])
+                    [10,  4,  5,  6, -1, -1],
+                    [10,  7,  8,  9, -1, -1]])
             >>> ys_out
             tensor([[ 1,  2,  3,  4,  5, 11],
                     [ 4,  5,  6, 11, -1, -1],
@@ -1908,30 +1820,8 @@ class EBranchformer(nn.Module):
         ctc_probs = self.ctc_logprobs(encoder_out, blank_penalty, blank_id)
         # print("**********{}".format(ctc_probs.shape)) 
         results = {}
-        if 'attention' in methods:
-            results['attention'] = attention_beam_search(
-                self, encoder_out, encoder_mask, beam_size, length_penalty,
-                infos)
         if 'ctc_greedy_search' in methods:
-            results['ctc_greedy_search'] = ctc_greedy_search(
+            results['ctc_greedy_search'] = self.ctc_greedy_search(
                 ctc_probs, encoder_lens, blank_id)
-        if 'ctc_prefix_beam_search' in methods:
-            ctc_prefix_result = ctc_prefix_beam_search(ctc_probs, encoder_lens,
-                                                       beam_size,
-                                                       context_graph, blank_id)
-            results['ctc_prefix_beam_search'] = ctc_prefix_result
-        if 'attention_rescoring' in methods:
-            # attention_rescoring depends on ctc_prefix_beam_search nbest
-            if 'ctc_prefix_beam_search' in results:
-                ctc_prefix_result = results['ctc_prefix_beam_search']
-            else:
-                ctc_prefix_result = ctc_prefix_beam_search(
-                    ctc_probs, encoder_lens, beam_size, context_graph,
-                    blank_id)
-            if self.apply_non_blank_embedding:
-                encoder_out, _ = self.filter_blank_embedding(
-                    ctc_probs, encoder_out)
-            results['attention_rescoring'] = attention_rescoring(
-                self, ctc_prefix_result, encoder_out, encoder_lens, ctc_weight,
-                reverse_weight, infos)
+
         return results

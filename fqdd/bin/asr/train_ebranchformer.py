@@ -20,22 +20,20 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
 
 
 def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger, rank, device):
+    if rank == 0:
+        print("status: train\t train_load_size:{}".format(len(train_loader)))
 
-    # if args.pretrained:
-    #     # if args.local_rank < 1:
-    #     start_epoch = reload_model(os.path.join(args.result_dir, str(configs["seed"])), model=model,
-    #                                optimizer=optimizer, map_location='cuda:{}'.format(0))
-    #     start_epoch = start_epoch + 1
-    # else:
-    #     start_epoch = 1
+    log_interval = configs["log_interval"]
     tag = configs["init_infos"].get("tag", "init")
     start_epoch = configs["init_infos"].get('epoch', 0) + int("epoch_" in tag)
     epoch_n = configs["max_epoch"]
+
     if rank == 0:
         logger.info("init_lr:{}".format(optimizer.state_dict()['param_groups'][0]['lr']))
     accum_grad = 4
+
     for epoch in range(start_epoch, epoch_n):
-        model.train()
+
 
         if rank == 0:
             logger.info("Epoch {}/{}".format(epoch, epoch_n))
@@ -46,10 +44,10 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
                  "att_loss": 0.0,
                  "th_acc": 0.0
                  }
-        log_interval = configs["log_interval"]
-        if rank == 0:
-            print("status: train\t train_load_size:{}".format(len(train_loader)))
+
         dist.barrier()  # 同步训练进程
+        model.train()
+
         for idx, batch_data in enumerate(tqdm(train_loader)):
             # 只做推理，代码不会更新模型状态
             keys, feats, wav_lengths, targets, target_lens = batch_data
@@ -97,7 +95,7 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             "tag": "epoch_{}".format(epoch),
             "step": scheduler.last_epoch,
             "result_dict": {
-                "loss":loss,
+                "loss": loss,
                 "ctc_loss": ctc_loss,
                 "att_loss": att_loss,
                 "th_acc": th_acc
@@ -164,7 +162,7 @@ def main():
                                                                                               configs,
                                                                                               tokenizer=tokenizer,
                                                                                               seed=configs["seed"]
-                                                                                          )
+                                                                                              )
     configs["model"]["vocab_size"] = tokenizer.vocab_size()
 
     model, configs = init_model(args, configs)
@@ -188,4 +186,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
