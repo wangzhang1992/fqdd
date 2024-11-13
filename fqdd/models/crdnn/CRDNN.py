@@ -20,6 +20,7 @@ from fqdd.element_nnets.RNN import LiGRU, LSTM, GRU
 from fqdd.element_nnets.linear import Linear
 from fqdd.modules.embedings import Embedding
 
+
 class Encoder(Sequential):
     """This model is a combination of CNNs, RNNs, and DNNs.
 
@@ -88,28 +89,28 @@ class Encoder(Sequential):
     """
 
     def __init__(
-        self,
-        output_size=1024,
-        input_shape=None,
-        activation=nn.LeakyReLU,
-        dropout=0.15,
-        cnn_blocks=2,
-        cnn_channels=(128, 256),
-        cnn_kernelsize=(3, 3),
-        time_pooling=False,
-        time_pooling_size=4,
-        freq_pooling_size=2,
-        rnn_class=LSTM,
-        inter_layer_pooling_size=(2, 2),
-        using_2d_pooling=False,
-        rnn_layers=2,
-        rnn_neurons=1024,
-        rnn_bidirectional=False,
-        rnn_re_init=True,
-        dnn_blocks=2,
-        dnn_neurons=1024,
-        projection_dim=1024,
-        use_rnnp=False,
+            self,
+            output_size=1024,
+            input_shape=None,
+            activation=nn.LeakyReLU,
+            dropout=0.15,
+            cnn_blocks=2,
+            cnn_channels=(128, 256),
+            cnn_kernelsize=(3, 3),
+            time_pooling=False,
+            time_pooling_size=4,
+            freq_pooling_size=2,
+            rnn_class=LSTM,
+            inter_layer_pooling_size=(2, 2),
+            using_2d_pooling=False,
+            rnn_layers=2,
+            rnn_neurons=1024,
+            rnn_bidirectional=False,
+            rnn_re_init=True,
+            dnn_blocks=2,
+            dnn_neurons=1024,
+            projection_dim=1024,
+            use_rnnp=False,
     ):
         if output_size is None and input_shape is None:
             raise ValueError("Must specify one of input_size or input_shape")
@@ -134,7 +135,7 @@ class Encoder(Sequential):
 
         if time_pooling:
             self.append(
-                    Pooling1d(
+                Pooling1d(
                     pool_type="max",
                     input_dims=4,
                     kernel_size=time_pooling_size,
@@ -202,6 +203,7 @@ class Encoder(Sequential):
                 layer_name=f"block_{block_index}",
             )
 
+
 class CNN_Block(Sequential):
     """CNN Block, based on VGG blocks.
 
@@ -232,18 +234,18 @@ class CNN_Block(Sequential):
     """
 
     def __init__(
-        self,
-        input_shape,
-        channels,
-        kernel_size=[3, 3],
-        activation=nn.LeakyReLU,
-        using_2d_pool=False,
-        pooling_size=2,
-        dropout=0.15,
+            self,
+            input_shape,
+            channels,
+            kernel_size=[3, 3],
+            activation=nn.LeakyReLU,
+            using_2d_pool=False,
+            pooling_size=2,
+            dropout=0.15,
     ):
         super().__init__(input_shape=input_shape)
         self.append(
-             Conv2d,
+            Conv2d,
             out_channels=channels,
             kernel_size=kernel_size,
             layer_name="conv_1",
@@ -261,7 +263,7 @@ class CNN_Block(Sequential):
 
         if using_2d_pool:
             self.append(
-                    Pooling2d(
+                Pooling2d(
                     pool_type="max",
                     kernel_size=(pooling_size, pooling_size),
                     pool_axis=(1, 2),
@@ -270,7 +272,7 @@ class CNN_Block(Sequential):
             )
         else:
             self.append(
-                    Pooling1d(
+                Pooling1d(
                     pool_type="max",
                     input_dims=4,
                     kernel_size=pooling_size,
@@ -308,7 +310,7 @@ class DNN_Block(Sequential):
     """
 
     def __init__(
-        self, input_shape, neurons, activation=nn.LeakyReLU, dropout=0.15
+            self, input_shape, neurons, activation=nn.LeakyReLU, dropout=0.15
     ):
         super().__init__(input_shape=input_shape)
         self.append(
@@ -318,11 +320,12 @@ class DNN_Block(Sequential):
         self.append(activation(), layer_name="act")
         self.append(nn.Dropout(p=dropout), layer_name="dropout")
 
+
 class Attention(nn.Module):
     def __init__(
-        self,
-        output_size=1024,
-        dropout = 0.01,
+            self,
+            output_size=1024,
+            dropout=0.01,
     ):
         super(Attention, self).__init__()
         self.output_size = output_size
@@ -335,43 +338,45 @@ class Attention(nn.Module):
             nn.ReLU(),
             nn.Dropout(p=dropout)
         )
-    
-    def forward(self,q, k, v):
-        q = self.q(q) # [4, 10, 1024] 
-        k = self.k(k) # [4, 1000, 1024]
-        v = self.v(v) # [4, 1000, 1024]
+
+    def forward(self, q, k, v):
+        q = self.q(q)  # [4, 10, 1024]
+        k = self.k(k)  # [4, 1000, 1024]
+        v = self.v(v)  # [4, 1000, 1024]
 
         score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.output_size)
         # clip
         # score = torch.clip(score, 0) # >0 正相关保留
-        score = F.softmax(score, dim=-1) # [4, 10, 1000]
+        score = F.softmax(score, dim=-1)  # [4, 10, 1000]
         # print(q.shape, k.shape, v.shape, score.shape)
-        x = torch.matmul(score, v) #  [4, 10, 1000] * [4, 1000, 1024] --> [4, 10, 1024]
+        x = torch.matmul(score, v)  # [4, 10, 1000] * [4, 1000, 1024] --> [4, 10, 1024]
         x = self.out(x)
         # print(x.shape)
         return x
 
+
 class Decoder_layer(nn.Module):
     def __init__(
-        self,
-        output_size=1024,
-        bidirectional=False,
-        consider_as_one_hot=False,
-        dropout=0.15,
-        blank_id=0
+            self,
+            output_size=1024,
+            bidirectional=False,
+            consider_as_one_hot=False,
+            dropout=0.15,
+            blank_id=0
     ):
-        super(Decoder_layer, self).__init__() 
-        self.rnn = nn.LSTM(input_size=output_size, hidden_size=output_size,num_layers=2, batch_first=True, dropout=0.15, bidirectional=bidirectional)
+        super(Decoder_layer, self).__init__()
+        self.rnn = nn.LSTM(input_size=output_size, hidden_size=output_size, num_layers=2, batch_first=True,
+                           dropout=0.15, bidirectional=bidirectional)
         self.l1 = nn.Sequential(
             nn.Linear(output_size, output_size, bias=True),
             nn.LayerNorm(output_size),
             nn.LeakyReLU(),
             nn.Dropout(p=dropout)
         )
-           
+
         self.att = Attention(output_size=output_size, dropout=dropout)
         self.ln = nn.LayerNorm(output_size)
-    
+
     def forward(self, x, en_x):
         x, _ = self.rnn(x)
         x = self.l1(x)
@@ -379,27 +384,29 @@ class Decoder_layer(nn.Module):
         x = self.ln(x)
         return x
 
+
 class Decoder(nn.Module):
     def __init__(
-        self,
-        num_classifies,
-        consider_as_one_hot=False,
-        embedding_dim=1024,
-        output_size=1024,
-        num_block=2,
-        bidirectional=False,
-        dropout=0.15,
-        blank_id=0,
-     ):
+            self,
+            num_classifies,
+            consider_as_one_hot=False,
+            embedding_dim=1024,
+            output_size=1024,
+            num_block=2,
+            bidirectional=False,
+            dropout=0.15,
+            blank_id=0,
+    ):
         super(Decoder, self).__init__()
         self.num_block = num_block
-        self.embedding = Embedding(num_embeddings=num_classifies, embedding_dim=embedding_dim, consider_as_one_hot=False)
+        self.embedding = Embedding(num_embeddings=num_classifies, embedding_dim=embedding_dim,
+                                   consider_as_one_hot=False)
         self.l1 = nn.Sequential(
-                nn.Linear(embedding_dim, output_size, bias=True),
-                nn.LayerNorm(output_size),
-                nn.LeakyReLU(),
-                nn.Dropout(p=dropout)
-                )
+            nn.Linear(embedding_dim, output_size, bias=True),
+            nn.LayerNorm(output_size),
+            nn.LeakyReLU(),
+            nn.Dropout(p=dropout)
+        )
         self.blocks = nn.ModuleList()
         for _ in range(self.num_block):
             self.blocks.append(
@@ -410,47 +417,48 @@ class Decoder(nn.Module):
                     dropout=0.15,
                     blank_id=0,
                 )
-            ) 
- 
+            )
+
     def forward(self, x, x_en):
         x = self.embedding(x)
-        x = self.l1(x) # (B, T, D)
+        x = self.l1(x)  # (B, T, D)
         for layer in self.blocks:
             x = layer(x, x_en)
         return x
 
 
 class Encoder_Decoer(nn.Module):
-     
+
     def __init__(
-        self,
-        num_classifies,
-        feat_shape=None,
-        output_size=1024, 
-        embedding_dim=512,
-        dropout=0.15,
-        de_num_layer=2,
+            self,
+            num_classifies,
+            feat_shape=None,
+            output_size=1024,
+            embedding_dim=512,
+            dropout=0.15,
+            de_num_layer=2,
     ):
         super(Encoder_Decoer, self).__init__()
         # self.output_size = output_size 
         self.encoder = Encoder(input_shape=feat_shape, output_size=output_size)
-        self.decoder = Decoder(num_classifies, embedding_dim=embedding_dim, num_block=de_num_layer, output_size=output_size)
+        self.decoder = Decoder(num_classifies, embedding_dim=embedding_dim, num_block=de_num_layer,
+                               output_size=output_size)
         self.en_out = nn.Linear(output_size, num_classifies, bias=False)
-        self.de_out = nn.Linear(output_size, num_classifies, bias=False)     
-         
+        self.de_out = nn.Linear(output_size, num_classifies, bias=False)
 
     def decode(self, feats):
         en = self.encoder(feats)
         out = self.en_out(en)
         return en
- 
+
     def forward(self, feats, targets_bos=None):
-        x_en = self.encoder(feats) #  (B, T, D)
+        x_en = self.encoder(feats)  # (B, T, D)
         en_out = self.en_out(x_en)
-        
+
         x_de = self.decoder(targets_bos, x_en)
         de_out = self.de_out(x_de)
         return en_out, de_out
+
 
 '''
 torch.manual_seed(2021)

@@ -8,6 +8,7 @@ import torch.distributed as dist
 sys.path.insert(0, "./")
 
 from tqdm import tqdm
+from torch.nn.utils import clip_grad_norm_
 from fqdd.utils.load_data import init_dataset_and_dataloader
 from fqdd.utils.train_utils import init_optimizer_and_scheduler, init_distributed
 from fqdd.utils.argument import parse_arguments, reload_configs
@@ -28,9 +29,11 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
     start_epoch = configs["init_infos"].get('epoch', 0) + int("epoch_" in tag)
     epoch_n = configs["max_epoch"]
 
+    clip = configs["model"]["grad_clip"]
+    accum_grad = configs["accumulation_steps"]
+    train_engine = configs["dist_conf"]["train_engine"]
     if rank == 0:
         logger.info("init_lr:{}".format(optimizer.state_dict()['param_groups'][0]['lr']))
-    accum_grad = 4
 
     for epoch in range(start_epoch, epoch_n):
 
@@ -55,16 +58,22 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             targets = targets.to(device)
             target_lens = target_lens.to(device)
             info_dicts = model(feats, wav_lengths, targets, target_lens)
-            loss = info_dicts["loss"]
+
+            assert train_engine in ["torch_ddp", "torch_fsdp"]
+            loss = info_dicts["loss"] / accum_grad
             loss.backward()
 
-            # output_en = info_dicts["encoder_out"]
+            if (idx + 1) % accum_grad == 0:
+                if train_engine == "torch_ddp":
+                    grad_norm = clip_grad_norm_((p for p in model.parameters()), max_norm=clip)
+                else:
+                    grad_norm = model.clip_grad_norm_(clip)
+                if torch.isfinite(grad_norm):
+                    optimizer.step()
+                optimizer.zero_grad()
+                scheduler.step()
 
-            torch.nn.utils.clip_grad_norm_((p for p in model.parameters()), max_norm=50)
-            optimizer.step()
-            optimizer.zero_grad()
-            scheduler.step()
-            infos["loss"] = info_dicts["loss"].item() + infos["loss"]
+            infos["loss"] = loss.item() + infos["loss"]
             infos["ctc_loss"] = info_dicts["ctc_loss"].item() + infos["ctc_loss"]
             infos["att_loss"] = info_dicts["att_loss"] + infos["att_loss"]
             infos["th_acc"] = info_dicts["th_acc"].item() + infos["th_acc"]

@@ -939,13 +939,11 @@ class EBranchformer(nn.Module):
     def forward(self, xs, xs_lens, padding_ys, ys_lens):
 
         encoder_out, encoder_mask = self.encoder(xs, xs_lens)
-        print("encoder_out.shape:{}\nencoder_out[0][0]{}".format(encoder_out.shape, encoder_out[0][0]))
-
         encoder_out_lens = encoder_mask.squeeze(1).sum(1)
-        print("encoder_out_lens:{}".format(encoder_out_lens))
 
         ctcloss, y_hats = self.ctcloss(encoder_out, encoder_out_lens, padding_ys, ys_lens)
-        print("y_hats.shape:{}\ny_hats[0][0]{}".format(y_hats.shape, y_hats[0][0]))
+
+        print("output:{}\nencoder_out_lens:{}".format(torch.argmax(y_hats, dim=2), encoder_out_lens))
 
         ys_in_pad, ys_out_pad = add_sos_eos(padding_ys, self.sos, self.eos, self.ignore_id)
         ys_in_lens = ys_lens + 1
@@ -956,7 +954,6 @@ class EBranchformer(nn.Module):
 
         decoder_out, r_decoder_out, _ = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens, r_ys_in_pad,
                                                      self.reverse_weight)
-        print("decoder_out.shape:{}\nr_decoder_out:{}".format(decoder_out.shape, r_decoder_out))
 
         loss_att = self.att_loss(decoder_out, ys_out_pad)
         loss = self.ctc_weight * ctcloss + (1 - self.ctc_weight) * loss_att

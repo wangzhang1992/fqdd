@@ -10,7 +10,7 @@ Authors
 import torch
 import logging
 import torch.nn as nn
-from fqdd.element_nnets.attention import (
+from fqdd.modules.attentions import (
     ContentBasedAttention,
     LocationAwareAttention,
     KeyValueAttention,
