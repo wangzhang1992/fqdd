@@ -11,14 +11,14 @@ import os, sys, torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from fqdd.nnets.containers import Sequential
-from fqdd.nnets.CNN import Conv2d
-from fqdd.nnets.dropout import Dropout2d
-from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
-from fqdd.nnets.pooling import Pooling1d, Pooling2d
-from fqdd.nnets.RNN import LiGRU, LSTM, GRU
-from fqdd.nnets.linear import Linear
-from fqdd.nnets.embedding import Embedding
+from fqdd.element_nnets.containers import Sequential
+from fqdd.element_nnets.CNN import Conv2d
+from fqdd.element_nnets.dropout import Dropout2d
+from fqdd.element_nnets.normalization import LayerNorm, BatchNorm1d
+from fqdd.element_nnets.pooling import Pooling1d, Pooling2d
+from fqdd.element_nnets.RNN import LiGRU, LSTM, GRU
+from fqdd.element_nnets.linear import Linear
+from fqdd.element_nnets.embedding import Embedding
 
 class Encoder(Sequential):
     """This model is a combination of CNNs, RNNs, and DNNs.

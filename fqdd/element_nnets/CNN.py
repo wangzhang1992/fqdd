@@ -14,7 +14,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Tuple
 
-from fqdd.nnets.base_utils import FQDD_NORMALIZES
+from fqdd.element_nnets.base_utils import FQDD_NORMALIZES
 
 logger = logging.getLogger(__name__)
 

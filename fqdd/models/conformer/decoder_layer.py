@@ -3,7 +3,7 @@ from typing import Optional, Dict, Tuple
 import torch
 import torch.nn as nn
 
-from fqdd.models.attentions import T_CACHE
+from fqdd.module_nnets.attentions import T_CACHE
 
 
 class DecoderLayer(nn.Module):

@@ -1,6 +1,6 @@
 import torch
 from torch.nn import LayerNorm, BatchNorm1d
-from fqdd.nnets.normalization import RMSNorm
+from fqdd.element_nnets.normalization import RMSNorm
 
 
 class Swish(torch.nn.Module):
