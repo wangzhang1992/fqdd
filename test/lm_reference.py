@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from fqdd.utils.argument import parse_arguments
-from fqdd.bin.asr.decode import int2word
+from fqdd.decoders.decode import int2word
 from fqdd.text.lang import read_phones
 from fqdd.lm.lm_net import RNN_Model
 

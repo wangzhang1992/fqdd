@@ -2,7 +2,7 @@ import os
 import torch.nn
 from fqdd.utils.argument import parse_arguments
 from fqdd.utils.feature import get_feats
-from fqdd.bin.asr.decode import decoder
+from fqdd.decoders.decode import decoder
 from fqdd.text.lang import read_phones
 
 
