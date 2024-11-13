@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class CNN(nn.Module):
       def __init__(self, output_dim):
-
+          # (b, t, d) -> (b, 1, t, d), 对时间进行卷积，(b,256, t/2,d/128)
           super(CNN, self).__init__()
           self.output_dim = output_dim
           self.conv1 = nn.Sequential(

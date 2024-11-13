@@ -5,11 +5,10 @@ from typing import List, Dict
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
-from fqdd.utils.common import (add_sos_eos, log_add, add_whisper_tokens,
-                                mask_to_bias)
-from fqdd.utils.ctc_utils import remove_duplicates_and_blank
+from fqdd.text.tokenize_utils import remove_duplicates_and_blank, add_whisper_tokens, add_sos_eos
+from fqdd.utils.common import log_add, mask_to_bias
 from fqdd.utils.mask import (make_pad_mask, mask_finished_preds,
-                              mask_finished_scores, subsequent_mask)
+                             mask_finished_scores, subsequent_mask)
 from fqdd.utils.context_graph import ContextGraph, ContextState
 
 

@@ -5,6 +5,43 @@ import re
 import json
 import datetime
 
+from fqdd.models.attentions import MultiHeadedCrossAttention, RelPositionMultiHeadedAttention
+from fqdd.models.embedings import PositionalEncoding, RelPositionalEncoding, NoPositionalEncoding, \
+    WhisperPositionalEncoding, LearnablePositionalEncoding, ParaformerPositinoalEncoding, RopePositionalEncoding
+from fqdd.models.mlps import PositionwiseFeedForward
+from fqdd.models.subsamples import LinearNoSubsampling, EmbedinigNoSubsampling, Conv1dSubsampling2, Conv2dSubsampling4, \
+    Conv2dSubsampling2
+from scripts.attention import MultiHeadedAttention
+
+FQDD_EMBEDDINGS = {
+    "embed": PositionalEncoding,
+    "abs_pos": PositionalEncoding,
+    "rel_pos": RelPositionalEncoding,
+    "no_pos": NoPositionalEncoding,
+    "abs_pos_whisper": WhisperPositionalEncoding,
+    "embed_learnable_pe": LearnablePositionalEncoding,
+    "abs_pos_paraformer": ParaformerPositinoalEncoding,
+    'rope_pos': RopePositionalEncoding,
+}
+
+FQDD_MLPS = {
+    'position_wise_feed_forward': PositionwiseFeedForward,
+}
+
+FQDD_ATTENTIONS = {
+    "selfattn": MultiHeadedAttention,
+    "rel_selfattn": RelPositionMultiHeadedAttention,
+    "crossattn": MultiHeadedCrossAttention,
+}
+
+FQDD_SUBSAMPLES = {
+    "linear": LinearNoSubsampling,
+    "embed": EmbedinigNoSubsampling,
+    "conv1d2": Conv1dSubsampling2,
+    "conv2d2": Conv2dSubsampling2,
+    "conv2d": Conv2dSubsampling4,
+}
+
 
 def save_state_dict_and_infos(state_dict, path: str, infos=None):
     rank = int(os.environ.get('RANK', 0))
@@ -49,12 +86,10 @@ def save_model(model, info_dict):
             fout.write(data)
 
 
-'''
-reload model
-'''
-
-
 def reload_model(load_dir, model=None, optimizer=None, map_location=None):
+    '''
+    reload model
+    '''
     print("ready to load pretrain model")
 
     # load epoch

@@ -31,6 +31,7 @@ from fqdd.utils.load_data import Dataload
 from fqdd.text.init_tokenizer import Tokenizers
 from fqdd.utils.load_data import mycollate_fn
 
+
 def get_args():
     parser = argparse.ArgumentParser(description='recognize with your model')
     parser.add_argument('--configs', required=True, help='config file')
@@ -196,8 +197,8 @@ def main():
 
     if test_conf["feat_type"] == "fbank":
         test_conf['fbank_conf']['dither'] = 0.0
-    elif test_conf["feat_type"] == 'mfcc': 
-        test_conf["mfcc_conf"]['dither']= 0.0
+    elif test_conf["feat_type"] == 'mfcc':
+        test_conf["mfcc_conf"]['dither'] = 0.0
     test_conf['batch_size'] = args.batch_size
 
     tokenizer = Tokenizers(configs)
@@ -277,4 +278,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

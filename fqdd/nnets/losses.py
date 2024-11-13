@@ -22,12 +22,11 @@ import sys
 from fqdd.utils.dataio import length_to_mask
 from fqdd.decoders.ctc import filter_ctc_output
 
-
 logger = logging.getLogger(__name__)
 
 
 def transducer_loss(
-    log_probs, targets, input_lens, target_lens, blank_index, reduction="mean"
+        log_probs, targets, input_lens, target_lens, blank_index, reduction="mean"
 ):
     """Transducer loss, see `speechbrain/nnet/loss/transducer_loss.py`.
 
@@ -46,13 +45,15 @@ def transducer_loss(
     reduction : str
         Specifies the reduction to apply to the output: 'mean' | 'batchmean' | 'sum'.
     """
-    from script.nnets.transducer_loss import Transducer
+    from fqdd.nnets.transducer_loss import Transducer
 
     input_lens = (input_lens * log_probs.shape[1]).int()
     target_lens = (target_lens * targets.shape[1]).int()
     return Transducer.apply(
         log_probs, targets, input_lens, target_lens, blank_index, reduction
     )
+
+
 # "(float32[:,:,:,:], int32[:,:], float32[:,:,:], float32[:], int32[:], int32[:], int32, int32[:,:])"
 '''
 log_probs = torch.randn(1, 200, 100, 80).to("cuda:2")
@@ -163,7 +164,7 @@ class PitWrapper(nn.Module):
 
         loss_mat = self.base_loss(pred, target)
         assert (
-            len(loss_mat.shape) >= 2
+                len(loss_mat.shape) >= 2
         ), "Base loss should not perform any reduction operation"
         mean_over = [x for x in range(len(loss_mat.shape))]
         loss_mat = loss_mat.mean(dim=mean_over[:-2])
@@ -225,7 +226,7 @@ class PitWrapper(nn.Module):
 
 
 def ctc_loss(
-    log_probs, targets, input_lens, target_lens, blank_index, reduction="mean"
+        log_probs, targets, input_lens, target_lens, blank_index, reduction="mean"
 ):
     """CTC loss.
 
@@ -247,8 +248,8 @@ def ctc_loss(
         See pytorch for 'mean', 'sum', 'none'. The 'batch' option returns
         one loss per item in the batch, 'batchmean' returns sum / batch size.
     """
-    #input_lens = (input_lens * log_probs.shape[1]).int()
-    #target_lens = (target_lens * targets.shape[1]).int()
+    # input_lens = (input_lens * log_probs.shape[1]).int()
+    # target_lens = (target_lens * targets.shape[1]).int()
     log_probs = log_probs.transpose(0, 1)
 
     if reduction == "batchmean":
@@ -277,7 +278,7 @@ def ctc_loss(
 
 
 def l1_loss(
-    predictions, targets, length=None, allowed_len_diff=3, reduction="mean"
+        predictions, targets, length=None, allowed_len_diff=3, reduction="mean"
 ):
     """Compute the true l1 loss, accounting for length differences.
 
@@ -310,7 +311,7 @@ def l1_loss(
 
 
 def mse_loss(
-    predictions, targets, length=None, allowed_len_diff=3, reduction="mean"
+        predictions, targets, length=None, allowed_len_diff=3, reduction="mean"
 ):
     """Compute the true mean squared error, accounting for length differences.
 
@@ -343,7 +344,7 @@ def mse_loss(
 
 
 def classification_error(
-    probabilities, targets, length=None, allowed_len_diff=3, reduction="mean"
+        probabilities, targets, length=None, allowed_len_diff=3, reduction="mean"
 ):
     """Computes the classification error at frame or batch level.
 
@@ -384,12 +385,12 @@ def classification_error(
 
 
 def nll_loss(
-    log_probabilities,
-    targets,
-    length=None,
-    label_smoothing=0.0,
-    allowed_len_diff=3,
-    reduction="mean",
+        log_probabilities,
+        targets,
+        length=None,
+        label_smoothing=0.0,
+        allowed_len_diff=3,
+        reduction="mean",
 ):
     """Computes negative log likelihood loss.
 
@@ -434,14 +435,14 @@ def nll_loss(
 
 
 def bce_loss(
-    inputs,
-    targets,
-    length=None,
-    weight=None,
-    pos_weight=None,
-    reduction="mean",
-    allowed_len_diff=3,
-    label_smoothing=0.0,
+        inputs,
+        targets,
+        length=None,
+        weight=None,
+        pos_weight=None,
+        reduction="mean",
+        allowed_len_diff=3,
+        label_smoothing=0.0,
 ):
     """Computes binary cross-entropy (BCE) loss. It also applies the sigmoid
     function directly (this improves the numerical stability).
@@ -504,13 +505,13 @@ def bce_loss(
 
 
 def kldiv_loss(
-    log_probabilities,
-    targets,
-    length=None,
-    label_smoothing=0.0,
-    allowed_len_diff=3,
-    pad_idx=0,
-    reduction="mean",
+        log_probabilities,
+        targets,
+        length=None,
+        label_smoothing=0.0,
+        allowed_len_diff=3,
+        pad_idx=0,
+        reduction="mean",
 ):
     """Computes the KL-divergence error at the batch level.
     This loss applies label smoothing directly to the targets
@@ -602,12 +603,12 @@ def truncate(predictions, targets, allowed_len_diff=3):
 
 
 def compute_masked_loss(
-    loss_fn,
-    predictions,
-    targets,
-    length=None,
-    label_smoothing=0.0,
-    reduction="mean",
+        loss_fn,
+        predictions,
+        targets,
+        length=None,
+        label_smoothing=0.0,
+        reduction="mean",
 ):
     """Compute the true average loss of a set of waveforms of unequal length.
 
@@ -735,7 +736,7 @@ def cal_si_snr(source, estimate_source):
     )  # [1, B, 1]
     mean_target = torch.sum(source, dim=0, keepdim=True) / num_samples
     mean_estimate = (
-        torch.sum(estimate_source, dim=0, keepdim=True) / num_samples
+            torch.sum(estimate_source, dim=0, keepdim=True) / num_samples
     )
     zero_mean_target = source - mean_target
     zero_mean_estimate = estimate_source - mean_estimate
@@ -750,14 +751,14 @@ def cal_si_snr(source, estimate_source):
     # s_target = <s', s>s / ||s||^2
     dot = torch.sum(s_estimate * s_target, dim=0, keepdim=True)  # [1, B, C]
     s_target_energy = (
-        torch.sum(s_target ** 2, dim=0, keepdim=True) + EPS
+            torch.sum(s_target ** 2, dim=0, keepdim=True) + EPS
     )  # [1, B, C]
     proj = dot * s_target / s_target_energy  # [T, B, C]
     # e_noise = s' - s_target
     e_noise = s_estimate - proj  # [T, B, C]
     # SI-SNR = 10 * log_10(||s_target||^2 / ||e_noise||^2)
     si_snr_beforelog = torch.sum(proj ** 2, dim=0) / (
-        torch.sum(e_noise ** 2, dim=0) + EPS
+            torch.sum(e_noise ** 2, dim=0) + EPS
     )
     si_snr = 10 * torch.log10(si_snr_beforelog + EPS)  # [B, C]
 
@@ -800,7 +801,7 @@ def get_mask(source, source_lengths):
     T, B, _ = source.size()
     mask = source.new_ones((T, B, 1))
     for i in range(B):
-        mask[source_lengths[i] :, i, :] = 0
+        mask[source_lengths[i]:, i, :] = 0
     return mask
 
 
@@ -1057,7 +1058,7 @@ def ce_kd(inp, target):
 
 
 def nll_loss_kd(
-    probabilities, targets, rel_lab_lengths,
+        probabilities, targets, rel_lab_lengths,
 ):
     """Knowledge distillation for negative log-likelihood loss.
 
@@ -1110,7 +1111,87 @@ def nll_loss_kd(
     loss = torch.sum(loss.reshape(N_snt, max_len) * mask) / torch.sum(mask)
     return loss
 
+
 def calculate_celoss(preds, padded_output, ignore_index=0, reduction="mean"):
     ce_loss = F.cross_entropy(preds, padded_output.view(-1), ignore_index=ignore_index,
-            reduction=reduction)
+                              reduction=reduction)
     return ce_loss
+
+
+class LabelSmoothingLoss(nn.Module):
+    """Label-smoothing loss.
+
+    In a standard CE loss, the label's data distribution is:
+    [0,1,2] ->
+    [
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0],
+    ]
+
+    In the smoothing version CE Loss,some probabilities
+    are taken from the true label prob (1.0) and are divided
+    among other labels.
+
+    e.g.
+    smoothing=0.1
+    [0,1,2] ->
+    [
+        [0.9, 0.05, 0.05],
+        [0.05, 0.9, 0.05],
+        [0.05, 0.05, 0.9],
+    ]
+
+    Args:
+        size (int): the number of class
+        padding_idx (int): padding class id which will be ignored for loss
+        smoothing (float): smoothing rate (0.0 means the conventional CE)
+        normalize_length (bool):
+            normalize loss by sequence length if True
+            normalize loss by batch size if False
+    """
+
+    def __init__(self,
+                 size: int,
+                 padding_idx: int,
+                 smoothing: float,
+                 normalize_length: bool = False):
+        """Construct an LabelSmoothingLoss object."""
+        super(LabelSmoothingLoss, self).__init__()
+        self.criterion = nn.KLDivLoss(reduction="none")
+        self.padding_idx = padding_idx
+        self.confidence = 1.0 - smoothing
+        self.smoothing = smoothing
+        self.size = size
+        self.normalize_length = normalize_length
+
+    def forward(self, x: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        """Compute loss between x and target.
+
+        The model outputs and data labels tensors are flatten to
+        (batch*seqlen, class) shape and a mask is applied to the
+        padding part which should not be calculated for loss.
+
+        Args:
+            x (torch.Tensor): prediction (batch, seqlen, class)
+            target (torch.Tensor):
+                target signal masked with self.padding_id (batch, seqlen)
+        Returns:
+            loss (torch.Tensor) : The KL loss, scalar float value
+        """
+        assert x.size(2) == self.size
+        batch_size = x.size(0)
+        x = x.view(-1, self.size)
+        target = target.view(-1)
+        # use zeros_like instead of torch.no_grad() for true_dist,
+        # since no_grad() can not be exported by JIT
+        true_dist = torch.zeros_like(x)
+        true_dist.fill_(self.smoothing / (self.size - 1))
+        ignore = target == self.padding_idx  # (B,)
+        total = len(target) - ignore.sum().item()
+        target = target.masked_fill(ignore, 0)  # avoid -1 index
+        true_dist.scatter_(1, target.unsqueeze(1), self.confidence)
+        kl = self.criterion(torch.log_softmax(x, dim=1), true_dist)
+        denom = total if self.normalize_length else batch_size
+
+        return kl.masked_fill(ignore.unsqueeze(1), 0).sum() / denom

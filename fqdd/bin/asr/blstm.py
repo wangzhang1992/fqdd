@@ -1,8 +1,5 @@
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from script.tools.argument import parse_arguments
-from thop import profile
+
 
 class BlstmNet(nn.Module):
     def __init__(self, input_dim, output_dim, args):
@@ -28,7 +25,6 @@ class BlstmNet(nn.Module):
         x = self.line1(x.transpose(0, 1))
         # x = self.line1(x)
         return x
-
 
 # batch=16: flops:904868659200.0	params:25675790.0
 # torch.manual_seed(2021)

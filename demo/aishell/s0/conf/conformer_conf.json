@@ -25,7 +25,7 @@
             "<eos>": 2
         }
     },
-    "model_name": "ebranchformer",
+    "model_name": "conformer",
     "model":{
         "grad_clip": 5,
         "dtype": "fp32",
@@ -46,12 +46,8 @@
         "encoder":{
             "input_size": 80,
             "output_size": 256,
-            "attention_heads": 8,
+            "attention_heads": 4,
             "linear_units": 1024,
-            "cgmlp_linear_units": 1024,
-            "cgmlp_conv_kernel": 31,
-            "use_linear_after_conv": false,
-            "gate_activation": "identity",
             "activation_type": "swish",
             "num_blocks": 17,
             "dropout_rate": 0.1,
@@ -60,10 +56,11 @@
             "layer_norm_type": "layer_norm",
             "stochastic_depth_rate": 0.0,
             "global_cmvn": null,
+            "cnn_module_kernel": 15,
             "causal": false,
             "input_layer": "conv2d",
             "positional_dropout_rate": 0.1,
-            "merge_conv_kernel": 31,
+            "selfattention_layer_type": "rel_selfattn",
             "use_ffn": true,
             "macaron_style": true,
             "query_bias": true,
@@ -79,6 +76,8 @@
         },
 
         "decoder":{
+            "input_size": 80,
+            "output_size": 256,
             "encoder_output_size": 256,
             "attention_heads": 4,
             "linear_units": 2048,

@@ -35,14 +35,14 @@ class CTCPrefixScorer:
     """
 
     def __init__(
-        self,
-        x,
-        enc_lens,
-        batch_size,
-        beam_size,
-        blank_index,
-        eos_index,
-        ctc_window_size=0,
+            self,
+            x,
+            enc_lens,
+            batch_size,
+            beam_size,
+            blank_index,
+            eos_index,
+            ctc_window_size=0,
     ):
         self.blank_index = blank_index
         self.eos_index = eos_index
@@ -74,11 +74,11 @@ class CTCPrefixScorer:
 
         # The first index of each sentence.
         self.beam_offset = (
-            torch.arange(batch_size, device=self.device) * self.beam_size
+                torch.arange(batch_size, device=self.device) * self.beam_size
         )
         # The first index of each candidates.
         self.cand_offset = (
-            torch.arange(batch_size, device=self.device) * self.vocab_size
+                torch.arange(batch_size, device=self.device) * self.vocab_size
         )
 
     def forward_step(self, g, state, candidates=None, attn=None):
@@ -135,10 +135,10 @@ class CTCPrefixScorer:
             )
             # Select candidates indices for scoring
             scoring_index = (
-                candidates
-                + self.cand_offset.unsqueeze(1)
-                .repeat(1, self.beam_size)
-                .view(-1, 1)
+                    candidates
+                    + self.cand_offset.unsqueeze(1)
+                    .repeat(1, self.beam_size)
+                    .view(-1, 1)
             ).view(-1)
             x_inflate = torch.index_select(
                 self.x.view(2, -1, self.batch_size * self.vocab_size),
@@ -261,8 +261,8 @@ class CTCPrefixScorer:
         r, psi, scoring_table = memory
         # The index of top-K vocab came from in (t-1) timesteps.
         best_index = (
-            index
-            + (self.beam_offset.unsqueeze(1).expand_as(index) * self.vocab_size)
+                index
+                + (self.beam_offset.unsqueeze(1).expand_as(index) * self.vocab_size)
         ).view(-1)
         # synchronize forward prob
         psi = torch.index_select(psi.view(-1), dim=0, index=best_index)
@@ -275,7 +275,7 @@ class CTCPrefixScorer:
         # synchronize ctc states
         if scoring_table is not None:
             effective_index = (
-                index // self.vocab_size + self.beam_offset.view(-1, 1)
+                    index // self.vocab_size + self.beam_offset.view(-1, 1)
             ).view(-1)
             selected_vocab = (index % self.vocab_size).view(-1)
             score_index = scoring_table[effective_index, selected_vocab]

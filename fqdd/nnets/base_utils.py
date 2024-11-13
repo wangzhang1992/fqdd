@@ -1,5 +1,7 @@
 import torch
-import fqdd
+from torch.nn import LayerNorm, BatchNorm1d
+from fqdd.nnets.normalization import RMSNorm
+
 
 class Swish(torch.nn.Module):
     """Construct an Swish object."""
@@ -9,7 +11,7 @@ class Swish(torch.nn.Module):
         return x * torch.sigmoid(x)
 
 
-ACTIVATION_CLASSES = {
+FQDD_ACTIVATIONS = {
     "hardtanh": torch.nn.Hardtanh,
     "tanh": torch.nn.Tanh,
     "relu": torch.nn.ReLU,
@@ -18,9 +20,13 @@ ACTIVATION_CLASSES = {
     "gelu": torch.nn.GELU,
 }
 
-
-RNN_CLASSES = {
+FQDD_RNNS = {
     "rnn": torch.nn.RNN,
-    "lstm": fqdd.nnets.RNN.LSTM,
     "gru": torch.nn.GRU,
+}
+
+FQDD_NORMALIZES = {
+    'layer_norm': LayerNorm,
+    'batch_norm': BatchNorm1d,
+    'rms_norm': RMSNorm
 }

@@ -40,15 +40,15 @@ class BatchNorm1d(nn.Module):
     """
 
     def __init__(
-        self,
-        input_shape=None,
-        input_size=None,
-        eps=1e-05,
-        momentum=0.1,
-        affine=True,
-        track_running_stats=True,
-        combine_batch_time=False,
-        skip_transpose=False,
+            self,
+            input_shape=None,
+            input_size=None,
+            eps=1e-05,
+            momentum=0.1,
+            affine=True,
+            track_running_stats=True,
+            combine_batch_time=False,
+            skip_transpose=False,
     ):
         super().__init__()
         self.combine_batch_time = combine_batch_time
@@ -128,13 +128,13 @@ class BatchNorm2d(nn.Module):
     """
 
     def __init__(
-        self,
-        input_shape=None,
-        input_size=None,
-        eps=1e-05,
-        momentum=0.1,
-        affine=True,
-        track_running_stats=True,
+            self,
+            input_shape=None,
+            input_size=None,
+            eps=1e-05,
+            momentum=0.1,
+            affine=True,
+            track_running_stats=True,
     ):
         super().__init__()
 
@@ -191,11 +191,11 @@ class LayerNorm(nn.Module):
     """
 
     def __init__(
-        self,
-        input_size=None,
-        input_shape=None,
-        eps=1e-05,
-        elementwise_affine=True,
+            self,
+            input_size=None,
+            input_shape=None,
+            eps=1e-05,
+            elementwise_affine=True,
     ):
         super().__init__()
         self.eps = eps
@@ -253,13 +253,13 @@ class InstanceNorm1d(nn.Module):
     """
 
     def __init__(
-        self,
-        input_shape=None,
-        input_size=None,
-        eps=1e-05,
-        momentum=0.1,
-        track_running_stats=True,
-        affine=False,
+            self,
+            input_shape=None,
+            input_size=None,
+            eps=1e-05,
+            momentum=0.1,
+            track_running_stats=True,
+            affine=False,
     ):
         super().__init__()
 
@@ -324,13 +324,13 @@ class InstanceNorm2d(nn.Module):
     """
 
     def __init__(
-        self,
-        input_shape=None,
-        input_size=None,
-        eps=1e-05,
-        momentum=0.1,
-        track_running_stats=True,
-        affine=False,
+            self,
+            input_shape=None,
+            input_size=None,
+            eps=1e-05,
+            momentum=0.1,
+            track_running_stats=True,
+            affine=False,
     ):
         super().__init__()
 
@@ -361,3 +361,29 @@ class InstanceNorm2d(nn.Module):
         x_n = x_n.transpose(1, -1)
 
         return x_n
+
+
+class RMSNorm(torch.nn.Module):
+    """ https://arxiv.org/pdf/1910.07467.pdf
+    """
+
+    def __init__(
+            self,
+            dim: int,
+            eps: float = 1e-6,
+            add_unit_offset: bool = True,
+    ):
+        super().__init__()
+        self.eps = eps
+        self.weight = torch.nn.Parameter(torch.ones(dim))
+        self.add_unit_offset = add_unit_offset
+
+    def _norm(self, x):
+        return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
+
+    def forward(self, x):
+        x = self._norm(x.float()).type_as(x)
+        if self.add_unit_offset:
+            return x * (1 + self.weight)
+        else:
+            return x * self.weight

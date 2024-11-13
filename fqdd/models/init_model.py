@@ -1,11 +1,14 @@
 import torch
 import torch.nn as nn
+
+from fqdd.models.conformer.conformer import Conformer
 from fqdd.models.model_utils import infer_model, load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
 from fqdd.models.crdnn.CRDNN import Encoder_Decoer
 from fqdd.models.las.las import LAS
 
-model_lists = {
+MODEL_LISTS = {
+    "conformer": Conformer,
     "crdnn": Encoder_Decoer,
     "ebranchformer": EBranchformer,
     "las": LAS
@@ -38,7 +41,7 @@ def model_params_init(model, init_method="default"):
 def init_model(args, configs):
     model_name = configs["model_name"]
     model_configs = configs["model"]
-    model = model_lists[model_name](model_configs)
+    model = MODEL_LISTS[model_name](model_configs)
     if args.checkpoint is not None:
 
         infos = load_checkpoint(model, args.checkpoint)

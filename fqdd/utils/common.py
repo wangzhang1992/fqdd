@@ -24,7 +24,6 @@ from typing import List, Tuple
 from whisper.tokenizer import LANGUAGES as WhiserLanguages
 from torch.nn.utils.rnn import pad_sequence
 
-
 WHISPER_LANGS = tuple(WhiserLanguages.keys())
 IGNORE_ID = -1
 
@@ -53,6 +52,36 @@ def load_json_cmvn(json_cmvn_file):
     cmvn = np.array([means, variance])
     return cmvn[0], cmvn[1]
 
+class GlobalCMVN(torch.nn.Module):
+
+    def __init__(self,
+                 mean: torch.Tensor,
+                 istd: torch.Tensor,
+                 norm_var: bool = True):
+        """
+        Args:
+            mean (torch.Tensor): mean stats
+            istd (torch.Tensor): inverse std, std which is 1.0 / std
+        """
+        super().__init__()
+        assert mean.shape == istd.shape
+        self.norm_var = norm_var
+        # The buffer can be accessed from this module using self.mean
+        self.register_buffer("mean", mean)
+        self.register_buffer("istd", istd)
+
+    def forward(self, x: torch.Tensor):
+        """
+        Args:
+            x (torch.Tensor): (batch, max_len, feat_dim)
+
+        Returns:
+            (torch.Tensor): normalized feature
+        """
+        x = x - self.mean
+        if self.norm_var:
+            x = x * self.istd
+        return x
 
 def pad_list(xs: List[torch.Tensor], pad_value: int):
     """Perform padding for the list of tensors.
@@ -101,196 +130,6 @@ def pad_list(xs: List[torch.Tensor], pad_value: int):
     for i in range(batchs):
         pad_res[i, :len(xs[i])] = xs[i]
     return pad_res
-
-
-def add_blank(ys_pad: torch.Tensor, blank: int,
-              ignore_id: int) -> torch.Tensor:
-    """ Prepad blank for transducer predictor
-
-    Args:
-        ys_pad (torch.Tensor): batch of padded target sequences (B, Lmax)
-        blank (int): index of <blank>
-
-    Returns:
-        ys_in (torch.Tensor) : (B, Lmax + 1)
-
-    Examples:
-        >>> blank = 0
-        >>> ignore_id = -1
-        >>> ys_pad
-        tensor([[ 1,  2,  3,   4,   5],
-                [ 4,  5,  6,  -1,  -1],
-                [ 7,  8,  9,  -1,  -1]], dtype=torch.int32)
-        >>> ys_in = add_blank(ys_pad, 0, -1)
-        >>> ys_in
-        tensor([[0,  1,  2,  3,  4,  5],
-                [0,  4,  5,  6,  0,  0],
-                [0,  7,  8,  9,  0,  0]])
-    """
-    bs = ys_pad.size(0)
-    _blank = torch.tensor([blank],
-                          dtype=torch.long,
-                          requires_grad=False,
-                          device=ys_pad.device)
-    _blank = _blank.repeat(bs).unsqueeze(1)  # [bs,1]
-    out = torch.cat([_blank, ys_pad], dim=1)  # [bs, Lmax+1]
-    return torch.where(out == ignore_id, blank, out)
-
-
-def add_sos_eos(ys_pad: torch.Tensor, sos: int, eos: int,
-                ignore_id: int) -> Tuple[torch.Tensor, torch.Tensor]:
-    """Add <sos> and <eos> labels.
-
-    Args:
-        ys_pad (torch.Tensor): batch of padded target sequences (B, Lmax)
-        sos (int): index of <sos>
-        eos (int): index of <eeos>
-        ignore_id (int): index of padding
-
-    Returns:
-        ys_in (torch.Tensor) : (B, Lmax + 1)
-        ys_out (torch.Tensor) : (B, Lmax + 1)
-
-    Examples:
-        >>> sos_id = 10
-        >>> eos_id = 11
-        >>> ignore_id = -1
-        >>> ys_pad
-        tensor([[ 1,  2,  3,  4,  5],
-                [ 4,  5,  6, -1, -1],
-                [ 7,  8,  9, -1, -1]], dtype=torch.int32)
-        >>> ys_in,ys_out=add_sos_eos(ys_pad, sos_id , eos_id, ignore_id)
-        >>> ys_in
-        tensor([[10,  1,  2,  3,  4,  5],
-                [10,  4,  5,  6, 11, 11],
-                [10,  7,  8,  9, 11, 11]])
-        >>> ys_out
-        tensor([[ 1,  2,  3,  4,  5, 11],
-                [ 4,  5,  6, 11, -1, -1],
-                [ 7,  8,  9, 11, -1, -1]])
-    """
-    _sos = torch.tensor([sos],
-                        dtype=torch.long,
-                        requires_grad=False,
-                        device=ys_pad.device)
-    _eos = torch.tensor([eos],
-                        dtype=torch.long,
-                        requires_grad=False,
-                        device=ys_pad.device)
-    ys = [y[y != ignore_id] for y in ys_pad]  # parse padded ys
-    ys_in = [torch.cat([_sos, y], dim=0) for y in ys]
-    ys_out = [torch.cat([y, _eos], dim=0) for y in ys]
-    return pad_list(ys_in, eos), pad_list(ys_out, ignore_id)
-
-
-def add_whisper_tokens(special_tokens, ys_pad: torch.Tensor, ignore_id: int,
-                       tasks: List[str], no_timestamp: bool, langs: List[str],
-                       use_prev: bool) -> Tuple[torch.Tensor, torch.Tensor]:
-    """Add whisper-style tokens.
-
-    ([PREV] -> [previous text tokens or hotwords]).optional --
-      ┌------------------------------------------------------↲
-      ↓
-    [sot] -> [language id] -> [transcribe] -> [begin time] -> [text tokens] -> [end time] -> ... -> [eot]    # noqa
-        |          |                |-------> [no timestamps] -> [text tokens] ----------------------↑       # noqa
-        |          |                                                                                 |       # noqa
-        |          |--------> [translate]  -> [begin time] -> [text tokens] -> [end time] -> ... --->|       # noqa
-        |                           |-------> [no timestamps] -> [text tokens] --------------------->|       # noqa
-        |                                                                                            |       # noqa
-        |--> [no speech(VAD)] ---------------------------------------------------------------------->|       # noqa
-
-    Args:
-        special_tokens: get IDs of special tokens
-        ignore_id (int): index of padding
-        no_timestamp (bool): whether to add timestamps tokens
-        tasks (List[str]): list of task tags
-        langs (List[str]): list of language tags
-
-    Returns:
-        ys_in (torch.Tensor) : (B, Lmax + ?)
-        ys_out (torch.Tensor) : (B, Lmax + ?)
-
-    """
-    assert len(langs) == ys_pad.size(0)
-    assert len(tasks) == ys_pad.size(0)
-    if use_prev:
-        # i.e., hotword list
-        _prev = [special_tokens["sot_prev"]]
-        # append hotword list to _prev
-        # ...
-        raise NotImplementedError
-    else:
-        _prev = []
-
-    _sot = []
-    for task, lang in zip(tasks, langs):
-        if task == "transcribe":
-            task_id = special_tokens["transcribe"]
-        elif task == "translate":
-            task_id = special_tokens["translate"]
-        elif task == "vad":
-            task_id = special_tokens["no_speech"]
-        else:
-            raise NotImplementedError("unsupported task {}".format(task))
-        language_id = special_tokens["sot"] + 1 + WHISPER_LANGS.index(lang)
-        prefix = _prev + [special_tokens["sot"], language_id, task_id]
-        if task == "transcribe" or task == "translate":
-            if no_timestamp:
-                prefix.append(special_tokens["no_timestamps"])
-            else:
-                prefix.append(special_tokens["timestamp_begin"])
-                # add subsequent tokens
-                # ...
-                raise NotImplementedError
-        elif task == "vad":
-            prefix.append(special_tokens["no_speech"])
-        else:
-            raise NotImplementedError
-        prefix = torch.tensor(prefix,
-                              dtype=torch.long,
-                              requires_grad=False,
-                              device=ys_pad.device)
-        _sot.append(prefix)
-
-    _eot = torch.tensor([special_tokens["eot"]],
-                        dtype=torch.long,
-                        requires_grad=False,
-                        device=ys_pad.device)
-    ys = [y[y != ignore_id] for y in ys_pad]  # parse padded ys
-
-    ys_in = [torch.cat([prefix, y], dim=0) for prefix, y in zip(_sot, ys)]
-    ys_out = [
-        torch.cat([prefix[1:], y, _eot], dim=0) for prefix, y in zip(_sot, ys)
-    ]
-    return pad_list(ys_in, special_tokens["eot"]), pad_list(ys_out, ignore_id)
-
-
-def reverse_pad_list(ys_pad: torch.Tensor,
-                     ys_lens: torch.Tensor,
-                     pad_value: float = -1.0) -> torch.Tensor:
-    """Reverse padding for the list of tensors.
-
-    Args:
-        ys_pad (tensor): The padded tensor (B, Tokenmax).
-        ys_lens (tensor): The lens of token seqs (B)
-        pad_value (int): Value for padding.
-
-    Returns:
-        Tensor: Padded tensor (B, Tokenmax).
-
-    Examples:
-        >>> x
-        tensor([[1, 2, 3, 4], [5, 6, 7, 0], [8, 9, 0, 0]])
-        >>> pad_list(x, 0)
-        tensor([[4, 3, 2, 1],
-                [7, 6, 5, 0],
-                [9, 8, 0, 0]])
-
-    """
-    r_ys_pad = pad_sequence([(torch.flip(y.int()[:i], [0]))
-                             for y, i in zip(ys_pad, ys_lens)], True,
-                            pad_value)
-    return r_ys_pad
 
 
 def th_accuracy(pad_outputs: torch.Tensor, pad_targets: torch.Tensor,

@@ -5,12 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新参数结构">
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/attentions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/conformer/conformer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/conformer/decoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/conformer/decoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/conformer/encoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/conformer/encoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/embedings.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/mlps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/subsamples.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/blstm.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/blstm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/decode.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/decode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train_ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train_ebranchformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/decoders/ctc.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/decoders/ctc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/decode_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/search.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer/ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/ebranchformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/nnets/CNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/nnets/CNN.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/nnets/base_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/nnets/base_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/nnets/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/nnets/losses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/nnets/normalization.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/nnets/normalization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/text/init_tokenizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/text/init_tokenizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/text/tokenize_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/text/tokenize_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/utils/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/ctc_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/ctc_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/load_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/load_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readdata.py" beforeDir="false" afterPath="$PROJECT_DIR$/readdata.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/cnn_dnn_ctc.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cnn_dnn_ctc.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +123,7 @@
       <recent name="D:\JetBrains\work\own_learn\fqdd" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.readdata">
     <configuration name="dense" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
@@ -134,6 +160,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="D:\JetBrains\work\fqdd\fqdd\models\init_model.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="readdata" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="fqdd" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/readdata.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -186,28 +234,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="train" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="fqdd" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fqdd/bin/asr" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fqdd/bin/asr/train.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration default="true" type="ShConfigurationType">
       <option name="SCRIPT_TEXT" value="" />
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
@@ -228,15 +254,15 @@
       <item itemvalue="Python.init_model" />
       <item itemvalue="Python.recognize" />
       <item itemvalue="Python.test" />
-      <item itemvalue="Python.train" />
+      <item itemvalue="Python.readdata" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.readdata" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.recognize" />
         <item itemvalue="Python.dense" />
         <item itemvalue="Python.init_model" />
-        <item itemvalue="Python.train" />
       </list>
     </recent_temporary>
   </component>
@@ -408,7 +434,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730959571892</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="更新参数结构">
+      <option name="closed" value="true" />
+      <created>1731377982085</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1731377982085</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -443,6 +477,11 @@
           <url>file://$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/train_ebranchformer.py</url>
           <line>2</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fqdd/utils/common.py</url>
+          <line>16</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

@@ -726,7 +726,7 @@ class Dataload:
         return len(self.files)
 
 
-def mycollate_fn(data):
+def collate_fn(data):
     feats = []
     targets = []
     keys = []
@@ -801,7 +801,7 @@ def init_dataset_and_dataloader(args, config, tokenizer=None, seed=4233):
                               persistent_workers=True,
                               generator=generator,
                               sampler=train_sampler,
-                              collate_fn=mycollate_fn,
+                              collate_fn=collate_fn,
                               # shuffle=train_conf.get("shuffle"),
                               prefetch_factor=data_conf.get("prefetch", 500)
                               )
@@ -812,7 +812,7 @@ def init_dataset_and_dataloader(args, config, tokenizer=None, seed=4233):
                             num_workers=dev_conf.get("num_workers", 1),
                             persistent_workers=True,
                             generator=generator,
-                            collate_fn=mycollate_fn,
+                            collate_fn=collate_fn,
                             shuffle=dev_conf.get("shuffle"),
                             prefetch_factor=data_conf.get("prefetch", 500)
                             )

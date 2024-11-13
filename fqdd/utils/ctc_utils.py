@@ -20,19 +20,6 @@ import torch
 import torchaudio.functional as F
 
 
-def remove_duplicates_and_blank(hyp: List[int],
-                                blank_id: int = 0) -> List[int]:
-    new_hyp: List[int] = []
-    cur = 0
-    while cur < len(hyp):
-        if hyp[cur] != blank_id:
-            new_hyp.append(hyp[cur])
-        prev = cur
-        while cur < len(hyp) and hyp[cur] == hyp[prev]:
-            cur += 1
-    return new_hyp
-
-
 def replace_duplicates_with_blank(hyp: List[int],
                                   blank_id: int = 0) -> List[int]:
     new_hyp: List[int] = []
@@ -61,10 +48,10 @@ def gen_ctc_peak_time(hyp: List[int], blank_id: int = 0) -> List[int]:
 
 
 def gen_timestamps_from_peak(
-    peaks: List[int],
-    max_duration: float,
-    frame_rate: float = 0.04,
-    max_token_duration: float = 1.0,
+        peaks: List[int],
+        max_duration: float,
+        frame_rate: float = 0.04,
+        max_token_duration: float = 1.0,
 ) -> List[Tuple[float, float]]:
     """
     Args:

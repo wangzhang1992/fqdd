@@ -34,7 +34,6 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
 
     for epoch in range(start_epoch, epoch_n):
 
-
         if rank == 0:
             logger.info("Epoch {}/{}".format(epoch, epoch_n))
             logger.info("-" * 50)
