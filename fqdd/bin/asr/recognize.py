@@ -29,7 +29,7 @@ from fqdd.utils.argument import reload_configs
 from fqdd.models.init_model import init_model
 from fqdd.utils.load_data import Dataload
 from fqdd.text.init_tokenizer import Tokenizers
-from fqdd.utils.load_data import mycollate_fn
+from fqdd.utils.load_data import collate_fn
 
 
 def get_args():
@@ -212,7 +212,7 @@ def main():
     test_data_loader = DataLoader(test_dataset,
                                   batch_size=test_conf.get("batch_size", 1),
                                   num_workers=args.num_workers,
-                                  collate_fn=mycollate_fn,
+                                  collate_fn=collate_fn,
                                   )
 
     # Init asr model from configs
