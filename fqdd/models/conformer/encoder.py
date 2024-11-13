@@ -7,7 +7,7 @@ import torch
 from fqdd.models.conformer.encoder_layer import ConformerEncoderLayer
 from fqdd.models.model_utils import FQDD_MLPS, FQDD_SUBSAMPLES, FQDD_EMBEDDINGS, FQDD_ATTENTIONS
 from fqdd.nnets.CNN import ConvolutionModule
-from fqdd.nnets.base_utils import FQDD_ACTIVATIONS
+from fqdd.nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN
 from fqdd.utils.mask import make_pad_mask
 
@@ -85,6 +85,7 @@ class ConformerEncoder(torch.nn.Module):
             self.global_cmvn = GlobalCMVN(mean, std)
 
         self.normalize_before = normalize_before
+        self.after_norm = FQDD_NORMALIZES[layer_norm_type](output_size, eps=norm_eps)
 
         activation = FQDD_ACTIVATIONS[activation_type]()
         pos_emb_class = FQDD_EMBEDDINGS[pos_enc_layer_type]
