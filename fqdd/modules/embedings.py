@@ -15,6 +15,7 @@
 """Positonal Encoding Module."""
 
 import math
+import torch.nn as nn
 from typing import Tuple, Union
 
 import torch
@@ -31,6 +32,16 @@ def precompute_freqs_cis(dim: int,
     freqs = torch.outer(t, freqs).float()
     freqs_cis = torch.polar(torch.ones_like(freqs), freqs)  # complex64
     return freqs_cis
+
+
+class Embedding(nn.Module):
+    def __init__(self, d_model, vocab):
+        super(Embedding, self).__init__()
+        self.lut = nn.Embedding(vocab, d_model)
+        self.d_model = d_model
+
+    def forward(self, x):
+        return self.lut(x) * math.sqrt(self.d_model)
 
 
 class PositionalEncoding(torch.nn.Module):

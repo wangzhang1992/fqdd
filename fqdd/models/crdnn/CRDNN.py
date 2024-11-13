@@ -18,7 +18,7 @@ from fqdd.element_nnets.normalization import LayerNorm, BatchNorm1d
 from fqdd.element_nnets.pooling import Pooling1d, Pooling2d
 from fqdd.element_nnets.RNN import LiGRU, LSTM, GRU
 from fqdd.element_nnets.linear import Linear
-from fqdd.element_nnets.embedding import Embedding
+from fqdd.modules.embedings import Embedding
 
 class Encoder(Sequential):
     """This model is a combination of CNNs, RNNs, and DNNs.

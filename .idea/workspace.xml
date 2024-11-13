@@ -6,7 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新参数结构">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer/ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/ebranchformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/modules/embedings.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/embedings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/DataLoader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/argument.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/argument.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/attention.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/attention.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/blstm.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/blstm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/cnn_dnn_ctc.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cnn_dnn_ctc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/decode.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/decode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/fx.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -460,7 +470,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731462919315</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="更新参数结构">
+      <option name="closed" value="true" />
+      <created>1731463770113</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1731463770113</updated>
+    </task>
+    <task id="LOCAL-00028" summary="更新参数结构">
+      <option name="closed" value="true" />
+      <created>1731464717113</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1731464717113</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -500,6 +526,16 @@
           <url>file://$PROJECT_DIR$/fqdd/utils/common.py</url>
           <line>16</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py</url>
+          <line>9</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fqdd/modules/embedings.py</url>
+          <line>16</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

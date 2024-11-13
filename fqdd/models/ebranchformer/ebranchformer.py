@@ -3,9 +3,9 @@ import torch.nn as nn
 
 from typing import List, Optional, Union, Tuple, Dict
 from fqdd.modules.CTC import CTC
-from fqdd.module_nnets.attentions import MultiHeadedAttention, MultiHeadedCrossAttention
+from fqdd.modules.attentions import MultiHeadedAttention, MultiHeadedCrossAttention
 from fqdd.decoders.search import DecodeResult
-from fqdd.module_nnets.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_SUBSAMPLES
+from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_SUBSAMPLES
 from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.modules.losses import LabelSmoothingLoss
 from fqdd.text.tokenize_utils import remove_duplicates_and_blank, add_sos_eos, reverse_pad_list

@@ -6,6 +6,8 @@ import copy
 import math
 import numpy as np
 
+from fqdd.modules.embedings import Embedding
+
 
 class EncoderDecoder(nn.Module):
     """
@@ -162,7 +164,7 @@ class Batch:
         if trg is not None:
             self.trg = trg[:, :-1]
             self.trg_y = trg[:, 1:]
-            self.trg_mask =self.make_std_mask(self.trg, pad)
+            self.trg_mask = self.make_std_mask(self.trg, pad)
         self.ntokens = (self.trg_y != pad).data.sum()
 
         @staticmethod
@@ -171,6 +173,7 @@ class Batch:
             tgt_mask = (tgt != pad).unsqueeze(-2)
             tgt_mask = tgt_mask & torch.Variable(subsequent_mask(tgt.size(-1)).type_as(tgt_mask.data))
             return tgt_mask
+
 
 def attention(query, key, value, mask=None, dropout=None):
     d_k = query.size(-1)
@@ -222,16 +225,6 @@ class PositionwiseFeedForward(nn.Module):
         return self.w_2(self.dropout(F.relu(self.w_1(x))))
 
 
-class Embeddings(nn.Module):
-    def __init__(self, d_model, vocab):
-        super(Embeddings, self).__init__()
-        self.lut = nn.Embedding(vocab, d_model)
-        self.d_model = d_model
-
-    def forward(self, x):
-        return self.lut(x) * math.sqrt(self.d_model)
-
-
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout, max_len=5000):
         super(PositionalEncoding, self).__init__()
@@ -261,8 +254,8 @@ def make_model(src_vocab, tgt_vocab, N=6,
     model = EncoderDecoder(
         Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
         Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), N),
-        nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
-        nn.Sequential(Embeddings(d_model, tgt_vocab), c(position)),
+        nn.Sequential(Embedding(d_model, src_vocab), c(position)),
+        nn.Sequential(Embedding(d_model, tgt_vocab), c(position)),
         Generator(d_model, tgt_vocab))
 
     # 随机初始化参数，这非常重要
