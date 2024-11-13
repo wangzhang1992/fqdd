@@ -84,6 +84,8 @@ class ConformerEncoder(torch.nn.Module):
             std = torch.from_numpy(std).float()
             self.global_cmvn = GlobalCMVN(mean, std)
 
+        self.normalize_before = normalize_before
+
         activation = FQDD_ACTIVATIONS[activation_type]()
         pos_emb_class = FQDD_EMBEDDINGS[pos_enc_layer_type]
         self.embed = FQDD_SUBSAMPLES[input_layer](
