@@ -2,12 +2,12 @@ import torch
 import torch.nn as nn
 
 from typing import List, Optional, Union, Tuple, Dict
-from fqdd.models.CTC import CTC
+from fqdd.modules.CTC import CTC
 from fqdd.module_nnets.attentions import MultiHeadedAttention, MultiHeadedCrossAttention
 from fqdd.decoders.search import DecodeResult
 from fqdd.module_nnets.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_SUBSAMPLES
 from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
-from fqdd.decoders.losses import LabelSmoothingLoss
+from fqdd.modules.losses import LabelSmoothingLoss
 from fqdd.text.tokenize_utils import remove_duplicates_and_blank, add_sos_eos, reverse_pad_list
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN, th_accuracy
 from fqdd.utils.mask import make_pad_mask, subsequent_mask

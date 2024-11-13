@@ -20,7 +20,7 @@ from itertools import permutations
 import sys
 # sys.path.insert(0, "./")
 from fqdd.utils.dataio import length_to_mask
-from fqdd.decoders.ctc import filter_ctc_output
+from fqdd.modules.CTC import filter_ctc_output
 
 logger = logging.getLogger(__name__)
 

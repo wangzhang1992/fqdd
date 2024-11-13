@@ -5,7 +5,7 @@ import torch.nn
 import torch
 
 from fqdd.models.conformer.encoder_layer import ConformerEncoderLayer
-from fqdd.module_nnets.model_utils import FQDD_MLPS, FQDD_SUBSAMPLES, FQDD_EMBEDDINGS, FQDD_ATTENTIONS
+from fqdd.modules.model_utils import FQDD_MLPS, FQDD_SUBSAMPLES, FQDD_EMBEDDINGS, FQDD_ATTENTIONS
 from fqdd.element_nnets.CNN import ConvolutionModule
 from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN

@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 
 from typing import List
-from fqdd.models.CTC import CTC
+from fqdd.modules.CTC import CTC
 from fqdd.models.conformer.decoder import TransformerDecoder
 from fqdd.models.conformer.encoder import ConformerEncoder
 from fqdd.decoders.search import DecodeResult
-from fqdd.decoders.losses import LabelSmoothingLoss
+from fqdd.modules.losses import LabelSmoothingLoss
 from fqdd.text.tokenize_utils import add_sos_eos, reverse_pad_list, remove_duplicates_and_blank
 from fqdd.utils.common import IGNORE_ID, th_accuracy
 from fqdd.utils.mask import make_pad_mask

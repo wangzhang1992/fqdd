@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 from fqdd.models.conformer.conformer import Conformer
-from fqdd.module_nnets.model_utils import load_checkpoint
+from fqdd.modules.model_utils import load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
 from fqdd.models.crdnn.CRDNN import Encoder_Decoer
 from fqdd.models.las.las import LAS

@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 import torch
 import torch.nn as nn
 
-from fqdd.module_nnets.attentions import T_CACHE
+from fqdd.modules.attentions import T_CACHE
 from fqdd.element_nnets.base_utils import FQDD_NORMALIZES
 
 

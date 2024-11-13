@@ -5,11 +5,11 @@ import re
 import json
 import datetime
 
-from fqdd.module_nnets.attentions import MultiHeadedCrossAttention, RelPositionMultiHeadedAttention
-from fqdd.module_nnets.embedings import PositionalEncoding, RelPositionalEncoding, NoPositionalEncoding, \
+from fqdd.modules.attentions import MultiHeadedCrossAttention, RelPositionMultiHeadedAttention
+from fqdd.modules.embedings import PositionalEncoding, RelPositionalEncoding, NoPositionalEncoding, \
     WhisperPositionalEncoding, LearnablePositionalEncoding, ParaformerPositinoalEncoding, RopePositionalEncoding
-from fqdd.module_nnets.mlps import PositionwiseFeedForward
-from fqdd.module_nnets.subsamples import LinearNoSubsampling, EmbedinigNoSubsampling, Conv1dSubsampling2, Conv2dSubsampling4, \
+from fqdd.modules.mlps import PositionwiseFeedForward
+from fqdd.modules.subsamples import LinearNoSubsampling, EmbedinigNoSubsampling, Conv1dSubsampling2, Conv2dSubsampling4, \
     Conv2dSubsampling2
 from scripts.attention import MultiHeadedAttention
 
