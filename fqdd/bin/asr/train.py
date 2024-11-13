@@ -73,7 +73,7 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
                 optimizer.zero_grad()
                 scheduler.step()
 
-            infos["loss"] = loss.item() + infos["loss"]
+            infos["loss"] = info_dicts["loss"].item() + infos["loss"]
             infos["ctc_loss"] = info_dicts["ctc_loss"].item() + infos["ctc_loss"]
             infos["att_loss"] = info_dicts["att_loss"] + infos["att_loss"]
             infos["th_acc"] = info_dicts["th_acc"].item() + infos["th_acc"]

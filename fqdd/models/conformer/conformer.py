@@ -72,7 +72,6 @@ class Conformer(nn.Module):
 
         decoder_out, r_decoder_out, _ = self.decoder(encoder_out, encoder_mask, ys_in_pad, ys_in_lens, r_ys_in_pad,
                                                      self.reverse_weight)
-        print("decoder_out.shape:{}\nr_decoder_out:{}".format(decoder_out.shape, r_decoder_out))
 
         loss_att = self.att_loss(decoder_out, ys_out_pad)
         loss = self.ctc_weight * ctcloss + (1 - self.ctc_weight) * loss_att
@@ -108,7 +107,6 @@ class Conformer(nn.Module):
         return ctc_probs
 
     def ctc_greedy_search(
-            self,
             ctc_probs: torch.Tensor,
             ctc_lens: torch.Tensor,
             blank_id: int = 0
