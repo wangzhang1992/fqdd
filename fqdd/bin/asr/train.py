@@ -41,10 +41,10 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             logger.info("Epoch {}/{}".format(epoch, epoch_n))
             logger.info("-" * 50)
 
-        infos = {"loss": 0.0,
-                 "ctc_loss": 0.0,
-                 "att_loss": 0.0,
-                 "th_acc": 0.0
+        infos = {"loss": [],
+                 "ctc_loss": [],
+                 "att_loss": [],
+                 "th_acc": []
                  }
 
         dist.barrier()  # 同步训练进程
@@ -57,10 +57,10 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             wav_lengths = wav_lengths.to(device)
             targets = targets.to(device)
             target_lens = target_lens.to(device)
-            info_dicts = model(feats, wav_lengths, targets, target_lens)
+            batch_infos = model(feats, wav_lengths, targets, target_lens)
 
             assert train_engine in ["torch_ddp", "torch_fsdp"]
-            loss = info_dicts["loss"] / accum_grad
+            loss = batch_infos["loss"] / accum_grad
             loss.backward()
 
             if (idx + 1) % accum_grad == 0:
@@ -73,29 +73,42 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
                 optimizer.zero_grad()
                 scheduler.step()
 
-            infos["loss"] = info_dicts["loss"].item() + infos["loss"]
-            infos["ctc_loss"] = info_dicts["ctc_loss"].item() + infos["ctc_loss"]
-            infos["att_loss"] = info_dicts["att_loss"] + infos["att_loss"]
-            infos["th_acc"] = info_dicts["th_acc"].item() + infos["th_acc"]
-            if rank == 0 and (idx + 1) % log_interval == 0:
-                avg_loss = infos["loss"] / (idx + 1)
-                avg_ctc_loss = infos["ctc_loss"] / (idx + 1)
-                avg_att_loss = infos["att_loss"] / (idx + 1)
-                avg_th_acc = infos["th_acc"] / (idx + 1)
+            infos["loss"].append(batch_infos["loss"].item())
+            infos["ctc_loss"].append(batch_infos["ctc_loss"].item())
+            infos["att_loss"].append(batch_infos["att_loss"])
+            infos["th_acc"].append(batch_infos["th_acc"].item())
+            if rank == 0 and (idx + 1) % log_interval == 0 and (idx + 1) % accum_grad == 0:
+                interval_loss = sum(infos["loss"][-log_interval:]) / log_interval
+                interval_ctc_loss = sum(infos["ctc_loss"][-log_interval:]) / log_interval
+                interval_att_loss = sum(infos["att_loss"][-log_interval:]) / log_interval
+                interval_th_acc = sum(infos["th_acc"][-log_interval:]) / log_interval
                 logger.info(
                     "Epoch:{}/{}\ttrain:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
-                                                                                                       avg_loss,
-                                                                                                       avg_ctc_loss,
-                                                                                                       avg_att_loss,
-                                                                                                       avg_th_acc)
+                                                                                                       interval_loss,
+                                                                                                       interval_ctc_loss,
+                                                                                                       interval_att_loss,
+                                                                                                       interval_th_acc)
                 )
+
+        if rank == 0:
+            train_loss = sum(infos["loss"]) / (idx + 1)
+            train_ctc_loss = sum(infos["ctc_loss"]) / (idx + 1)
+            train_att_loss = sum(infos["att_loss"]) / (idx + 1)
+            train_th_acc = sum(infos["th_acc"]) / (idx + 1)
+            logger.info(
+                "Epoch:{}\ttrain:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch,
+                                                                                                train_loss,
+                                                                                                train_ctc_loss,
+                                                                                                train_att_loss,
+                                                                                                train_th_acc)
+            )
 
         dist.barrier()  # 同步测试进程
         with torch.no_grad():
             loss, ctc_loss, att_loss, th_acc = evaluate(model, dev_loader, epoch, configs, logger, rank, device)
             logger.info(
-                "Epoch:{}\tDEV:loss:{}\tctc_loss:{}\tatt_loss:{}\tth_acc:{}".format(epoch, loss, ctc_loss, att_loss,
-                                                                                    th_acc)
+                "Epoch:{}\tCV:loss:{}\tctc_loss:{}\tatt_loss:{}\tth_acc:{}".format(epoch, loss, ctc_loss, att_loss,
+                                                                                   th_acc)
             )
         info_dict = {
             "epoch": epoch,
@@ -115,11 +128,12 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
 
 def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
     model.eval()
-    infos = {"loss": 0.0,
-             "ctc_loss": 0.0,
-             "att_loss": 0.0,
-             "th_acc": 0.0
+    infos = {"loss": [],
+             "ctc_loss": [],
+             "att_loss": [],
+             "th_acc": []
              }
+
     log_interval = configs["log_interval"]
     for idx, batch_data in enumerate(tqdm(eval_loader)):
 
@@ -129,27 +143,28 @@ def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
         targets = targets.to(device)
         target_lens = target_lens.to(device)
         # print(feats.shape)
-        info_dicts = model(feats, wav_lengths, targets, target_lens)
-        infos["loss"] = info_dicts["loss"].item() + infos["loss"]
-        infos["ctc_loss"] = info_dicts["ctc_loss"].item() + infos["ctc_loss"]
-        infos["att_loss"] = info_dicts["att_loss"].item() + infos["att_loss"]
-        infos["th_acc"] = info_dicts["th_acc"].item() + infos["th_acc"]
+        batch_infos = model(feats, wav_lengths, targets, target_lens)
+        infos["loss"].append(batch_infos["loss"].item())
+        infos["ctc_loss"].append(batch_infos["ctc_loss"].item())
+        infos["att_loss"].append(batch_infos["att_loss"])
+        infos["th_acc"].append(batch_infos["th_acc"].item())
         if rank == 0 and (idx + 1) % log_interval == 0:
-            avg_loss = infos["loss"] / (idx + 1)
-            avg_ctc_loss = infos["ctc_loss"] / (idx + 1)
-            avg_att_loss = infos["att_loss"] / (idx + 1)
-            avg_th_acc = infos["th_acc"] / (idx + 1)
-            logger.info("Epoch:{}/{}\tDEV:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
-                                                                                                         avg_loss,
-                                                                                                         avg_ctc_loss,
-                                                                                                         avg_att_loss,
-                                                                                                         avg_th_acc))
-
-    loss = infos["loss"] / (idx + 1)
-    ctc_loss = infos["ctc_loss"] / (idx + 1)
-    att_loss = infos["att_loss"] / (idx + 1)
-    th_acc = infos["th_acc"] / (idx + 1)
-    return loss, ctc_loss, att_loss, th_acc
+            interval_loss = sum(infos["loss"][-log_interval:]) / log_interval
+            interval_ctc_loss = sum(infos["ctc_loss"][-log_interval:]) / log_interval
+            interval_att_loss = sum(infos["att_loss"][-log_interval:]) / log_interval
+            interval_th_acc = sum(infos["th_acc"][-log_interval:]) / log_interval
+            logger.info(
+                "Epoch:{}/{}\tCV:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
+                                                                                                interval_loss,
+                                                                                                interval_ctc_loss,
+                                                                                                interval_att_loss,
+                                                                                                interval_th_acc)
+            )
+    cv_loss = sum(infos["loss"]) / (idx + 1)
+    cv_ctc_loss = sum(infos["ctc_loss"]) / (idx + 1)
+    cv_att_loss = sum(infos["att_loss"]) / (idx + 1)
+    cv_th_acc = sum(infos["th_acc"]) / (idx + 1)
+    return cv_loss, cv_ctc_loss, cv_att_loss, cv_th_acc
 
 
 def main():
