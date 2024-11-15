@@ -75,7 +75,7 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
 
             infos["loss"].append(batch_infos["loss"].item())
             infos["ctc_loss"].append(batch_infos["ctc_loss"].item())
-            infos["att_loss"].append(batch_infos["att_loss"])
+            infos["att_loss"].append(batch_infos["att_loss"].item())
             infos["th_acc"].append(batch_infos["th_acc"].item())
             if rank == 0 and (idx + 1) % log_interval == 0 and (idx + 1) % accum_grad == 0:
                 interval_loss = sum(infos["loss"][-log_interval:]) / log_interval
@@ -146,7 +146,7 @@ def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
         batch_infos = model(feats, wav_lengths, targets, target_lens)
         infos["loss"].append(batch_infos["loss"].item())
         infos["ctc_loss"].append(batch_infos["ctc_loss"].item())
-        infos["att_loss"].append(batch_infos["att_loss"])
+        infos["att_loss"].append(batch_infos["att_loss"].item())
         infos["th_acc"].append(batch_infos["th_acc"].item())
         if rank == 0 and (idx + 1) % log_interval == 0:
             interval_loss = sum(infos["loss"][-log_interval:]) / log_interval
