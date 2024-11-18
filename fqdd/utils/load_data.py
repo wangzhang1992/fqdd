@@ -258,7 +258,7 @@ class Dataload:
                 is_in_mask = False
                 if x > 0:
                     for mask in positive_mask:
-                        if x >= mask[0] and x <= mask[1]:
+                        if mask[0] <= x <= mask[1]:
                             is_in_mask = True
                             return x
                     if not is_in_mask:
@@ -266,7 +266,7 @@ class Dataload:
                 elif x < 0:
                     abs_x = abs(x)
                     for mask in negative_mask:
-                        if abs_x >= mask[0] and abs_x <= mask[1]:
+                        if mask[0] <= abs_x <= mask[1]:
                             is_in_mask = True
                             return x
                     if not is_in_mask:
@@ -683,8 +683,9 @@ class Dataload:
 
         if self.conf["augment"]["wav_distortion"]:
             # logging.info("input_waveform type:{}".format(type(waveform)))
-            waveform = self.wav_distortion(waveform, self.conf["augment"]["wav_distortion_conf"],
-                                           self.conf.get("sample_rate", 16000))
+            # waveform = self.wav_distortion(waveform, self.conf["augment"]["wav_distortion_conf"],
+            #                                self.conf.get("sample_rate", 16000))
+            waveform = self.wav_distortion(waveform, self.conf["augment"]["wav_distortion_conf"])
             # logging.info("wav_distortion, case1 isinf:{}\t case2 isnan:{}".format(torch.sum(waveform.isinf()),
             # torch.sum(waveform.isnan()))) logging.info("add_distortion_after:{}".format(waveform.shape))
 
