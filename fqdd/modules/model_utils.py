@@ -61,6 +61,12 @@ def save_checkpoint(model: torch.nn.Module, path: str, infos=None):
     '''
     Args:
         infos (dict or None): any info you want to save.
+
+    Parameters
+    ----------
+    infos
+    path
+    model
     '''
     if isinstance(model, torch.nn.DataParallel):
         state_dict = model.module.state_dict()
@@ -71,7 +77,7 @@ def save_checkpoint(model: torch.nn.Module, path: str, infos=None):
     save_state_dict_and_infos(state_dict, path, infos)
 
 
-def save_model(model, info_dict):
+def save_model(model: torch.nn.Module, info_dict=None):
     rank = int(os.environ.get('RANK', 0))
     tag = info_dict["tag"]
     model_dir = info_dict["model_dir"]
