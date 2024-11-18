@@ -56,7 +56,7 @@ class ConformerEncoder(torch.nn.Module):
         macaron_style = encoder_conf.get("macaron_style", True)
         selfattention_layer_type = encoder_conf.get("selfattention_layer_type", "rel_selfattn")
         activation_type = encoder_conf.get("activation_type", "swish")
-        use_cnn_module = encoder_conf.get("use_cnn_module")
+        use_cnn_module = encoder_conf.get("use_cnn_module", True)
         cnn_module_kernel = encoder_conf.get("cnn_module_kernel")
         causal = encoder_conf.get("causal", False)
         cnn_module_norm = encoder_conf.get("cnn_module_norm", "batch_norm")
