@@ -3,7 +3,6 @@
     "max_epoch": 120,
     "pretrain_model": null,
     "log_interval": 100,
-    "model_root_dir": "exp",
     "accumulation_steps": 1,
     "dist_conf":{
         "train_engine": "torch_ddp",
