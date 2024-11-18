@@ -83,12 +83,14 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
                 interval_att_loss = sum(infos["att_loss"][-log_interval:]) / log_interval
                 interval_th_acc = sum(infos["th_acc"][-log_interval:]) / log_interval
                 logger.info(
-                    "Epoch:{}/{}\ttrain:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
-                                                                                                       interval_loss,
-                                                                                                       interval_ctc_loss,
-                                                                                                       interval_att_loss,
-                                                                                                       interval_th_acc)
-                )
+                    "Epoch:{}/{}\ttrain:\tloss:{:.4f}\tctc_loss:{:.4f}\tatt_loss:{:.4f}\tth_acc:{:.4f}\tlr:{:.6f}".format(
+                        epoch,
+                        idx + 1,
+                        interval_loss,
+                        interval_ctc_loss,
+                        interval_att_loss,
+                        interval_th_acc,
+                        optimizer.param_groups[0]["lr"]))
 
         if rank == 0:
             train_loss = sum(infos["loss"]) / (idx + 1)
@@ -96,19 +98,20 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             train_att_loss = sum(infos["att_loss"]) / (idx + 1)
             train_th_acc = sum(infos["th_acc"]) / (idx + 1)
             logger.info(
-                "Epoch:{}\ttrain:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch,
-                                                                                                train_loss,
-                                                                                                train_ctc_loss,
-                                                                                                train_att_loss,
-                                                                                                train_th_acc)
+                "Epoch:{}\ttrain:\tloss:{:.4f}\tctc_loss:{:.4f}\tatt_loss:{:.4f}\tth_acc:{:.4f}".format(epoch,
+                                                                                                        train_loss,
+                                                                                                        train_ctc_loss,
+                                                                                                        train_att_loss,
+                                                                                                        train_th_acc)
             )
 
         dist.barrier()  # 同步测试进程
         with torch.no_grad():
             loss, ctc_loss, att_loss, th_acc = evaluate(model, dev_loader, epoch, configs, logger, rank, device)
             logger.info(
-                "Epoch:{}\tCV:loss:{}\tctc_loss:{}\tatt_loss:{}\tth_acc:{}".format(epoch, loss, ctc_loss, att_loss,
-                                                                                   th_acc)
+                "Epoch:{}\tCV:loss:{:.4f}\tctc_loss:{:.4f}\tatt_loss:{:.4f}\tth_acc:{:.4f}".format(epoch, loss,
+                                                                                                   ctc_loss, att_loss,
+                                                                                                   th_acc)
             )
         info_dict = {
             "epoch": epoch,
@@ -154,11 +157,11 @@ def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
             interval_att_loss = sum(infos["att_loss"][-log_interval:]) / log_interval
             interval_th_acc = sum(infos["th_acc"][-log_interval:]) / log_interval
             logger.info(
-                "Epoch:{}/{}\tCV:\tloss:{:.2f}\tctc_loss:{:.2f}\tatt_loss:{}\tth_acc:{}".format(epoch, idx + 1,
-                                                                                                interval_loss,
-                                                                                                interval_ctc_loss,
-                                                                                                interval_att_loss,
-                                                                                                interval_th_acc)
+                "Epoch:{}/{}\tCV:\tloss:{:.4f}\tctc_loss:{:.4f}\tatt_loss:{:.4f}\tth_acc:{:.4f}".format(epoch, idx + 1,
+                                                                                                        interval_loss,
+                                                                                                        interval_ctc_loss,
+                                                                                                        interval_att_loss,
+                                                                                                        interval_th_acc)
             )
     cv_loss = sum(infos["loss"]) / (idx + 1)
     cv_ctc_loss = sum(infos["ctc_loss"]) / (idx + 1)
