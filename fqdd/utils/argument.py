@@ -63,10 +63,15 @@ def parse_arguments():
         type=str,
         help='data_folder path'
     )
-    
+
     model_args.add_argument('--train_data', required=True, help='train data file')
     model_args.add_argument('--dev_data', required=True, help='cv data file')
-
+    model_args.add_argument(
+        '--model_dir',
+        type=str,
+        required=True,
+        help='model save path'
+    )
     model_args.add_argument(
         '--checkpoint',
         type=str,
@@ -134,21 +139,13 @@ def parse_arguments():
 
     )
 
-
-
-    model_args.add_argument(
-        '--lm_path',
-        default="lm/lm_best.pth",
-        type=str,
-        help='lm path'
-    )
-
     return model_args.parse_args()
 
 
 def reload_configs(args, configs):
-    configs["model_dir"] = os.path.join(configs["model_root_dir"], configs["model_name"])
+    configs["model_dir"] = args.model_dir
     configs["max_epoch"] = args.max_epoch if "max_epoch" not in str(configs) else configs["max_epoch"]
-    configs["data_conf"]["batch_size"] = args.batch_size if "batch_size" not in str(configs) else configs["data_conf"]["batch_size"]
+    configs["data_conf"]["batch_size"] = args.batch_size if "batch_size" not in str(configs) else configs["data_conf"][
+        "batch_size"]
     # print(configs)
     return configs
