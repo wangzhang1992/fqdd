@@ -174,7 +174,7 @@ def main():
         os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu)
 
     configs = json.load(open(args.configs, 'r', encoding="utf-8"))
-    configs = reload_configs(args, configs)
+    # configs = reload_configs(args, configs)
 
     test_conf = copy.deepcopy(configs["data_conf"])
 

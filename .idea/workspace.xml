@@ -4,9 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新参数结构">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="添加多模型权重合并">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/run.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/recognize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/modules/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/argument.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/argument.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/utils/load_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/utils/load_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,11 +92,11 @@
       <recent name="D:\JetBrains\work\fqdd\fqdd\lm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\fqdd\bin" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\decoders" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\modules" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\module_nnets" />
-      <recent name="D:\JetBrains\work\fqdd\fqdd\text" />
     </key>
   </component>
   <component name="RunManager" selected="Python.readdata">
@@ -508,7 +514,31 @@
       <option name="project" value="LOCAL" />
       <updated>1731483788611</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="更新log_interval 日志输出及损失，准确度计算方法">
+      <option name="closed" value="true" />
+      <created>1731584251500</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1731584251500</updated>
+    </task>
+    <task id="LOCAL-00034" summary="更新log_interval 日志输出及损失，准确度计算方法">
+      <option name="closed" value="true" />
+      <created>1731641458882</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1731641458882</updated>
+    </task>
+    <task id="LOCAL-00035" summary="添加多模型权重合并">
+      <option name="closed" value="true" />
+      <created>1731653404361</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1731653404361</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -534,7 +564,9 @@
     <MESSAGE value="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式" />
     <MESSAGE value="编写recognize程序,测试运行，目前只有ctc_greedy解码模式" />
     <MESSAGE value="更新参数结构" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新参数结构" />
+    <MESSAGE value="更新log_interval 日志输出及损失，准确度计算方法" />
+    <MESSAGE value="添加多模型权重合并" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加多模型权重合并" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
