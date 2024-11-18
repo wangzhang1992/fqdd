@@ -19,20 +19,23 @@ nodes=1
 master_port=8000
 
 
-start_stage=4
-stop_stage=4
+start_stage=6
+stop_stage=7
 
 
 data_dir=/data1/data_management/speech_processing/ASR/audio_raw/language_china/zh-CN/lable/near-field/read/aishell/aishell_1_178hr/data_aishell
-train_config=conf/ebranchformer_conf.json
+train_config=conf/conformer_conf.json
 
 train_set="train"
 test_sets="test"
 dev_sets="dev"
 dict=data/dict/lang_char.txt
 
+average_num=5
+decode_methods="ctc_greedy_search"
 
-checkpoint=
+dir=exp/conformer
+checkpoint=exp/conformer/pretrain.pt
 
 if [ ${start_stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
     echo "prepare data"
@@ -77,37 +80,45 @@ if [ ${start_stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
 fi
 
 if [ $stop_stage -ge 4 ] && [ $start_stage -le 4 ]; then
-    python -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$nodes --master-port=$master_port \
-	      fqdd/bin/asr/train_ebranchformer.py \
-	          --train_config $train_config \
-	          ${checkpoint:+--checkpoint $checkpoint} \
-	          --train_data data/$train_set/data.list \
-	          --dev_data data/$dev_sets/data.list \
+    python -m torch.distributed.launch --nproc_per_node=$num_gpus --nnodes=$nodes \
+	    --master-port=$master_port \
+	    fqdd/bin/asr/train.py \
+	    --train_config $train_config \
+	    --model_dir $dir \
+	    ${checkpoint:+--checkpoint $checkpoint} \
+	    --train_data data/$train_set/data.list \
+	    --dev_data data/$dev_sets/data.list \
 
 fi
 
-if [ $stop_stage -ge 5 ] && [ $start_stage -le 5 ]; then
-    # 测试模型
-    python fqdd/bin/asr/recognize.py --configs=conf/ebranchformer_conf.json \
-        --checkpoint=exp/ebranchformer/epoch_1.pt \
-        --test_data data/test/data.list \
-        --gpu "-1" \
-        --modes ctc_greedy_search \
-        --result_dir exp/ebranchformer
 
+if [ $stop_stage -ge 5 ] && [ $start_stage -le 5 ]; then
+
+    # python fqdd/bin/average_model.py --dst_model=exp/conformer/avg_30.pt --src_path=exp/conformer --num=30 --val_best
+    dst_model=$dir/avg_${average_num}.pt
+
+    python fqdd/bin/average_model.py \
+	--dst_model $dst_model \
+	--src_path $dir \
+	--num $average_num \
+	--val_best
+fi
+
+
+if [ $stop_stage -ge 6 ] && [ $start_stage -le 6 ]; then
+        # 测试模型
+    python fqdd/bin/asr/recognize.py --configs=${train_config} \
+        --checkpoint=$dir/avg_${average_num}.pt \
+        --test_data data/test/data.list \
+        --gpu "0" \
+        --modes $decode_methods \
+        --result_dir $dir
 fi
 
 if [ $stop_stage -ge 7 ] && [ $start_stage -le 7 ]; then
-    echo "pass"
+
+    for mode in ${decode_modes}; do
+        python tools/compute-wer.py --char=1 --v=1 \
+            data/test/text $dir/$mode/text > $dir/$mode/wer
+    done
 fi
-
-if [ $stop_stage -ge 8 ] && [ $start_stage -le 8 ]; then
-    echo "pass"
-fi
-
-if [ $stop_stage -ge 9 ] && [ $start_stage -le 9 ]; then
-    echo "pass"
-fi
-# python -m torch.distributed.launch --nproc_per_node=1 --nnodes=-1 --node-rank=0 fqdd/bin/asr/train.py
-
-
