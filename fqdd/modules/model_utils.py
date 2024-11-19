@@ -5,13 +5,12 @@ import re
 import json
 import datetime
 
-from fqdd.modules.attentions import MultiHeadedCrossAttention, RelPositionMultiHeadedAttention
+from fqdd.modules.attentions import MultiHeadedCrossAttention, RelPositionMultiHeadedAttention, MultiHeadedAttention
 from fqdd.modules.embedings import PositionalEncoding, RelPositionalEncoding, NoPositionalEncoding, \
     WhisperPositionalEncoding, LearnablePositionalEncoding, ParaformerPositinoalEncoding, RopePositionalEncoding
 from fqdd.modules.mlps import PositionwiseFeedForward
 from fqdd.modules.subsamples import LinearNoSubsampling, EmbedinigNoSubsampling, Conv1dSubsampling2, Conv2dSubsampling4, \
     Conv2dSubsampling2
-from scripts.attention import MultiHeadedAttention
 
 FQDD_EMBEDDINGS = {
     "embed": PositionalEncoding,

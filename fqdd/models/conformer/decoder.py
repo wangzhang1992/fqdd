@@ -2,7 +2,6 @@ from typing import Tuple
 
 import torch
 
-from fqdd.modules.attentions import MultiHeadedAttention, MultiHeadedCrossAttention
 from fqdd.models.conformer.decoder_layer import DecoderLayer
 from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_ATTENTIONS
 from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
