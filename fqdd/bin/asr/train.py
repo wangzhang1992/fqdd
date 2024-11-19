@@ -34,7 +34,7 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
     train_engine = configs["dist_conf"]["train_engine"]
     if rank == 0:
         logger.info("init_lr:{}".format(optimizer.state_dict()['param_groups'][0]['lr']))
-
+    final_epoch = None
     for epoch in range(start_epoch, epoch_n):
 
         if rank == 0:
@@ -127,6 +127,13 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             **configs
         }
         save_model(model, info_dict)
+        final_epoch = epoch
+
+    if final_epoch is not None and rank == 0:
+        final_model_path = os.path.join(configs["model_dir"], 'final.pt')
+        os.remove(final_model_path) if os.path.exists(
+            final_model_path) else None
+        os.symlink('{}.pt'.format(final_epoch), final_model_path)
 
 
 def evaluate(model, eval_loader, epoch, configs, logger, rank, device):
