@@ -4,7 +4,7 @@ import torch
 
 from fqdd.modules.attentions import MultiHeadedAttention, MultiHeadedCrossAttention
 from fqdd.models.conformer.decoder_layer import DecoderLayer
-from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS
+from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_ATTENTIONS
 from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.utils.mask import make_pad_mask, subsequent_mask
 
@@ -44,24 +44,25 @@ class TransformerDecoder(torch.nn.Module):
         super().__init__()
 
         encoder_output_size = decoder_conf.get("encoder_output_size", 256)
-        attention_heads = decoder_conf.get("attention_heads", 4, )
-        linear_units = decoder_conf.get("linear_units", 2048, )
-        num_blocks = decoder_conf.get("num_blocks", 6, )
-        dropout_rate = decoder_conf.get("dropout_rate", 0.1, )
+        linear_units = decoder_conf.get("linear_units", 2048)
+        num_blocks = decoder_conf.get("num_blocks", 6)
+        dropout_rate = decoder_conf.get("dropout_rate", 0.1)
         activation_type = decoder_conf.get("activation_type", "relu")
-        self_attention_dropout_rate = decoder_conf.get("self_attention_dropout_rate", 0.0, )
-        src_attention_dropout_rate = decoder_conf.get("src_attention_dropout_rate", 0.0, )
-        normalize_before = decoder_conf.get("normalize_before", True, )
-        use_output_layer = decoder_conf.get("use_output_layer", True, )
-        positional_dropout_rate = decoder_conf.get("positional_dropout_rate", 0.1, )
-        query_bias = decoder_conf.get("query_bias", True, )
-        key_bias = decoder_conf.get("key_bias", True, )
-        value_bias = decoder_conf.get("value_bias", True, )
-        n_kv_head = decoder_conf.get("n_kv_head", None, )
-        head_dim = decoder_conf.get("head_dim", None, )
+        normalize_before = decoder_conf.get("normalize_before", True)
+        use_output_layer = decoder_conf.get("use_output_layer", True)
+        positional_dropout_rate = decoder_conf.get("positional_dropout_rate", 0.1)
+        attention_heads = decoder_conf.get("attention_heads", 4)
+        self_attention_dropout_rate = decoder_conf.get("self_attention_dropout_rate", 0.0)
+        src_attention_dropout_rate = decoder_conf.get("src_attention_dropout_rate", 0.0)
+        src_attention = decoder_conf.get("src_attention", True)
+        query_bias = decoder_conf.get("query_bias", True)
+        key_bias = decoder_conf.get("key_bias", True)
+        value_bias = decoder_conf.get("value_bias", True)
+        n_kv_head = decoder_conf.get("n_kv_head", None)
+        head_dim = decoder_conf.get("head_dim", None)
         mlp_type = decoder_conf.get("mlp_type", "position_wise_feed_forward")
-        mlp_bias = decoder_conf.get("mlp_bias", True, )
-        n_expert = decoder_conf.get("n_expert", 8, )
+        mlp_bias = decoder_conf.get("mlp_bias", True)
+        n_expert = decoder_conf.get("n_expert", 8)
         n_expert_activated = decoder_conf.get("n_expert_activated", 2)
         norm_eps: float = decoder_conf.get("norm_eps", 1e-5)
         input_layer = decoder_conf.get("input_layer", "embed")
@@ -89,14 +90,14 @@ class TransformerDecoder(torch.nn.Module):
         self.decoders = torch.nn.ModuleList([
             DecoderLayer(
                 attention_dim,
-                MultiHeadedAttention(
+                FQDD_ATTENTIONS["selfattn"](
                     attention_heads, attention_dim,
                     self_attention_dropout_rate, query_bias, key_bias,
                     value_bias, n_kv_head, head_dim),
-                MultiHeadedCrossAttention(
+                FQDD_ATTENTIONS["crossattn"](
                     attention_heads, attention_dim, src_attention_dropout_rate,
                     query_bias, key_bias, value_bias, n_kv_head,
-                    head_dim),
+                    head_dim) if src_attention else None,
                 mlp_class(attention_dim,
                           linear_units,
                           dropout_rate,
