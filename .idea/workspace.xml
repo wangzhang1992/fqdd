@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新输入参数，及更新attention调用方式">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/conformer/decoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/conformer/decoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/modules/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/model_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -605,7 +606,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731921822377</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="添加final.model 软连接">
+      <option name="closed" value="true" />
+      <created>1731984938601</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1731984938601</updated>
+    </task>
+    <task id="LOCAL-00046" summary="更新输入参数，及更新attention调用方式">
+      <option name="closed" value="true" />
+      <created>1731985042320</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1731985042320</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -642,7 +659,9 @@
     <MESSAGE value="添加use_cnn_module, 默认值" />
     <MESSAGE value="添加学习率输出" />
     <MESSAGE value="更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新" />
+    <MESSAGE value="添加final.model 软连接" />
+    <MESSAGE value="更新输入参数，及更新attention调用方式" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新输入参数，及更新attention调用方式" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -671,6 +690,10 @@
           <url>file://$PROJECT_DIR$/fqdd/models/conformer/encoder.py</url>
           <line>59</line>
           <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fqdd/modules/model_utils.py</url>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
