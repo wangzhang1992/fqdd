@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新输入参数，及更新attention调用方式">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/conformer/decoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/conformer/decoder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/modules/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/model_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -622,7 +619,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731985042320</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="更新输入参数，及更新attention调用方式">
+      <option name="closed" value="true" />
+      <created>1731987031408</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1731987031408</updated>
+    </task>
+    <task id="LOCAL-00048" summary="更新输入参数，及更新attention调用方式">
+      <option name="closed" value="true" />
+      <created>1731998094464</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1731998094465</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
