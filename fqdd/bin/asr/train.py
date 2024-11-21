@@ -46,8 +46,9 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
                  "att_loss": [],
                  "th_acc": []
                  }
-
-        dist.barrier()  # 同步训练进程
+        # 每一次新的epoch，重新打乱数据
+        train_loader.sampler.set_epoch(epoch)
+        dist.barrier()  # 同步训练进程:
         model.train()
 
         for idx, batch_data in enumerate(tqdm(train_loader)):
