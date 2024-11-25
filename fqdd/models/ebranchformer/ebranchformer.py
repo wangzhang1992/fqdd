@@ -1,22 +1,16 @@
 import torch
 import torch.nn as nn
 
-from typing import List, Optional, Union, Tuple, Dict
+from typing import List, Tuple
 
 from fqdd.models.ebranchformer.encoder import EBranchformerEncoder
 from fqdd.modules.CTC import CTC
-from fqdd.modules.attentions import MultiHeadedAttention, MultiHeadedCrossAttention
 from fqdd.decoders.search import DecodeResult
-from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_SUBSAMPLES
-from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.modules.losses import LabelSmoothingLoss
 from fqdd.text.tokenize_utils import remove_duplicates_and_blank, add_sos_eos, reverse_pad_list
-from fqdd.utils.common import load_json_cmvn, GlobalCMVN, th_accuracy
+from fqdd.utils.common import th_accuracy
 from fqdd.utils.mask import make_pad_mask
 from fqdd.models.ebranchformer.decoder import TransformerDecoder
-
-# sys.path.insert(0, "./")
-# from src.model.base import ACTIVATION_CLASSES
 
 T_CACHE = Tuple[torch.Tensor, torch.Tensor]
 IGNORE_ID = -1

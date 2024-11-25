@@ -16,7 +16,7 @@ class EBranchformerEncoder(nn.Module):
     def __init__(
             self,
             encoder_conf,
-            use_cmvn: bool = True,
+            use_cmvn: bool = False,
             cmvn_file: str = None
     ):
         super(EBranchformerEncoder, self).__init__()
@@ -24,34 +24,34 @@ class EBranchformerEncoder(nn.Module):
         output_size = encoder_conf.get("output_size", 256)
         attention_heads = encoder_conf.get("attention_heads", 4)
         linear_units = encoder_conf.get("linear_units", 2048)
+        selfattention_layer_type = encoder_conf.get("selfattention_layer_type", "rel_selfattn")
+        pos_enc_layer_type = encoder_conf.get("pos_enc_layer_type", "rel_pos")
+        activation_type = encoder_conf.get("activation_type", "swish")
         cgmlp_linear_units = encoder_conf.get("cgmlp_linear_units", 2048)
         cgmlp_conv_kernel = encoder_conf.get("cgmlp_conv_kernel", 31)
         use_linear_after_conv = encoder_conf.get("use_linear_after_conv", False)
         gate_activation = encoder_conf.get("gate_activation", "identity")
         num_blocks = encoder_conf.get("num_blocks", 12)
         dropout_rate = encoder_conf.get("dropout_rate", 0.1)
-        attention_dropout_rate = encoder_conf.get("attention_dropout_rate", 0.0)
-        selfattention_layer_type = encoder_conf.get("selfattention_layer_type", "rel_selfattn")
-        normalize_before = encoder_conf.get("normalize_before", True)
-        layer_norm_type = encoder_conf.get("layer_norm_type", "layer_norm")
-        stochastic_depth_rate = encoder_conf.get("stochastic_depth_rate", 0.0)
-        causal = encoder_conf.get("causal", False, )
-        activation_type = encoder_conf.get("activation_type", "swish")
         positional_dropout_rate = encoder_conf.get("positional_dropout_rate", 0.1)
+        attention_dropout_rate = encoder_conf.get("attention_dropout_rate", 0.0)
+        input_layer = encoder_conf.get("input_layer", "conv2d")
+        stochastic_depth_rate = encoder_conf.get("stochastic_depth_rate", 0.0)
+        causal = encoder_conf.get("causal", False)
         merge_conv_kernel = encoder_conf.get("merge_conv_kernel", 3)
+        normalize_before = encoder_conf.get("normalize_before", True)
         use_ffn = encoder_conf.get("use_ffn", True)
         macaron_style = encoder_conf.get("macaron_style", True)
         query_bias = encoder_conf.get("query_bias", True)
         key_bias = encoder_conf.get("key_bias", True)
         value_bias = encoder_conf.get("value_bias", True)
+        layer_norm_type = encoder_conf.get("layer_norm_type", "layer_norm")
         n_kv_head = encoder_conf.get("n_kv_head", None)
         head_dim = encoder_conf.get("head_dim", None)
         mlp_type = encoder_conf.get("mlp_type", "position_wise_feed_forward")
         mlp_bias = encoder_conf.get("mlp_bias", True)
         n_expert = encoder_conf.get("n_expert", 8)
-        input_layer = encoder_conf.get("input_layer", "conv2d")
         n_expert_activated = encoder_conf.get("n_expert_activated", 2)
-        pos_enc_layer_type = encoder_conf.get("pos_enc_layer_type", "abs_pos")
         norm_eps: float = encoder_conf.get("norm_eps", 1e-5)
         use_cmvn = use_cmvn
         cmvn_file = cmvn_file
@@ -66,7 +66,6 @@ class EBranchformerEncoder(nn.Module):
             self.global_cmvn = GlobalCMVN(mean, std)
 
         assert layer_norm_type in ['layer_norm', 'rms_norm']
-        self.normalize_before = normalize_before
         self.after_norm = FQDD_NORMALIZES[layer_norm_type](output_size, eps=norm_eps)
         encoder_selfattn_layer_args = (
             attention_heads,
@@ -98,19 +97,21 @@ class EBranchformerEncoder(nn.Module):
             n_expert_activated,
         )
 
-        self.embed = FQDD_SUBSAMPLES[input_layer](
-            input_size, output_size, dropout_rate,
-            pos_emb_class(output_size, positional_dropout_rate)
-            if pos_enc_layer_type != 'rope_pos' else pos_emb_class(
-                output_size, output_size //
-                             attention_heads, positional_dropout_rate))
-
+        assert layer_norm_type in ['layer_norm', 'rms_norm']
+        self.normalize_before = normalize_before
         if isinstance(stochastic_depth_rate, float):
             stochastic_depth_rate = [stochastic_depth_rate] * num_blocks
         if len(stochastic_depth_rate) != num_blocks:
             raise ValueError(
                 f"Length of stochastic_depth_rate ({len(stochastic_depth_rate)}) "
                 f"should be equal to num_blocks ({num_blocks})")
+
+        self.embed = FQDD_SUBSAMPLES[input_layer](
+            input_size, output_size, dropout_rate,
+            pos_emb_class(output_size, positional_dropout_rate)
+            if pos_enc_layer_type != 'rope_pos' else pos_emb_class(
+                output_size, output_size //
+                             attention_heads, positional_dropout_rate))
 
         self.encoders = LayerDropModuleList(
             p=stochastic_depth_rate,
