@@ -72,8 +72,6 @@ class EBranchformer(nn.Module):
 
         ctcloss, y_hats = self.ctcloss(encoder_out, encoder_out_lens, padding_ys, ys_lens)
 
-        print("output:{}\nencoder_out_lens:{}".format(torch.argmax(y_hats, dim=2), encoder_out_lens))
-
         ys_in_pad, ys_out_pad = add_sos_eos(padding_ys, self.sos, self.eos, self.ignore_id)
         ys_in_lens = ys_lens + 1
 
@@ -86,7 +84,7 @@ class EBranchformer(nn.Module):
 
         loss_att = self.att_loss(decoder_out, ys_out_pad)
         loss = self.ctc_weight * ctcloss + (1 - self.ctc_weight) * loss_att
-        # print(decoder_out.shape) 
+
         acc_att = th_accuracy(
             decoder_out.view(-1, self.vocab_size),
             ys_out_pad,
@@ -112,7 +110,7 @@ class EBranchformer(nn.Module):
             logits[:, :, blank_id] -= blank_penalty
             ctc_probs = logits.log_softmax(dim=2)
         else:
-            # print("ctc_logprobs: encoder_out.shape:{}".format(encoder_out.shape))
+
             ctc_probs = self.ctcloss.log_softmax(encoder_out)
 
         return ctc_probs
@@ -132,7 +130,7 @@ class EBranchformer(nn.Module):
         topk_index = topk_index.masked_fill_(mask, blank_id)  # (B, maxlen)
         hyps = [hyp.tolist() for hyp in topk_index]
         scores = topk_prob.max(1)
-        # print("ctc_greed: hyp:{}".format(hyps)) 
+
         results = []
         for hyp in hyps:
             r = remove_duplicates_and_blank(hyp, blank_id)
@@ -152,7 +150,7 @@ class EBranchformer(nn.Module):
         encoder_out, encoder_mask = self.encoder(speech, speech_lengths)
         encoder_lens = encoder_mask.squeeze(1).sum(1)
         ctc_probs = self.ctc_logprobs(encoder_out, blank_penalty, blank_id)
-        # print("**********{}".format(ctc_probs.shape)) 
+
         results = {}
         if 'ctc_greedy_search' in methods:
             results['ctc_greedy_search'] = self.ctc_greedy_search(
