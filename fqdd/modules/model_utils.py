@@ -1,3 +1,5 @@
+from typing import List
+
 import torch
 import os
 import logging
@@ -40,6 +42,48 @@ FQDD_SUBSAMPLES = {
     "conv2d2": Conv2dSubsampling2,
     "conv2d": Conv2dSubsampling4,
 }
+
+
+# modify from : https://github.com/facebookresearch/fairseq/blob/main/fairseq/modules/layer_drop.py # noqa
+class LayerDropModuleList(torch.nn.ModuleList):
+    """
+    A LayerDrop implementation based on :class:`torch.nn.ModuleList`.
+
+    We refresh the choice of which layers to drop every time we iterate
+    over the LayerDropModuleList instance. During evaluation we always
+    iterate over all layers.
+
+    Usage::
+
+        layers = LayerDropList(p=0.5, modules=[layer1, layer2, layer3])
+        for layer in layers:  # this might iterate over layers 1 and 3
+            x = layer(x)
+        for layer in layers:  # this might iterate over all layers
+            x = layer(x)
+        for layer in layers:  # this might not iterate over any layers
+            x = layer(x)
+
+    Args:
+        p (float): probability of dropping out each layer
+        modules (iterable, optional): an iterable of modules to add
+
+    Limitations:
+        1 can work with ddp when layer's gradient checkpoint disabled
+        2 can't work with ddp when layer's gradient checkpoint enables
+        3 can work with fsdp
+        4 can work with deepspeed
+    """
+
+    def __init__(self, p: List[float], modules=None):
+        super().__init__(modules)
+        assert len(p) == len(self)
+        self.p = p
+
+    def __iter__(self):
+        dropout_probs = torch.empty(len(self)).uniform_()
+        for i, m in enumerate(super().__iter__()):
+            if not self.training or (dropout_probs[i] > self.p[i]):
+                yield m
 
 
 def save_state_dict_and_infos(state_dict, path: str, infos=None):

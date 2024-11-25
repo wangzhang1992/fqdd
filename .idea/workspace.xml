@@ -4,9 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="update">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="每次epoch进行数据shuffle">
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/decoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/decoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/encoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/encoder_layer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/conformer_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/conformer/decoder_layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/conformer/decoder_layer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer/ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/ebranchformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/modules/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/model_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,24 +61,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Doctests in CRDNN.executor&quot;: &quot;Run&quot;,
-    &quot;Python.CRDNN.executor&quot;: &quot;Run&quot;,
-    &quot;Python.dense.executor&quot;: &quot;Run&quot;,
-    &quot;Python.init_model.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.readdata.executor&quot;: &quot;Run&quot;,
-    &quot;Python.recognize.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.train.executor&quot;: &quot;Run&quot;,
-    &quot;Python.train_NNM.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/JetBrains/work/faiss_audio_v2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Doctests in CRDNN.executor": "Run",
+    "Python.CRDNN.executor": "Run",
+    "Python.dense.executor": "Run",
+    "Python.init_model.executor": "Debug",
+    "Python.readdata.executor": "Run",
+    "Python.recognize.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.train.executor": "Run",
+    "Python.train_NNM.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/models/ebranchformer",
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
-}</component>
+}]]></component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="fqdd" is-module-sdk="true" working-directory="$PROJECT_DIR$">
@@ -82,11 +90,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\fqdd\models\ebranchformer" />
       <recent name="D:\JetBrains\work\fqdd\tools" />
       <recent name="D:\JetBrains\work\fqdd\fqdd" />
       <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0" />
       <recent name="D:\JetBrains\work\fqdd\demo\aishell" />
-      <recent name="D:\JetBrains\work\fqdd\fqdd\lm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\JetBrains\work\fqdd\fqdd\bin" />
@@ -225,9 +233,9 @@
     <list>
       <item itemvalue="Python.dense" />
       <item itemvalue="Python.init_model" />
-      <item itemvalue="Python.readdata" />
       <item itemvalue="Python.recognize" />
       <item itemvalue="Python.test" />
+      <item itemvalue="Python.readdata" />
     </list>
     <recent_temporary>
       <list>
@@ -254,14 +262,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00003" summary="update package, check requirements">
-      <option name="closed" value="true" />
-      <created>1714116761974</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1714116761974</updated>
     </task>
     <task id="LOCAL-00004" summary="u更新依赖包关系">
       <option name="closed" value="true" />
@@ -647,7 +647,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732001058584</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="每次epoch进行数据shuffle">
+      <option name="closed" value="true" />
+      <created>1732178780398</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1732178780398</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -662,7 +670,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update setup.py, install enviroment&#10;Run: python setup.py install," />
     <MESSAGE value="update package, check requirements" />
     <MESSAGE value="u更新依赖包关系" />
     <MESSAGE value="init" />
@@ -687,7 +694,8 @@
     <MESSAGE value="readme" />
     <MESSAGE value="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;README.md" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="每次epoch进行数据shuffle" />
+    <option name="LAST_COMMIT_MESSAGE" value="每次epoch进行数据shuffle" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
