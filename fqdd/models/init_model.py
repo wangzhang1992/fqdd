@@ -3,14 +3,10 @@ import torch.nn as nn
 from fqdd.models.conformer.conformer import Conformer
 from fqdd.modules.model_utils import load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
-from fqdd.models.crdnn.CRDNN import Encoder_Decoer
-from fqdd.models.las.las import LAS
 
 MODEL_LISTS = {
     "conformer": Conformer,
-    "crdnn": Encoder_Decoer,
-    "ebranchformer": EBranchformer,
-    "las": LAS
+    "ebranchformer": EBranchformer
 }
 
 
@@ -22,7 +18,7 @@ def model_params_init(model, init_method="default"):
                 nn.init.kaiming_normal_(m.weight, mode='fan_in')
 
     # 通用方法，适用于任何激活函数
-    elif init_method == "default":
+    elif init_method == "xavier_uniform":
         for m in model.modules():
             if isinstance(m, (nn.Conv2d, nn.Linear)):
                 nn.init.xavier_uniform_(m.weight)
@@ -33,6 +29,8 @@ def model_params_init(model, init_method="default"):
         for m in model.modules():
             if isinstance(m, (nn.Conv2d, nn.Linear)):
                 nn.init.orthogonal(m.weight)
+    elif init_method == "default":
+        pass
     else:
         print("model init method error")
 
@@ -42,7 +40,6 @@ def init_model(args, configs):
     model_configs = configs["model"]
     model = MODEL_LISTS[model_name](model_configs)
     if args.checkpoint is not None:
-
         infos = load_checkpoint(model, args.checkpoint)
     else:
         init_method = model_configs.get("init_method", "default")

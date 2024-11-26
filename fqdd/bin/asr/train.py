@@ -33,9 +33,11 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
     clip = configs["model"]["grad_clip"]
     accum_grad = configs["accumulation_steps"]
     train_engine = configs["dist_conf"]["train_engine"]
+
     if rank == 0:
         logger.info("init_lr:{}".format(optimizer.state_dict()['param_groups'][0]['lr']))
     final_epoch = None
+
     for epoch in range(start_epoch, epoch_n):
 
         if rank == 0:
@@ -50,6 +52,8 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
         # 每一次新的epoch，重新打乱数据
         train_loader.sampler.set_epoch(epoch)
         dist.barrier()  # 同步训练进程:
+        group_join = dist.new_group(
+            backend="gloo", timeout=datetime.timedelta(seconds=30))
         model.train()
 
         for idx, batch_data in enumerate(tqdm(train_loader)):
@@ -119,6 +123,7 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
                                                                                                         train_th_acc)
             )
 
+        dist.destroy_process_group(group_join)
         dist.barrier()  # 同步测试进程
         with torch.no_grad():
             loss, ctc_loss, att_loss, th_acc = evaluate(model, dev_loader, epoch, configs, logger, rank, device)
