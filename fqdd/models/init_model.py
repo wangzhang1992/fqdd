@@ -32,7 +32,7 @@ def model_params_init(model, init_method="default"):
     elif init_method == "default":
         pass
     else:
-        print("model init method error")
+        assert "model init method error"
 
 
 def init_model(args, configs):

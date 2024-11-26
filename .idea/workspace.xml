@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新网络输出结构">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="init_model 修改default">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -255,30 +255,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00011" summary="update">
-      <option name="closed" value="true" />
-      <created>1730427293460</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1730427293460</updated>
-    </task>
-    <task id="LOCAL-00012" summary="update">
-      <option name="closed" value="true" />
-      <created>1730431807588</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1730431807588</updated>
-    </task>
-    <task id="LOCAL-00013" summary="update">
-      <option name="closed" value="true" />
-      <created>1730431816207</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1730431816207</updated>
     </task>
     <task id="LOCAL-00014" summary="update">
       <option name="closed" value="true" />
@@ -648,7 +624,31 @@
       <option name="project" value="LOCAL" />
       <updated>1732610619631</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="添加模型总参数输出">
+      <option name="closed" value="true" />
+      <created>1732620012094</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1732620012094</updated>
+    </task>
+    <task id="LOCAL-00061" summary="添加context">
+      <option name="closed" value="true" />
+      <created>1732621266952</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1732621266952</updated>
+    </task>
+    <task id="LOCAL-00062" summary="init_model 修改default">
+      <option name="closed" value="true" />
+      <created>1732625386691</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1732625386691</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -663,9 +663,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update部分功能" />
-    <MESSAGE value="update setup.py" />
-    <MESSAGE value="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式" />
     <MESSAGE value="编写recognize程序,测试运行，目前只有ctc_greedy解码模式" />
     <MESSAGE value="更新参数结构" />
     <MESSAGE value="更新log_interval 日志输出及损失，准确度计算方法" />
@@ -688,7 +685,10 @@
     <MESSAGE value="更新ebranchformer" />
     <MESSAGE value="更新RelPositionMultiHeadedAttention 代码" />
     <MESSAGE value="更新网络输出结构" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新网络输出结构" />
+    <MESSAGE value="添加模型总参数输出" />
+    <MESSAGE value="添加context" />
+    <MESSAGE value="init_model 修改default" />
+    <option name="LAST_COMMIT_MESSAGE" value="init_model 修改default" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
