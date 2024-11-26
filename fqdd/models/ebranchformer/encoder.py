@@ -65,8 +65,6 @@ class EBranchformerEncoder(nn.Module):
             std = torch.from_numpy(std).float()
             self.global_cmvn = GlobalCMVN(mean, std)
 
-        assert layer_norm_type in ['layer_norm', 'rms_norm']
-        self.after_norm = FQDD_NORMALIZES[layer_norm_type](output_size, eps=norm_eps)
         encoder_selfattn_layer_args = (
             attention_heads,
             output_size,
@@ -97,7 +95,6 @@ class EBranchformerEncoder(nn.Module):
             n_expert_activated,
         )
 
-        assert layer_norm_type in ['layer_norm', 'rms_norm']
         self.normalize_before = normalize_before
         if isinstance(stochastic_depth_rate, float):
             stochastic_depth_rate = [stochastic_depth_rate] * num_blocks
@@ -113,6 +110,8 @@ class EBranchformerEncoder(nn.Module):
                 output_size, output_size //
                              attention_heads, positional_dropout_rate))
 
+        assert layer_norm_type in ['layer_norm', 'rms_norm']
+        self.after_norm = FQDD_NORMALIZES[layer_norm_type](output_size, eps=norm_eps)
         self.encoders = LayerDropModuleList(
             p=stochastic_depth_rate,
             modules=[
