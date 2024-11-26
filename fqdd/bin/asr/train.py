@@ -1,4 +1,5 @@
 import datetime
+from contextlib import nullcontext
 
 import torch
 import os, sys
@@ -58,11 +59,23 @@ def train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger
             wav_lengths = wav_lengths.to(device)
             targets = targets.to(device)
             target_lens = target_lens.to(device)
-            batch_infos = model(feats, wav_lengths, targets, target_lens)
 
-            assert train_engine in ["torch_ddp", "torch_fsdp"]
-            loss = batch_infos["loss"] / accum_grad
-            loss.backward()
+            context = None
+            # Disable gradient synchronizations across DDP processes.
+            # Within this context, gradients will be accumulated on module
+            # variables, which will later be synchronized.
+            if train_engine in ["torch_ddp", "torch_fsdp"] and (idx + 1) % accum_grad != 0:
+                context = model.no_sync
+            # Used for single gpu training and DDP gradient synchronization
+            # processes.
+            else:
+                context = nullcontext
+            with context():
+                batch_infos = model(feats, wav_lengths, targets, target_lens)
+
+                assert train_engine in ["torch_ddp", "torch_fsdp"]
+                scaled_loss = batch_infos["loss"] / accum_grad
+                scaled_loss.backward()
 
             if (idx + 1) % accum_grad == 0:
                 if train_engine == "torch_ddp":
