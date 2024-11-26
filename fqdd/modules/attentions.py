@@ -353,7 +353,6 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
                          value_bias, n_kv_head, head_dim)
         # linear transformation for positional encoding
         self.linear_pos = nn.Linear(n_feat, n_feat, bias=False)
-        print(self.linear_pos)
         # these two learnable bias are used in matrix c and matrix d
         # as described in https://arxiv.org/abs/1901.02860 Section 3.3
         self.do_rel_shift = do_rel_shift
@@ -481,7 +480,6 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
                 where `cache_t == chunk_size * num_decoding_left_chunks`
                 and `head * d_k == size`
         """
-        print(query)
         if self.adaptive_scale:
             query = self.ada_scale * query + self.ada_bias
             key = self.ada_scale * key + self.ada_bias
@@ -517,7 +515,6 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
 
         n_batch_pos = pos_emb.size(0)
         p = self.linear_pos(pos_emb).view(n_batch_pos, -1, self.h, self.d_k)
-        print(p)
         p = p.transpose(1, 2)  # (batch, head, time1, d_k)
 
         # (batch, head, time1, d_k)
