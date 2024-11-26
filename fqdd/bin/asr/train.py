@@ -211,6 +211,8 @@ def main():
                })
     if rank == 0:
         logger.info(model)
+        num_params = sum(p.numel() for p in model.parameters())
+        logger.info('the number of model params: {:,d}'.format(num_params))
     device = args.device
     model.to(device)
     train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger, rank, device)

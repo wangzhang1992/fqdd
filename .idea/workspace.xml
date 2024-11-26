@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新ebranchformer">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新网络输出结构">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer/encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer/encoder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/modules/attentions.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/attentions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -256,38 +255,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00007" summary="update部分功能">
-      <option name="closed" value="true" />
-      <created>1730081343429</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1730081343430</updated>
-    </task>
-    <task id="LOCAL-00008" summary="update setup.py">
-      <option name="closed" value="true" />
-      <created>1730084870266</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1730084870267</updated>
-    </task>
-    <task id="LOCAL-00009" summary="update setup.py">
-      <option name="closed" value="true" />
-      <created>1730272214795</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1730272214795</updated>
-    </task>
-    <task id="LOCAL-00010" summary="update">
-      <option name="closed" value="true" />
-      <created>1730427245162</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1730427245162</updated>
     </task>
     <task id="LOCAL-00011" summary="update">
       <option name="closed" value="true" />
@@ -649,7 +616,39 @@
       <option name="project" value="LOCAL" />
       <updated>1732525451704</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="更新RelPositionMultiHeadedAttention 代码">
+      <option name="closed" value="true" />
+      <created>1732602603030</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1732602603030</updated>
+    </task>
+    <task id="LOCAL-00057" summary="更新网络输出结构">
+      <option name="closed" value="true" />
+      <created>1732602623729</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1732602623730</updated>
+    </task>
+    <task id="LOCAL-00058" summary="更新网络输出结构">
+      <option name="closed" value="true" />
+      <created>1732604742245</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1732604742245</updated>
+    </task>
+    <task id="LOCAL-00059" summary="更新网络输出结构">
+      <option name="closed" value="true" />
+      <created>1732610619631</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1732610619631</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -664,8 +663,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="u更新依赖包关系" />
-    <MESSAGE value="init" />
     <MESSAGE value="update部分功能" />
     <MESSAGE value="update setup.py" />
     <MESSAGE value="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式" />
@@ -689,7 +686,9 @@
     <MESSAGE value="update" />
     <MESSAGE value="每次epoch进行数据shuffle" />
     <MESSAGE value="更新ebranchformer" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新ebranchformer" />
+    <MESSAGE value="更新RelPositionMultiHeadedAttention 代码" />
+    <MESSAGE value="更新网络输出结构" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新网络输出结构" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -722,11 +721,6 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fqdd/modules/model_utils.py</url>
           <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/fqdd/modules/attentions.py</url>
-          <line>371</line>
-          <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
