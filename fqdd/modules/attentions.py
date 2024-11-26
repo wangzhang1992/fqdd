@@ -343,11 +343,7 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
                  key_bias: bool = True,
                  value_bias: bool = True,
                  n_kv_head: Optional[int] = None,
-                 head_dim: Optional[int] = None,
-                 do_rel_shift=False,
-                 adaptive_scale=False,
-                 init_weights=False
-                 ):
+                 head_dim: Optional[int] = None):
         """Construct an RelPositionMultiHeadedAttention object."""
         super().__init__(n_head, n_feat, dropout_rate, query_bias, key_bias,
                          value_bias, n_kv_head, head_dim)
@@ -355,30 +351,10 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
         self.linear_pos = nn.Linear(n_feat, n_feat, bias=False)
         # these two learnable bias are used in matrix c and matrix d
         # as described in https://arxiv.org/abs/1901.02860 Section 3.3
-        self.do_rel_shift = do_rel_shift
         self.pos_bias_u = nn.Parameter(torch.Tensor(self.h, self.d_k))
         self.pos_bias_v = nn.Parameter(torch.Tensor(self.h, self.d_k))
         torch.nn.init.xavier_uniform_(self.pos_bias_u)
         torch.nn.init.xavier_uniform_(self.pos_bias_v)
-        self.adaptive_scale = adaptive_scale
-        self.ada_scale = nn.Parameter(torch.ones([1, 1, n_feat]),
-                                      requires_grad=adaptive_scale)
-        self.ada_bias = nn.Parameter(torch.zeros([1, 1, n_feat]),
-                                     requires_grad=adaptive_scale)
-        if init_weights:
-            self.init_weights()
-
-    def init_weights(self):
-        input_max = (self.h * self.d_k) ** -0.5
-        torch.nn.init.uniform_(self.linear_q.weight, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_q.bias, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_k.weight, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_k.bias, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_v.weight, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_v.bias, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_pos.weight, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_out.weight, -input_max, input_max)
-        torch.nn.init.uniform_(self.linear_out.bias, -input_max, input_max)
 
     def rel_shift(self, x, zero_triu: bool = False):
         """Compute relative positinal encoding.
@@ -406,53 +382,6 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
 
         return x
 
-    def forward_attention(
-            self,
-            value: torch.Tensor,
-            scores: torch.Tensor,
-            mask: torch.Tensor = torch.ones((0, 0, 0), dtype=torch.bool)
-    ) -> torch.Tensor:
-        """Compute attention context vector.
-
-        Args:
-            value (torch.Tensor): Transformed value, size
-                (#batch, n_head, time2, d_k).
-            scores (torch.Tensor): Attention score, size
-                (#batch, n_head, time1, time2).
-            mask (torch.Tensor): Mask, size (#batch, 1, time2) or
-                (#batch, time1, time2), (0, 0, 0) means fake mask.
-
-        Returns:
-            torch.Tensor: Transformed value (#batch, time1, d_model)
-                weighted by the attention score (#batch, time1, time2).
-
-        """
-        n_batch = value.size(0)
-        # NOTE(xcsong): When will `if mask.size(2) > 0` be True?
-        #   1. onnx(16/4) [WHY? Because we feed real cache & real mask for the
-        #           1st chunk to ease the onnx export.]
-        #   2. pytorch training
-        if mask.size(2) > 0:  # time2 > 0
-            mask = mask.unsqueeze(1).eq(0)  # (batch, 1, *, time2)
-            # For last chunk, time2 might be larger than scores.size(-1)
-            mask = mask[:, :, :, :scores.size(-1)]  # (batch, 1, *, time2)
-            scores = scores.masked_fill(mask, -float('inf'))
-            # (batch, head, time1, time2)
-            attn = torch.softmax(scores, dim=-1).masked_fill(mask, 0.0)
-        # NOTE(xcsong): When will `if mask.size(2) > 0` be False?
-        #   1. onnx(16/-1, -1/-1, 16/0)
-        #   2. jit (16/-1, -1/-1, 16/0, 16/4)
-        else:
-            attn = torch.softmax(scores, dim=-1)  # (batch, head, time1, time2)
-
-        p_attn = self.dropout(attn)
-        x = torch.matmul(p_attn, value)  # (batch, head, time1, d_k)
-        x = (x.transpose(1, 2).contiguous().view(n_batch, -1,
-                                                 self.h * self.d_k)
-             )  # (batch, time1, d_model)
-
-        return self.linear_out(x)  # (batch, time1, d_model)
-
     def forward(
             self,
             query: torch.Tensor,
@@ -460,8 +389,8 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
             value: torch.Tensor,
             mask: torch.Tensor = torch.ones((0, 0, 0), dtype=torch.bool),
             pos_emb: torch.Tensor = torch.empty(0),
-            cache: torch.Tensor = torch.zeros((0, 0, 0, 0))
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+            cache: T_CACHE = (torch.zeros((0, 0, 0, 0)), torch.zeros((0, 0, 0, 0)))
+    ) -> Tuple[torch.Tensor, T_CACHE]:
         """Compute 'Scaled Dot Product Attention' with rel. positional encoding.
         Args:
             query (torch.Tensor): Query tensor (#batch, time1, size).
@@ -480,38 +409,9 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
                 where `cache_t == chunk_size * num_decoding_left_chunks`
                 and `head * d_k == size`
         """
-        if self.adaptive_scale:
-            query = self.ada_scale * query + self.ada_bias
-            key = self.ada_scale * key + self.ada_bias
-            value = self.ada_scale * value + self.ada_bias
         q, k, v = self.forward_qkv(query, key, value)
         q = q.transpose(1, 2)  # (batch, time1, head, d_k)
-
-        # NOTE(xcsong):
-        #   when export onnx model, for 1st chunk, we feed
-        #       cache(1, head, 0, d_k * 2) (16/-1, -1/-1, 16/0 mode)
-        #       or cache(1, head, real_cache_t, d_k * 2) (16/4 mode).
-        #       In all modes, `if cache.size(0) > 0` will alwayse be `True`
-        #       and we will always do splitting and
-        #       concatnation(this will simplify onnx export). Note that
-        #       it's OK to concat & split zero-shaped tensors(see code below).
-        #   when export jit  model, for 1st chunk, we always feed
-        #       cache(0, 0, 0, 0) since jit supports dynamic if-branch.
-        # >>> a = torch.ones((1, 2, 0, 4))
-        # >>> b = torch.ones((1, 2, 3, 4))
-        # >>> c = torch.cat((a, b), dim=2)
-        # >>> torch.equal(b, c)        # True
-        # >>> d = torch.split(a, 2, dim=-1)
-        # >>> torch.equal(d[0], d[1])  # True
-        if cache.size(0) > 0:
-            key_cache, value_cache = torch.split(cache,
-                                                 cache.size(-1) // 2,
-                                                 dim=-1)
-            k = torch.cat([key_cache, k], dim=2)
-            v = torch.cat([value_cache, v], dim=2)
-        # NOTE(xcsong): We do cache slicing in encoder.forward_chunk, since it's
-        #   non-trivial to calculate `next_cache_start` here.
-        new_cache = torch.cat((k, v), dim=-1)
+        k, v, new_cache = self._update_kv_and_cache(k, v, cache)
 
         n_batch_pos = pos_emb.size(0)
         p = self.linear_pos(pos_emb).view(n_batch_pos, -1, self.h, self.d_k)
@@ -522,19 +422,18 @@ class RelPositionMultiHeadedAttention(MultiHeadedAttention):
         # (batch, head, time1, d_k)
         q_with_bias_v = (q + self.pos_bias_v).transpose(1, 2)
 
-        # compute attention score
-        # first compute matrix a and matrix c
-        # as described in https://arxiv.org/abs/1901.02860 Section 3.3
-        # (batch, head, time1, time2)
-        matrix_ac = torch.matmul(q_with_bias_u, k.transpose(-2, -1))
-
         # compute matrix b and matrix d
         # (batch, head, time1, time2)
         matrix_bd = torch.matmul(q_with_bias_v, p.transpose(-2, -1))
         # Remove rel_shift since it is useless in speech recognition,
         # and it requires special attention for streaming.
-        if self.do_rel_shift:
-            matrix_bd = self.rel_shift(matrix_bd)
+        # matrix_bd = self.rel_shift(matrix_bd)
+
+        # compute attention score
+        # first compute matrix a and matrix c
+        # as described in https://arxiv.org/abs/1901.02860 Section 3.3
+        # (batch, head, time1, time2)
+        matrix_ac = torch.matmul(q_with_bias_u, k.transpose(-2, -1))
 
         scores = (matrix_ac + matrix_bd) / math.sqrt(
             self.d_k)  # (batch, head, time1, time2)
@@ -788,117 +687,3 @@ class KeyValueAttention(nn.Module):
         normalized_scores = scores.softmax(1).transpose(1, 2)
         out = torch.matmul(normalized_scores, self.values).squeeze(1)
         return out, normalized_scores
-
-
-class MultiheadAttention(nn.Module):
-    """ The class is a wrapper of MultiHead Attention for torch.nn.MultiHeadAttention.
-    Reference: https://pytorch.org/docs/stable/nn.html
-    Arguments
-    ----------
-    num_heads : int
-        parallel attention heads.
-    dropout : float
-        a Dropout layer on attn_output_weights (default: 0.0).
-    bias : bool
-        add bias as module parameter (default: True).
-    add_bias_kv : bool
-        add bias to the key and value sequences at dim=0.
-    add_zero_attn : bool
-        add a new batch of zeros to the key and value sequences at dim=1.
-    kdim : int
-        total number of features in key (default: None).
-    vdim : int
-        total number of features in value (default: None).
-    Example
-    -------
-    >>> inputs = torch.rand([8, 60, 512])
-    >>> net = MultiheadAttention(nhead=8, d_model=inputs.shape[-1])
-    >>> outputs, attn = net(inputs, inputs, inputs)
-    >>> outputs.shape
-    torch.Size([8, 60, 512])
-    """
-
-    def __init__(
-            self,
-            nhead,
-            d_model,
-            dropout=0.0,
-            bias=True,
-            add_bias_kv=False,
-            add_zero_attn=False,
-            kdim=None,
-            vdim=None,
-    ):
-        super().__init__()
-        self.att = nn.MultiheadAttention(
-            embed_dim=d_model,
-            num_heads=nhead,
-            dropout=dropout,
-            bias=bias,
-            add_bias_kv=add_bias_kv,
-            add_zero_attn=add_zero_attn,
-            kdim=kdim,
-            vdim=vdim,
-        )
-
-    def forward(
-            self,
-            query,
-            key,
-            value,
-            attn_mask: Optional[torch.Tensor] = None,
-            key_padding_mask: Optional[torch.Tensor] = None,
-    ):
-        """
-        Arguments
-        ----------
-        query : tensor
-            (N, L, E) where L is the target sequence length,
-            N is the batch size, E is the embedding dimension.
-        key : tensor
-            (N, S, E) where S is the source sequence length,
-            N is the batch size, E is the embedding dimension.
-        value : tensor
-            (N, S, E) where S is the source sequence length,
-            N is the batch size, E is the embedding dimension.
-        key_padding_mask : tensor
-            (N, S) where N is the batch size, S is the source sequence
-            length. If a ByteTensor is provided, the non-zero positions will
-            be ignored while the position with the zero positions will be
-            unchanged. If a BoolTensor is provided, the positions with the
-            value of True will be ignored while the position with the value
-            of False will be unchanged.
-        attn_mask : tensor
-            2D mask (L, S) where L is the target sequence length, S is
-            the source sequence length.
-            3D mask (N*num_heads, L, S) where N is the batch
-            size, L is the target sequence length, S is the source sequence
-            length. attn_mask ensure that position i is allowed to attend the
-            unmasked positions. If a ByteTensor is provided, the non-zero
-            positions are not allowed to attend while the zero positions will
-            be unchanged. If a BoolTensor is provided, positions with True is
-            not allowed to attend while False values will be unchanged. If a
-            FloatTensor is provided, it will be added to the attention weight.
-        Outputs
-        -------
-        attn_output : tensor
-            (L, N, E) where L is the target sequence length, N is the
-            batch size, E is the embedding dimension.
-        attn_output_weights : tensor
-            (N, L, S) where N is the batch size, L is the target
-            sequence length, S is the source sequence length.
-        """
-        # give tensors of shape (time, batch, fea)
-        query = query.permute(1, 0, 2)
-        key = key.permute(1, 0, 2)
-        value = value.permute(1, 0, 2)
-        output, attention = self.att(
-            query,
-            key,
-            value,
-            attn_mask=attn_mask,
-            key_padding_mask=key_padding_mask,
-        )
-        # reshape the output back to (batch, time, fea)
-        output = output.permute(1, 0, 2)
-        return output, attention
