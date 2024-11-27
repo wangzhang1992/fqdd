@@ -1,15 +1,17 @@
 import torch
-import torch.nn as  nn
+import torch.nn as nn
 
 from fqdd.element_nnets.RNN import LSTM
+from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS
 from fqdd.element_nnets.containers import Sequential
 from fqdd.element_nnets.linear import Linear
 from fqdd.element_nnets.normalization import LayerNorm
 from fqdd.element_nnets.pooling import Pooling1d
 from fqdd.models.crdnn.encoder_layer import CNN_Block, DNN_Block
+from fqdd.utils.common import load_json_cmvn, GlobalCMVN
 
 
-class Encoder(Sequential):
+class CrdnnEncoder(Sequential):
     """This model is a combination of CNNs, RNNs, and DNNs.
 
     This model expects 3-dimensional input [batch, time, feats] and
@@ -66,58 +68,62 @@ class Encoder(Sequential):
         The number of neurons in the projection layer.
         This layer is used to reduce the size of the flattened
         representation obtained after the CNN blocks.
-
-    Example
-    -------
-    >>> inputs = torch.rand([10, 15, 60])
-    >>> model = CRDNN(input_shape=inputs.shape)
-    >>> outputs = model(inputs)
-    >>> outputs.shape
-    torch.Size([10, 15, 512])
     """
 
     def __init__(
             self,
-            output_size=1024,
-            input_shape=None,
-            activation=nn.LeakyReLU,
-            dropout=0.15,
-            cnn_blocks=2,
-            cnn_channels=(128, 256),
-            cnn_kernelsize=(3, 3),
-            time_pooling=False,
-            time_pooling_size=4,
-            freq_pooling_size=2,
-            rnn_class=LSTM,
-            inter_layer_pooling_size=(2, 2),
-            using_2d_pooling=False,
-            rnn_layers=2,
-            rnn_neurons=1024,
-            rnn_bidirectional=False,
-            rnn_re_init=True,
-            dnn_blocks=2,
-            dnn_neurons=1024,
-            projection_dim=1024,
-            use_rnnp=False,
+            encoder_conf,
+            use_cmvn: bool = False,
+            cmvn_file: str = None
     ):
-        if output_size is None and input_shape is None:
+        super(CrdnnEncoder, self).__init__()
+        input_size = encoder_conf.get("input_size")
+        output_size = encoder_conf.get("output_size", 256)
+        activation_type = encoder_conf.get("activation_type", "swish")
+        dropout_rate = encoder_conf.get("dropout_rate", 0.1)
+        cnn_blocks = encoder_conf.get("num_blocks", 2)
+        cnn_channels = encoder_conf.get("cnn_channels", (128, 256))
+        cnn_kernel_size = encoder_conf.get("cnn_kernel_size", (3, 3))
+        time_pooling = encoder_conf.get("time_pooling", False)
+        time_pooling_size = encoder_conf.get("time_pooling_size", 4)
+        freq_pooling_size = encoder_conf.get("freq_pooling_size", 2)
+        rnn_class = encoder_conf.get("rnn_class", "lstm")
+        inter_layer_pooling_size = encoder_conf.get("cnn_kernel_size", (2, 2))
+        using_2d_pooling = encoder_conf.get("using_2d_pooling", False)
+        rnn_layers = encoder_conf.get("rnn_layers", 2)
+        rnn_neurons = encoder_conf.get("rnn_neurons", 1024)
+        rnn_bidirectional = encoder_conf.get("rnn_bidirectional", False)
+        rnn_re_init = encoder_conf.get("rnn_re_init", True)
+        dnn_blocks = encoder_conf.get("dnn_blocks", 2)
+        dnn_neurons = encoder_conf.get("dnn_neurons", 1024)
+        projection_dim = encoder_conf.get("projection_dim", 1024)
+        use_rnnp = encoder_conf.get("use_rnnp", False)
+
+        if output_size is None and input_size is None:
             raise ValueError("Must specify one of input_size or input_shape")
 
-        if input_shape is None:
+        if input_size is None:
             input_shape = [None, None, output_size]
         super().__init__(input_shape=input_shape)
 
+        if use_cmvn:
+            mean, std = load_json_cmvn(cmvn_file)
+            mean = torch.from_numpy(mean).float()
+            std = torch.from_numpy(std).float()
+            self.append(Sequential, layerF_name="GlobalCMVN")
+            self.GlobalCMVN.append(GlobalCMVN(mean, std))
+
         if cnn_blocks > 0:
-            self.append(Sequential, layer_name="CNN")
+            self.append(Sequential, layerF_name="CNN")
         for block_index in range(cnn_blocks):
             self.CNN.append(
                 CNN_Block,
                 channels=cnn_channels[block_index],
-                kernel_size=cnn_kernelsize,
+                kernel_size=cnn_kernel_size,
                 using_2d_pool=using_2d_pooling,
                 pooling_size=inter_layer_pooling_size[block_index],
-                activation=activation,
-                dropout=dropout,
+                activation=FQDD_ACTIVATIONS[activation_type](),
+                dropout=dropout_rate,
                 layer_name=f"block_{block_index}",
             )
 
@@ -149,7 +155,7 @@ class Encoder(Sequential):
             self.projection.append(
                 LayerNorm, layer_name="norm"
             )
-            self.projection.append(activation(), layer_name="act")
+            self.projection.append(FQDD_ACTIVATIONS[activation_type](), layer_name="act")
 
         if rnn_layers > 0:
             if use_rnnp:
@@ -168,14 +174,14 @@ class Encoder(Sequential):
                         bias=True,
                         combine_dims=True,
                     )
-                    self.append(nn.Dropout(p=dropout))
+                    self.append(nn.Dropout(p=dropout_rate))
             else:
                 self.append(
                     rnn_class,
                     layer_name="RNN",
                     hidden_size=rnn_neurons,
                     num_layers=rnn_layers,
-                    dropout=dropout,
+                    dropout=dropout_rate,
                     bidirectional=rnn_bidirectional,
                     re_init=rnn_re_init,
                 )
@@ -186,7 +192,7 @@ class Encoder(Sequential):
             self.DNN.append(
                 DNN_Block,
                 neurons=dnn_neurons,
-                activation=activation,
-                dropout=dropout,
+                activation=FQDD_ACTIVATIONS[activation_type](),
+                dropout=dropout_rate,
                 layer_name=f"block_{block_index}",
             )

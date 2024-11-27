@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="init_model 修改default">
-      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/decoder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/decoder_layer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" afterDir="false" />
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新crdnn">
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/crdnn_conf.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/decoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/decoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,6 +62,7 @@
     "Python tests.Doctests in CRDNN.executor": "Run",
     "Python.CRDNN.executor": "Run",
     "Python.attentions.executor": "Run",
+    "Python.crdnn.executor": "Run",
     "Python.dense.executor": "Run",
     "Python.init_model.executor": "Debug",
     "Python.readdata.executor": "Run",
@@ -76,7 +73,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/models/crdnn",
+    "last_opened_file_path": "D:/JetBrains/work/fqdd/demo/aishell/s0/conf",
     "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
@@ -91,11 +88,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0\conf" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\crdnn" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\ebranchformer" />
       <recent name="D:\JetBrains\work\fqdd\tools" />
       <recent name="D:\JetBrains\work\fqdd\fqdd" />
-      <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\JetBrains\work\fqdd\fqdd\bin" />
@@ -105,7 +102,7 @@
       <recent name="D:\JetBrains\work\fqdd\fqdd\module_nnets" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.attentions">
+  <component name="RunManager" selected="Python.crdnn">
     <configuration name="attentions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
@@ -128,7 +125,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="dense" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="crdnn" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -137,11 +134,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fqdd/models" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fqdd" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fqdd/models/dense.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -233,18 +230,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.attentions" />
-      <item itemvalue="Python.dense" />
+      <item itemvalue="Python.crdnn" />
       <item itemvalue="Python.recognize" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.readdata" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.crdnn" />
         <item itemvalue="Python.attentions" />
         <item itemvalue="Python.readdata" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.recognize" />
-        <item itemvalue="Python.dense" />
       </list>
     </recent_temporary>
   </component>
@@ -263,14 +260,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00015" summary="update">
-      <option name="closed" value="true" />
-      <created>1730439341149</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1730439341149</updated>
     </task>
     <task id="LOCAL-00016" summary="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式">
       <option name="closed" value="true" />
@@ -656,7 +645,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732627569732</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="更新crdnn">
+      <option name="closed" value="true" />
+      <created>1732687137544</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1732687137545</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -671,7 +668,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="编写recognize程序,测试运行，目前只有ctc_greedy解码模式" />
     <MESSAGE value="更新参数结构" />
     <MESSAGE value="更新log_interval 日志输出及损失，准确度计算方法" />
     <MESSAGE value="添加多模型权重合并" />
@@ -696,7 +692,8 @@
     <MESSAGE value="添加模型总参数输出" />
     <MESSAGE value="添加context" />
     <MESSAGE value="init_model 修改default" />
-    <option name="LAST_COMMIT_MESSAGE" value="init_model 修改default" />
+    <MESSAGE value="更新crdnn" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新crdnn" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

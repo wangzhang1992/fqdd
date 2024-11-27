@@ -1,13 +1,10 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import math
 from fqdd.element_nnets.containers import Sequential
 from fqdd.element_nnets.CNN import Conv2d
 from fqdd.element_nnets.dropout import Dropout2d
 from fqdd.element_nnets.normalization import LayerNorm, BatchNorm1d
 from fqdd.element_nnets.pooling import Pooling1d, Pooling2d
-from fqdd.element_nnets.RNN import LiGRU, LSTM, GRU
 from fqdd.element_nnets.linear import Linear
 
 
@@ -126,6 +123,3 @@ class DNN_Block(Sequential):
         self.append(BatchNorm1d, layer_name="norm")
         self.append(activation(), layer_name="act")
         self.append(nn.Dropout(p=dropout), layer_name="dropout")
-
-
-
