@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="init_model 修改default">
+      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/decoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/decoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/CRDNN_copy2.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,7 +76,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/models/ebranchformer",
+    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/models/crdnn",
     "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
@@ -83,11 +91,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\JetBrains\work\fqdd\fqdd\models\crdnn" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\ebranchformer" />
       <recent name="D:\JetBrains\work\fqdd\tools" />
       <recent name="D:\JetBrains\work\fqdd\fqdd" />
       <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0" />
-      <recent name="D:\JetBrains\work\fqdd\demo\aishell" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\JetBrains\work\fqdd\fqdd\bin" />
@@ -255,14 +263,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00014" summary="update">
-      <option name="closed" value="true" />
-      <created>1730438724947</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1730438724947</updated>
     </task>
     <task id="LOCAL-00015" summary="update">
       <option name="closed" value="true" />
@@ -648,7 +648,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732625386691</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="init_model 修改default">
+      <option name="closed" value="true" />
+      <created>1732627569732</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1732627569732</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -702,11 +710,6 @@
           <url>file://$PROJECT_DIR$/fqdd/utils/common.py</url>
           <line>16</line>
           <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/fqdd/models/crdnn/CRDNN.py</url>
-          <line>9</line>
-          <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fqdd/modules/embedings.py</url>
