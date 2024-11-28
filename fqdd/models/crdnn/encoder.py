@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
 
-from fqdd.nnets.RNN import LSTM
+from fqdd.modules.model_utils import LayerDropModuleList
 from fqdd.nnets.base_utils import FQDD_ACTIVATIONS
-from fqdd.nnets.containers import Sequential
 from fqdd.nnets.linear import Linear
 from fqdd.nnets.normalization import LayerNorm
 from fqdd.nnets.pooling import Pooling1d
@@ -11,7 +10,7 @@ from fqdd.models.crdnn.encoder_layer import CNN_Block, DNN_Block
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN
 
 
-class CrdnnEncoder(Sequential):
+class CrdnnEncoder(nn.Module):
     """This model is a combination of CNNs, RNNs, and DNNs.
 
     This model expects 3-dimensional input [batch, time, feats] and
@@ -87,6 +86,7 @@ class CrdnnEncoder(Sequential):
         time_pooling = encoder_conf.get("time_pooling", False)
         time_pooling_size = encoder_conf.get("time_pooling_size", 4)
         freq_pooling_size = encoder_conf.get("freq_pooling_size", 2)
+        stochastic_depth_rate = encoder_conf.get("stochastic_depth_rate", 0.0)
         rnn_class = encoder_conf.get("rnn_class", "lstm")
         inter_layer_pooling_size = encoder_conf.get("cnn_kernel_size", (2, 2))
         using_2d_pooling = encoder_conf.get("using_2d_pooling", False)
@@ -99,25 +99,14 @@ class CrdnnEncoder(Sequential):
         projection_dim = encoder_conf.get("projection_dim", 1024)
         use_rnnp = encoder_conf.get("use_rnnp", False)
 
-        if output_size is None and input_size is None:
-            raise ValueError("Must specify one of input_size or input_shape")
-
-        if input_size is None:
-            input_shape = [None, None, output_size]
-        super().__init__(input_shape=input_shape)
-
         if use_cmvn:
             mean, std = load_json_cmvn(cmvn_file)
             mean = torch.from_numpy(mean).float()
             std = torch.from_numpy(std).float()
-            self.append(Sequential, layerF_name="GlobalCMVN")
-            self.GlobalCMVN.append(GlobalCMVN(mean, std))
+            self.global_cmvn = GlobalCMVN(mean, std)
 
-        if cnn_blocks > 0:
-            self.append(Sequential, layerF_name="CNN")
-        for block_index in range(cnn_blocks):
-            self.CNN.append(
-                CNN_Block,
+        self.cnn_block = LayerDropModuleList(p=stochastic_depth_rate, modules=[
+            CNN_Block(
                 channels=cnn_channels[block_index],
                 kernel_size=cnn_kernel_size,
                 using_2d_pool=using_2d_pooling,
@@ -125,7 +114,10 @@ class CrdnnEncoder(Sequential):
                 activation=FQDD_ACTIVATIONS[activation_type](),
                 dropout=dropout_rate,
                 layer_name=f"block_{block_index}",
-            )
+            ) for block_index in range(cnn_blocks)
+        ])
+
+
 
         if time_pooling:
             self.append(

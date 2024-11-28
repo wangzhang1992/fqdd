@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from fqdd.nnets.base_utils import FQDD_NORMALIZES, FQDD_ACTIVATIONS
-from fqdd.models.ebranchformer.encoder_layer import ConvolutionalGatingMLP, EBranchformerEncoderLayer
+from fqdd.models.ebranchformer_ehance.encoder_layer import ConvolutionalGatingMLP, EBranchformerEncoderLayer
 from fqdd.modules.model_utils import FQDD_MLPS, FQDD_EMBEDDINGS, FQDD_SUBSAMPLES, LayerDropModuleList, FQDD_ATTENTIONS
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN
 from fqdd.utils.mask import make_pad_mask

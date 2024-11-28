@@ -2,7 +2,7 @@ import torch.nn as nn
 
 from fqdd.models.conformer.conformer import Conformer
 from fqdd.models.crdnn.crdnn import CRDNN
-from fqdd.models.ebranchformer_ehance.ebranchformer import EBranchformer_Ehance
+from fqdd.models.ebranchformer_ehance.ebranchformer_ehance import EBranchformer_Ehance
 from fqdd.modules.model_utils import load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
 

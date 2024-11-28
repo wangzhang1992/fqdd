@@ -3,14 +3,15 @@ import torch.nn as nn
 
 from typing import List, Tuple
 
-from fqdd.models.ebranchformer.encoder import EBranchformerEncoder
+from fqdd.models.ebranchformer_ehance.encoder import EBranchformerEncoder
+from fqdd.models.ebranchformer_ehance.decoder import TransformerDecoder
 from fqdd.modules.CTC import CTC
 from fqdd.decoders.search import DecodeResult
 from fqdd.modules.losses import LabelSmoothingLoss
 from fqdd.text.tokenize_utils import remove_duplicates_and_blank, add_sos_eos, reverse_pad_list
 from fqdd.utils.common import th_accuracy
 from fqdd.utils.mask import make_pad_mask
-from fqdd.models.ebranchformer.decoder import TransformerDecoder
+
 
 T_CACHE = Tuple[torch.Tensor, torch.Tensor]
 IGNORE_ID = -1
@@ -21,7 +22,7 @@ class EBranchformer_Ehance(nn.Module):
             self,
             model_conf,
     ):
-        super(EBranchformer, self).__init__()
+        super(EBranchformer_Ehance, self).__init__()
 
         self.model_conf = model_conf
 

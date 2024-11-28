@@ -21,12 +21,6 @@ class CRDNN(nn.Module):
 
     ):
         '''
-                    num_classifies,
-            feat_shape=None,
-            output_size=1024,
-            embedding_dim=512,
-            dropout=0.15,
-            de_num_layer=2,
         Parameters
         ----------
         model_conf

@@ -24,7 +24,7 @@
       "<eos>": 2
     }
   },
-  "model_name": "conformer",
+  "model_name": "crdnn",
   "model": {
     "grad_clip": 5,
     "dtype": "fp32",

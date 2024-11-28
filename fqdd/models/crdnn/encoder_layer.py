@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from fqdd.nnets.containers import Sequential
 from fqdd.nnets.CNN import Conv2d
 from fqdd.nnets.dropout import Dropout2d
 from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
@@ -8,7 +7,7 @@ from fqdd.nnets.pooling import Pooling1d, Pooling2d
 from fqdd.nnets.linear import Linear
 
 
-class CNN_Block(Sequential):
+class CNN_Block(nn.Module):
     """CNN Block, based on VGG blocks.
 
     Arguments
@@ -27,14 +26,6 @@ class CNN_Block(Sequential):
         Size of pooling kernel, duplicated for 2d pooling.
     dropout : float
         Rate to use for dropping channels.
-
-    Example
-    -------
-    >>> inputs = torch.rand(10, 15, 60)
-    >>> block = CNN_Block(input_shape=inputs.shape, channels=32)
-    >>> outputs = block(inputs)
-    >>> outputs.shape
-    torch.Size([10, 15, 30, 32])
     """
 
     def __init__(
@@ -47,7 +38,7 @@ class CNN_Block(Sequential):
             pooling_size=2,
             dropout=0.15,
     ):
-        super().__init__(input_shape=input_shape)
+        super(CNN_Block).__init__()
         self.append(
             Conv2d,
             out_channels=channels,
