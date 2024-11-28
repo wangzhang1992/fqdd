@@ -139,14 +139,14 @@ class CRDNN(nn.Module):
         return results
 
 
-torch.manual_seed(2021)
-feats = torch.randn(4, 1500, 80).to("cpu")
-targets = torch.randint(2, 4078, (4, 20)).to("cpu")
-print("input_feats.shape:{}".format(feats.shape))
-print("input_targets.shape:{}".format(targets.shape))
-net = CRDNN().to("cpu")
-print(net)
-while 1:
-    res = net(feats, targets)
-    print(res[0].size(), res[1].size())
-    torch.cuda.empty_cache()
+# torch.manual_seed(2021)
+# feats = torch.randn(4, 1500, 80).to("cpu")
+# targets = torch.randint(2, 4078, (4, 20)).to("cpu")
+# print("input_feats.shape:{}".format(feats.shape))
+# print("input_targets.shape:{}".format(targets.shape))
+# net = CRDNN().to("cpu")
+# print(net)
+# while 1:
+#     res = net(feats, targets)
+#     print(res[0].size(), res[1].size())
+#     torch.cuda.empty_cache()
