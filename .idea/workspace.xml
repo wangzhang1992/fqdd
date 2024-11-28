@@ -5,12 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新crdnn">
-      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/crdnn_conf.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_ehance_conf.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/ebranchformer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/encoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/encoder_layer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/decoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/decoder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,10 +91,10 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0\conf" />
+      <recent name="D:\JetBrains\work\fqdd\fqdd\models" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\crdnn" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\ebranchformer" />
       <recent name="D:\JetBrains\work\fqdd\tools" />
-      <recent name="D:\JetBrains\work\fqdd\fqdd" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\JetBrains\work\fqdd\fqdd\bin" />
@@ -260,22 +262,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00016" summary="参数格式修改；模型初始化修改，添加模型工具类；修改参数格式">
-      <option name="closed" value="true" />
-      <created>1730798676882</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1730798676882</updated>
-    </task>
-    <task id="LOCAL-00017" summary="编写recognize程序,测试运行，目前只有ctc_greedy解码模式">
-      <option name="closed" value="true" />
-      <created>1730855987931</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1730855987931</updated>
     </task>
     <task id="LOCAL-00018" summary="更新参数结构">
       <option name="closed" value="true" />
@@ -653,7 +639,23 @@
       <option name="project" value="LOCAL" />
       <updated>1732687137545</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="更新crdnn">
+      <option name="closed" value="true" />
+      <created>1732697595518</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1732697595518</updated>
+    </task>
+    <task id="LOCAL-00066" summary="更新crdnn">
+      <option name="closed" value="true" />
+      <created>1732785962693</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1732785962693</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -721,6 +723,11 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fqdd/modules/model_utils.py</url>
           <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fqdd/models/ebranchformer/encoder_layer.py</url>
+          <line>273</line>
+          <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

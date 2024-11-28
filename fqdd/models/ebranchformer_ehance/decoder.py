@@ -2,7 +2,8 @@ from typing import Tuple
 
 import torch
 
-from fqdd.models.conformer.decoder_layer import DecoderLayer
+from fqdd.models.ebranchformer.decoder_layer import DecoderLayer
+from fqdd.models.ebranchformer_ehance.encoder_layer import ConvolutionalGatingMLP
 from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_ATTENTIONS
 from fqdd.nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.utils.mask import make_pad_mask, subsequent_mask
@@ -54,6 +55,11 @@ class TransformerDecoder(torch.nn.Module):
         self_attention_dropout_rate = decoder_conf.get("self_attention_dropout_rate", 0.0)
         src_attention_dropout_rate = decoder_conf.get("src_attention_dropout_rate", 0.0)
         src_attention = decoder_conf.get("src_attention", True)
+        merge_conv_kernel = decoder_conf.get("merge_conv_kernel", 3)
+        cgmlp_conv_kernel = decoder_conf.get("cgmlp_conv_kernel", 31)
+        use_linear_after_conv = decoder_conf.get("use_linear_after_conv", False)
+        gate_activation = decoder_conf.get("gate_activation", "identity")
+        causal = decoder_conf.get("causal", False)
         query_bias = decoder_conf.get("query_bias", True)
         key_bias = decoder_conf.get("key_bias", True)
         value_bias = decoder_conf.get("value_bias", True)
@@ -86,6 +92,10 @@ class TransformerDecoder(torch.nn.Module):
         self.num_blocks = num_blocks
 
         mlp_class = FQDD_MLPS[mlp_type]
+        cgmlp_layer = ConvolutionalGatingMLP
+        cgmlp_layer_args = (encoder_output_size, encoder_output_size*2, cgmlp_conv_kernel,
+                            dropout_rate, use_linear_after_conv,
+                            gate_activation, causal)
         self.decoders = torch.nn.ModuleList([
             DecoderLayer(
                 attention_dim,
@@ -104,9 +114,12 @@ class TransformerDecoder(torch.nn.Module):
                           mlp_bias,
                           n_expert=n_expert,
                           n_expert_activated=n_expert_activated),
+                cgmlp_layer(*cgmlp_layer_args),
                 dropout_rate,
-                normalize_before,
-                norm_eps,
+                merge_conv_kernel=merge_conv_kernel,
+                causal=causal,
+                normalize_before=self.normalize_before,
+                norm_eps=norm_eps
             ) for _ in range(self.num_blocks)
         ])
 

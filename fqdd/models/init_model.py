@@ -2,13 +2,15 @@ import torch.nn as nn
 
 from fqdd.models.conformer.conformer import Conformer
 from fqdd.models.crdnn.crdnn import CRDNN
+from fqdd.models.ebranchformer_ehance.ebranchformer import EBranchformer_Ehance
 from fqdd.modules.model_utils import load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
 
 MODEL_LISTS = {
     "conformer": Conformer,
     "ebranchformer": EBranchformer,
-    "crdnn": CRDNN
+    "crdnn": CRDNN,
+    "ebranchformer_ehance": EBranchformer_Ehance
 }
 
 

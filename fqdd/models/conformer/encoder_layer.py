@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from fqdd.modules.attentions import T_CACHE
-from fqdd.element_nnets.base_utils import FQDD_NORMALIZES
+from fqdd.nnets.base_utils import FQDD_NORMALIZES
 
 
 class ConformerEncoderLayer(nn.Module):

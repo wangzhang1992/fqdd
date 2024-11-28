@@ -9,7 +9,7 @@ import inspect
 import logging
 import operator
 import functools
-from fqdd.element_nnets.linear import Linear
+from fqdd.nnets.linear import Linear
 from fqdd.utils.callchains import lengths_arg_exists
 
 logger = logging.getLogger(__name__)

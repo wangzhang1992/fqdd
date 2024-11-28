@@ -45,7 +45,7 @@ def transducer_loss(
     reduction : str
         Specifies the reduction to apply to the output: 'mean' | 'batchmean' | 'sum'.
     """
-    from fqdd.element_nnets.transducer_loss import Transducer
+    from fqdd.nnets.transducer_loss import Transducer
 
     input_lens = (input_lens * log_probs.shape[1]).int()
     target_lens = (target_lens * targets.shape[1]).int()

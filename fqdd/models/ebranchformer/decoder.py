@@ -4,7 +4,7 @@ import torch
 
 from fqdd.models.ebranchformer.decoder_layer import DecoderLayer
 from fqdd.modules.model_utils import FQDD_EMBEDDINGS, FQDD_MLPS, FQDD_ATTENTIONS
-from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
+from fqdd.nnets.base_utils import FQDD_ACTIVATIONS, FQDD_NORMALIZES
 from fqdd.utils.mask import make_pad_mask, subsequent_mask
 
 

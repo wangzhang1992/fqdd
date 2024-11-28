@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
-from fqdd.element_nnets.containers import Sequential
-from fqdd.element_nnets.CNN import Conv2d
-from fqdd.element_nnets.dropout import Dropout2d
-from fqdd.element_nnets.normalization import LayerNorm, BatchNorm1d
-from fqdd.element_nnets.pooling import Pooling1d, Pooling2d
-from fqdd.element_nnets.linear import Linear
+from fqdd.nnets.containers import Sequential
+from fqdd.nnets.CNN import Conv2d
+from fqdd.nnets.dropout import Dropout2d
+from fqdd.nnets.normalization import LayerNorm, BatchNorm1d
+from fqdd.nnets.pooling import Pooling1d, Pooling2d
+from fqdd.nnets.linear import Linear
 
 
 class CNN_Block(Sequential):

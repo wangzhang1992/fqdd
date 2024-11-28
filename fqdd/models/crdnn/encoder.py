@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
 
-from fqdd.element_nnets.RNN import LSTM
-from fqdd.element_nnets.base_utils import FQDD_ACTIVATIONS
-from fqdd.element_nnets.containers import Sequential
-from fqdd.element_nnets.linear import Linear
-from fqdd.element_nnets.normalization import LayerNorm
-from fqdd.element_nnets.pooling import Pooling1d
+from fqdd.nnets.RNN import LSTM
+from fqdd.nnets.base_utils import FQDD_ACTIVATIONS
+from fqdd.nnets.containers import Sequential
+from fqdd.nnets.linear import Linear
+from fqdd.nnets.normalization import LayerNorm
+from fqdd.nnets.pooling import Pooling1d
 from fqdd.models.crdnn.encoder_layer import CNN_Block, DNN_Block
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN
 
