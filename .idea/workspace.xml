@@ -4,15 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新crdnn">
-      <change afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/ebranchformer_ehance_conf.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder_layer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/ebranchformer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/encoder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/encoder_layer.py" afterDir="false" />
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新nnets">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -262,14 +255,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00018" summary="更新参数结构">
-      <option name="closed" value="true" />
-      <created>1730876613273</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1730876613273</updated>
     </task>
     <task id="LOCAL-00019" summary="更新参数结构">
       <option name="closed" value="true" />
@@ -655,7 +640,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732785962693</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="更新nnets">
+      <option name="closed" value="true" />
+      <created>1732786343013</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1732786343013</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -670,7 +663,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="更新参数结构" />
     <MESSAGE value="更新log_interval 日志输出及损失，准确度计算方法" />
     <MESSAGE value="添加多模型权重合并" />
     <MESSAGE value="去除reload_config" />
@@ -695,7 +687,8 @@
     <MESSAGE value="添加context" />
     <MESSAGE value="init_model 修改default" />
     <MESSAGE value="更新crdnn" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新crdnn" />
+    <MESSAGE value="更新nnets" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新nnets" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
