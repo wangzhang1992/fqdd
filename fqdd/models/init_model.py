@@ -3,6 +3,8 @@ import torch.nn as nn
 from fqdd.models.conformer.conformer import Conformer
 from fqdd.models.crdnn.crdnn import CRDNN
 from fqdd.models.ebranchformer_ehance.ebranchformer_ehance import EBranchformer_Ehance
+from fqdd.models.ebranchformer_ehance_v2.ebranchformer_ehance_v2 import EBranchformer_Ehance_V2
+from fqdd.models.ebranchformer_ehance_v3.ebranchformer_ehance_v3 import EBranchformer_Ehance_V3
 from fqdd.modules.model_utils import load_checkpoint
 from fqdd.models.ebranchformer.ebranchformer import EBranchformer
 
@@ -10,7 +12,9 @@ MODEL_LISTS = {
     "conformer": Conformer,
     "ebranchformer": EBranchformer,
     "crdnn": CRDNN,
-    "ebranchformer_ehance": EBranchformer_Ehance
+    "ebranchformer_ehance": EBranchformer_Ehance,
+    "ebranchformer_ehance_v2": EBranchformer_Ehance_V2,
+    "ebranchformer_ehance_v3": EBranchformer_Ehance_V3,
 }
 
 

@@ -101,6 +101,7 @@ class DecoderLayer(nn.Module):
 
         Parameters
         ----------
+        cache
         cnn_cache
 
         """

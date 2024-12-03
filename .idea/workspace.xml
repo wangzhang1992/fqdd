@@ -4,15 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新nnets">
+    <list default="true" id="c46905b8-28ba-4d6f-addf-e82c57ceb894" name="Changes" comment="更新">
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2/decoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2/decoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2/ebranchformer_ehance_v2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2/encoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2/encoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3/decoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3/decoder_layer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3/ebranchformer_ehance_v3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3/encoder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3/encoder_layer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/aishell/s0/conf/crdnn_conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/demo/aishell/s0/conf/crdnn_conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/crdnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/bin/asr/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/bin/asr/train.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/crdnn/encoder_layer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/ebranchformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/ebranchformer_ehance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder_layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance/decoder_layer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fqdd/models/init_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/models/init_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/modules/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/modules/model_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fqdd/nnets/base_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/fqdd/nnets/base_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,13 +79,15 @@
     "Python.init_model.executor": "Debug",
     "Python.readdata.executor": "Run",
     "Python.recognize.executor": "Run",
+    "Python.t.executor": "Run",
+    "Python.te.executor": "Run",
     "Python.test.executor": "Run",
     "Python.train.executor": "Run",
     "Python.train_NNM.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "D:/JetBrains/work/fqdd/demo/aishell/s0/conf",
+    "last_opened_file_path": "D:/JetBrains/work/fqdd/fqdd/models",
     "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
@@ -90,8 +102,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0\conf" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models" />
+      <recent name="D:\JetBrains\work\fqdd\demo\aishell\s0\conf" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\crdnn" />
       <recent name="D:\JetBrains\work\fqdd\fqdd\models\ebranchformer" />
       <recent name="D:\JetBrains\work\fqdd\tools" />
@@ -104,7 +116,7 @@
       <recent name="D:\JetBrains\work\fqdd\fqdd\module_nnets" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.crdnn">
+  <component name="RunManager" selected="Python.te">
     <configuration name="attentions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
@@ -171,7 +183,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="recognize" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="t" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -180,11 +192,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/demo/aishell/s0/fqdd/bin/asr/recognize.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v2/t.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -193,7 +205,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="te" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="fqdd" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -202,11 +214,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fqdd/models/ebranchformer_ehance_v3/te.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -231,19 +243,19 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.t" />
+      <item itemvalue="Python.te" />
       <item itemvalue="Python.attentions" />
       <item itemvalue="Python.crdnn" />
-      <item itemvalue="Python.recognize" />
-      <item itemvalue="Python.test" />
       <item itemvalue="Python.readdata" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.te" />
+        <item itemvalue="Python.t" />
         <item itemvalue="Python.crdnn" />
         <item itemvalue="Python.attentions" />
         <item itemvalue="Python.readdata" />
-        <item itemvalue="Python.test" />
-        <item itemvalue="Python.recognize" />
       </list>
     </recent_temporary>
   </component>
@@ -262,14 +274,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1714114074472</updated>
-    </task>
-    <task id="LOCAL-00020" summary="更新参数结构">
-      <option name="closed" value="true" />
-      <created>1731377982085</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1731377982085</updated>
     </task>
     <task id="LOCAL-00021" summary="更新参数结构">
       <option name="closed" value="true" />
@@ -655,7 +659,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732787417970</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="更新">
+      <option name="closed" value="true" />
+      <created>1732792975236</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1732792975236</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -680,7 +692,6 @@
     <MESSAGE value="添加model_dir参数，并更新reload_configs函数代码" />
     <MESSAGE value="添加use_cnn_module, 默认值" />
     <MESSAGE value="添加学习率输出" />
-    <MESSAGE value="更新" />
     <MESSAGE value="添加final.model 软连接" />
     <MESSAGE value="更新输入参数，及更新attention调用方式" />
     <MESSAGE value="readme" />
@@ -695,7 +706,8 @@
     <MESSAGE value="init_model 修改default" />
     <MESSAGE value="更新crdnn" />
     <MESSAGE value="更新nnets" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新nnets" />
+    <MESSAGE value="更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

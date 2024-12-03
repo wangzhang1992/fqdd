@@ -13,6 +13,7 @@ from fqdd.modules.embedings import PositionalEncoding, RelPositionalEncoding, No
 from fqdd.modules.mlps import PositionwiseFeedForward
 from fqdd.modules.subsamples import LinearNoSubsampling, EmbedinigNoSubsampling, Conv1dSubsampling2, Conv2dSubsampling4, \
     Conv2dSubsampling2
+from fqdd.nnets.RNN import RNN, LSTM
 
 FQDD_EMBEDDINGS = {
     "embed": PositionalEncoding,
@@ -42,7 +43,10 @@ FQDD_SUBSAMPLES = {
     "conv2d2": Conv2dSubsampling2,
     "conv2d": Conv2dSubsampling4,
 }
-
+FQDD_RNNS = {
+    "rnn": RNN,
+    "lstm": LSTM
+}
 
 # modify from : https://github.com/facebookresearch/fairseq/blob/main/fairseq/modules/layer_drop.py # noqa
 class LayerDropModuleList(torch.nn.ModuleList):

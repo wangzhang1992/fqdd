@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from fqdd.modules.model_utils import LayerDropModuleList
+from fqdd.modules.model_utils import LayerDropModuleList, FQDD_RNNS
 from fqdd.nnets.base_utils import FQDD_ACTIVATIONS
 from fqdd.nnets.linear import Linear
 from fqdd.nnets.normalization import LayerNorm
@@ -99,6 +99,9 @@ class CrdnnEncoder(nn.Module):
         projection_dim = encoder_conf.get("projection_dim", 1024)
         use_rnnp = encoder_conf.get("use_rnnp", False)
 
+        self.use_cmvn = use_cmvn
+        self.time_pooling = time_pooling
+
         if use_cmvn:
             mean, std = load_json_cmvn(cmvn_file)
             mean = torch.from_numpy(mean).float()
@@ -107,6 +110,7 @@ class CrdnnEncoder(nn.Module):
 
         self.cnn_block = LayerDropModuleList(p=stochastic_depth_rate, modules=[
             CNN_Block(
+                input_size=input_size,
                 channels=cnn_channels[block_index],
                 kernel_size=cnn_kernel_size,
                 using_2d_pool=using_2d_pooling,
@@ -117,17 +121,12 @@ class CrdnnEncoder(nn.Module):
             ) for block_index in range(cnn_blocks)
         ])
 
-
-
         if time_pooling:
-            self.append(
-                Pooling1d(
-                    pool_type="max",
-                    input_dims=4,
-                    kernel_size=time_pooling_size,
-                    pool_axis=1,
-                ),
-                layer_name="time_pooling",
+            self.time_pooling_layer = Pooling1d(
+                pool_type="max",
+                input_dims=4,
+                kernel_size=time_pooling_size,
+                pool_axis=1,
             )
 
         # This projection helps reducing the number of parameters
@@ -135,56 +134,59 @@ class CrdnnEncoder(nn.Module):
         # Large numbers of CNN filters + large features
         # often lead to very large flattened layers.
         # This layer projects it back to something reasonable.
-        if projection_dim != -1:
-            self.append(Sequential, layer_name="projection")
-            self.projection.append(
-                Linear,
-                n_neurons=projection_dim,
-                bias=True,
-                combine_dims=True,
-                layer_name="linear",
-            )
-            self.projection.append(
-                LayerNorm, layer_name="norm"
-            )
-            self.projection.append(FQDD_ACTIVATIONS[activation_type](), layer_name="act")
+        self.projection = Linear(
+            n_neurons=projection_dim,
+            bias=True,
+            combine_dims=True,
+        )
+        self.projection_layer_norm = LayerNorm(projection_dim)
+        self.projection_activate = FQDD_ACTIVATIONS[activation_type]()
 
-        if rnn_layers > 0:
-            if use_rnnp:
-                self.append(Sequential, layer_name="RNN")
-                for _ in range(rnn_layers):
-                    self.append(
-                        rnn_class,
-                        hidden_size=rnn_neurons,
-                        num_layers=1,
-                        bidirectional=rnn_bidirectional,
-                        re_init=rnn_re_init,
-                    )
-                    self.append(
-                        Linear,
-                        n_neurons=dnn_neurons,
-                        bias=True,
-                        combine_dims=True,
-                    )
-                    self.append(nn.Dropout(p=dropout_rate))
-            else:
-                self.append(
-                    rnn_class,
-                    layer_name="RNN",
-                    hidden_size=rnn_neurons,
-                    num_layers=rnn_layers,
-                    dropout=dropout_rate,
-                    bidirectional=rnn_bidirectional,
-                    re_init=rnn_re_init,
-                )
+        self.rnn_layers = LayerDropModuleList(p=stochastic_depth_rate, modules=[
+            (FQDD_RNNS[rnn_class](
+                hidden_size=rnn_neurons,
+                num_layers=1,
+                bidirectional=rnn_bidirectional,
+                re_init=rnn_re_init,
+            ),
+             Linear(
+                 n_neurons=dnn_neurons,
+                 bias=True,
+                 combine_dims=True,
+             ), nn.Dropout(p=dropout_rate)) if use_rnnp else FQDD_RNNS[rnn_class](
+                layer_name="RNN",
+                hidden_size=rnn_neurons,
+                num_layers=rnn_layers,
+                dropout=dropout_rate,
+                bidirectional=rnn_bidirectional,
+                re_init=rnn_re_init,
+            )
+            for _ in range(rnn_layers)])
 
-        if dnn_blocks > 0:
-            self.append(Sequential, layer_name="DNN")
-        for block_index in range(dnn_blocks):
-            self.DNN.append(
-                DNN_Block,
+        self.dnn_block = LayerDropModuleList(p=stochastic_depth_rate, modules=[
+            DNN_Block(
                 neurons=dnn_neurons,
                 activation=FQDD_ACTIVATIONS[activation_type](),
                 dropout=dropout_rate,
                 layer_name=f"block_{block_index}",
-            )
+            ) for block_index in range(dnn_blocks)])
+
+    def forward(self, xs):
+        if self.use_cmvn:
+            x = self.global_cmvn(xs)
+
+        for layer in self.cnn_block:
+            x = layer(x)
+        if self.time_pooling:
+            x = self.time_pooling_layer(x)
+        x = self.projection(x)
+        x = self.projection_layer_norm(x)
+        x = self.projection_activate(x)
+        for layer in self.rnn_layers:
+            x = layer(x)
+        for layer in self.dnn_block:
+            x = layer(x)
+        return x
+
+
+CrdnnEncoder()

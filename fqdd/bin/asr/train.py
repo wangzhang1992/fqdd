@@ -210,15 +210,15 @@ def main():
     tokenizer = Tokenizers(configs)
 
     _, _, rank = init_distributed(args)
-    train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(args,
-                                                                                              configs,
-                                                                                              tokenizer=tokenizer,
-                                                                                              seed=configs["seed"]
-                                                                                              )
-    configs["model"]["vocab_size"] = tokenizer.vocab_size()
 
+    configs["model"]["vocab_size"] = tokenizer.vocab_size()
     model, configs = init_model(args, configs)
     model, optimizer, scheduler = init_optimizer_and_scheduler(configs, model)
+
+    if rank == 0:
+        logger.info(model)
+        num_params = sum(p.numel() for p in model.parameters())
+        logger.info('the number of model params: {:,d}'.format(num_params))
 
     # Save checkpoints
     save_model(model,
@@ -227,12 +227,16 @@ def main():
                    "tag": "init",
                    **configs
                })
-    if rank == 0:
-        logger.info(model)
-        num_params = sum(p.numel() for p in model.parameters())
-        logger.info('the number of model params: {:,d}'.format(num_params))
+
     device = args.device
     model.to(device)
+
+    train_set, train_loader, train_sampler, dev_set, dev_loader = init_dataset_and_dataloader(args,
+                                                                                              configs,
+                                                                                              tokenizer=tokenizer,
+                                                                                              seed=configs["seed"]
+                                                                                              )
+
     train(model, train_loader, dev_loader, optimizer, scheduler, configs, logger, rank, device)
     # Tear down the process group
     dist.destroy_process_group()

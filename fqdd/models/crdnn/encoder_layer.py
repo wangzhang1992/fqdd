@@ -39,13 +39,11 @@ class CNN_Block(nn.Module):
             dropout=0.15,
     ):
         super(CNN_Block).__init__()
-        self.append(
-            Conv2d,
-            out_channels=channels,
-            kernel_size=kernel_size,
-            layer_name="conv_1",
-        )
-        self.append(LayerNorm, layer_name="norm_1")
+
+        self.conv2d = Conv2d(out_channels=channels,
+                             kernel_size=kernel_size
+                             )
+        self.layer_norm = LayerNorm()
         self.append(activation(), layer_name="act_1")
         self.append(
             Conv2d,
@@ -81,7 +79,7 @@ class CNN_Block(nn.Module):
         )
 
 
-class DNN_Block(Sequential):
+class DNN_Block(nn.Module):
     """Block for linear layers.
 
     Arguments

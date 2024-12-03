@@ -20,10 +20,6 @@ FQDD_ACTIVATIONS = {
     "gelu": torch.nn.GELU,
 }
 
-FQDD_RNNS = {
-    "rnn": torch.nn.RNN,
-    "gru": torch.nn.GRU,
-}
 
 FQDD_NORMALIZES = {
     'layer_norm': LayerNorm,
