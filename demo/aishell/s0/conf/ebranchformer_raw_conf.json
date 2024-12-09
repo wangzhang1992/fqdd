@@ -1,0 +1,176 @@
+{
+  "seed": 777,
+  "max_epoch": 240,
+  "pretrain_model": null,
+  "log_interval": 100,
+  "accumulation_steps": 1,
+  "dist_conf": {
+    "train_engine": "torch_ddp",
+    "dist_backend": "nccl",
+    "find_unused_parameters": false
+  },
+  "tokenizer": "char",
+  "tokenizer_conf": {
+    "symbol_table_path": "data/dict/lang_char.txt",
+    "split_with_space": false,
+    "bpe_path": null,
+    "non_lang_syms_path": null,
+    "is_multilingual": false,
+    "num_languages": 1,
+    "special_tokens": {
+      "<blank>": 0,
+      "<unk>": 1,
+      "<sos>": 2,
+      "<eos>": 2
+    }
+  },
+  "model_name": "ebranchformer_raw",
+  "model": {
+    "grad_clip": 5,
+    "dtype": "fp32",
+    "use_cmvn": false,
+    "cmvn_file": "data/train/global_cmvn",
+    "special_tokens": {
+      "<blank>": 0,
+      "<unk>": 1,
+      "<sos>": 2,
+      "<eos>": 2
+    },
+    "ctc_weight": 0.3,
+    "lsm_weight": 0.1,
+    "length_normalized_loss": false,
+    "ctc_conf": {
+      "ctc_blank_id": 0
+    },
+    "encoder": {
+      "output_size": 256,
+      "attention_heads": 8,
+      "linear_units": 1024,
+      "num_blocks": 17,
+      "cgmlp_linear_units": 1024,
+      "cgmlp_conv_kernel": 31,
+      "use_linear_after_conv": false,
+      "gate_activation": "identity",
+      "merge_conv_kernel": 31,
+      "activation_type": "swish",
+      "dropout_rate": 0.1,
+      "attention_dropout_rate": 0.1,
+      "input_layer": "conv1d512",
+      "positional_dropout_rate": 0.1,
+      "causal": false,
+      "pos_enc_layer_type": "rel_pos",
+      "selfattention_layer_type": "rel_selfattn"
+    },
+    "decoder": {
+      "encoder_output_size": 256,
+      "attention_heads": 4,
+      "linear_units": 2048,
+      "num_blocks": 6,
+      "dropout_rate": 0.1,
+      "positional_dropout_rate": 0.1,
+      "self_attention_dropout_rate": 0.1,
+      "src_attention_dropout_rate": 0.1
+    }
+  },
+  "optim": "adam",
+  "optim_conf": {
+    "lr": 0.001,
+    "weight_decay": 0.000001
+  },
+  "scheduler": "warmuplr",
+  "scheduler_conf": {
+    "warmup_steps": 35000
+  },
+  "data_conf": {
+    "sample_rate": 16000,
+    "filter": true,
+    "filter_conf": {
+      "max_length": 1500,
+      "min_length": 10,
+      "token_max_length": 200,
+      "token_min_length": 1,
+      "min_output_input_ratio": 0.005,
+      "max_output_input_ratio": 1
+    },
+    "feat_type": "raw",
+    "fbank_conf": {
+      "num_mel_bins": 80,
+      "frame_shift": 10,
+      "frame_length": 25,
+      "dither": 1.0
+    },
+    "batch_size": 16,
+    "num_workers": 4,
+    "pin_memory": true,
+    "prefetch": 500,
+    "shuffle": true,
+    "augment": {
+      "spec_aug": false,
+      "spec_aug_conf": {
+        "num_t_mask": 2,
+        "num_f_mask": 2,
+        "max_t": 50,
+        "max_f": 10,
+        "rate": 0.5
+      },
+      "spec_sub": false,
+      "spec_sub_conf": {
+        "max_t": 30,
+        "num_t_sub": 3,
+        "rate": 0.5
+      },
+      "spec_trim": false,
+      "spec_trim_conf": {
+        "max_t": 50,
+        "rate": 0.5
+      },
+      "speed_perturb": false,
+      "add_noise": false,
+      "add_noise_conf": {
+        "noise_lists": "data/noise/musan.lst",
+        "snr_db": [
+          5,
+          10,
+          15
+        ],
+        "rate": 0.5
+      },
+      "add_reverb": false,
+      "add_reverb_conf": {
+        "reverb_lists": "data/noise/rirs.lst",
+        "rate": 0.5
+      },
+      "wav_distortion": false,
+      "wav_distortion_conf": {
+        "rate": 0.5,
+        "gain_db": {
+          "db": -30
+        },
+        "max_distortion": {
+          "max_db": -30
+        },
+        "jag_distortion": {
+          "mask_number": 4
+        },
+        "fence_distortion": {
+          "mask_number": 1,
+          "max_db": -30
+        },
+        "poly_distortion": {
+          "a": 4,
+          "m": 2,
+          "n": 2
+        },
+        "quad_distortion": {
+          "a": 1,
+          "m": 1,
+          "n": 1
+        },
+        "null_distortion": {
+        }
+      }
+    }
+  }
+}
+
+

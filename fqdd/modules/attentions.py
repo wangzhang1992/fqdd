@@ -259,6 +259,23 @@ class MultiHeadedAttention(nn.Module):
         return self.forward_attention(v, scores, mask), new_cache
 
 
+class Reverse_MultiHeadedAttention(MultiHeadedAttention):
+    def forward(
+            self,
+            query: torch.Tensor,
+            key: torch.Tensor,
+            value: torch.Tensor,
+            mask: torch.Tensor = torch.ones((0, 0, 0), dtype=torch.bool),
+            pos_emb: torch.Tensor = torch.empty(0),
+            cache: T_CACHE = (torch.zeros(0, 0, 0, 0), torch.zeros(0, 0, 0, 0)),
+    ) -> Tuple[torch.Tensor, T_CACHE]:
+        q, k, v = self.forward_qkv(query, key, value)
+        k = torch.flip(k, dim=-1)
+        k, v, new_cache = self._update_kv_and_cache(k, v, cache)
+        scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.d_k)
+        return self.forward_attention(v, scores, mask), new_cache
+
+
 class MultiHeadedCrossAttention(MultiHeadedAttention):
 
     def __init__(self,
@@ -687,3 +704,6 @@ class KeyValueAttention(nn.Module):
         normalized_scores = scores.softmax(1).transpose(1, 2)
         out = torch.matmul(normalized_scores, self.values).squeeze(1)
         return out, normalized_scores
+
+# cat exp/ebranchformer_ehance_v3/train_log.txt |grep train|grep CV:loss
+# cat exp/ebranchformer_ehance_v3/train_log.txt |grep train:|grep -v lr

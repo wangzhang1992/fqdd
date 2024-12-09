@@ -444,7 +444,9 @@ class Dataload:
 
         sample_rate = self.conf.get("sample_rate", 16000)
 
-        if self.conf.get("feat_type") == "fbank":
+        if self.conf.get("feat_type") == "raw":
+            mat = waveform
+        elif self.conf.get("feat_type") == "fbank":
             feat_conf = self.conf.get("fbank_conf")
             mat = torchaudio.compliance.kaldi.fbank(
                 waveform,

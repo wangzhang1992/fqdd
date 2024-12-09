@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from fqdd.nnets.base_utils import FQDD_NORMALIZES, FQDD_ACTIVATIONS
-from fqdd.models.ebranchformer.encoder_layer import ConvolutionalGatingMLP, EBranchformerEncoderLayer
+from fqdd.models.ebranchformer_raw.encoder_layer import ConvolutionalGatingMLP, EBranchformerEncoderLayer
 from fqdd.modules.model_utils import FQDD_MLPS, FQDD_EMBEDDINGS, FQDD_SUBSAMPLES, LayerDropModuleList, FQDD_ATTENTIONS
 from fqdd.utils.common import load_json_cmvn, GlobalCMVN
 from fqdd.utils.mask import make_pad_mask
@@ -20,7 +20,7 @@ class EBranchformerEncoder(nn.Module):
             cmvn_file: str = None
     ):
         super(EBranchformerEncoder, self).__init__()
-        input_size = encoder_conf.get("input_size")
+        input_size = encoder_conf.get("input_size", 1)
         output_size = encoder_conf.get("output_size", 256)
         attention_heads = encoder_conf.get("attention_heads", 4)
         linear_units = encoder_conf.get("linear_units", 2048)

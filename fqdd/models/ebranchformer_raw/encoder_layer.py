@@ -192,20 +192,21 @@ class EBranchformerEncoderLayer(torch.nn.Module):
             size: int,
             attn: torch.nn.Module,
             cgmlp: torch.nn.Module,
-            merge: torch.nn.Module,
             feed_forward: Optional[torch.nn.Module],
             feed_forward_macaron: Optional[torch.nn.Module],
             dropout_rate: float,
+            merge_conv_kernel: int = 3,
+            causal: bool = True,
             stochastic_depth_rate=0.0,
     ):
         super().__init__()
 
         self.size = size
-        self.feed_forward_macaron = feed_forward_macaron
         self.attn = attn
         self.cgmlp = cgmlp
-        self.merge_proj = merge
+
         self.feed_forward = feed_forward
+        self.feed_forward_macaron = feed_forward_macaron
         self.ff_scale = 1.0
         if self.feed_forward is not None:
             self.norm_ff = nn.LayerNorm(size)
@@ -219,7 +220,25 @@ class EBranchformerEncoderLayer(torch.nn.Module):
         self.norm_final = nn.LayerNorm(size)
 
         self.dropout = torch.nn.Dropout(dropout_rate)
-        self.final_merge = torch.nn.Linear(size, size)
+
+        if causal:
+            padding = 0
+            self.lorder = merge_conv_kernel - 1
+        else:
+            # kernel_size should be an odd number for none causal convolution
+            assert (merge_conv_kernel - 1) % 2 == 0
+            padding = (merge_conv_kernel - 1) // 2
+            self.lorder = 0
+        self.depthwise_conv_fusion = torch.nn.Conv1d(
+            size + size,
+            size + size,
+            kernel_size=merge_conv_kernel,
+            stride=1,
+            padding=padding,
+            groups=size + size,
+            bias=True,
+        )
+        self.merge_proj = torch.nn.Linear(size + size, size)
         self.stochastic_depth_rate = stochastic_depth_rate
 
     def _forward(
@@ -257,15 +276,23 @@ class EBranchformerEncoderLayer(torch.nn.Module):
         x2 = self.dropout(x2)
 
         # Merge two branches
-        fuse_x = self.merge_proj(x1, x2)
+        x_concat = torch.cat([x1, x2], dim=-1)
+        x_tmp = x_concat.transpose(1, 2)
+        if self.lorder > 0:
+            x_tmp = nn.functional.pad(x_tmp, (self.lorder, 0), "constant", 0.0)
+            assert x_tmp.size(2) > self.lorder
+        x_tmp = self.depthwise_conv_fusion(x_tmp)
+        x_tmp = x_tmp.transpose(1, 2)
         x = x + stoch_layer_coeff * self.dropout(
-            self.final_merge(fuse_x))
+            self.merge_proj(x_concat + x_tmp))
+
         if self.feed_forward is not None:
             # feed forward module
             residual = x
             x = self.norm_ff(x)
             x = residual + stoch_layer_coeff * self.ff_scale * self.dropout(
                 self.feed_forward(x))
+
         x = self.norm_final(x)
 
         return x, mask, new_att_cache, new_cnn_cache
